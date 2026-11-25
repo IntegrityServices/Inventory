@@ -9,24 +9,23 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
-/* Layout idea: one phone-width column, big thumb-reach buttons, scan list on top of a fixed Confirm bar. */
 :root {
-  --paper: #F2F4F5; --card: #FFFFFF; --ink: #172027; --muted: #586873; --line: #D5DCE0;
-  --accent: #1558B0; --accent-ink: #FFFFFF; --accent-soft: #E3EDFA;
-  --good: #17703F; --good-bg: #DDF2E5; --warn: #8F4B00; --warn-bg: #FFEBCC; --bad: #B3261E; --bad-bg: #FBE0DD;
-  --cam: #0E1418;
-  --font-display: 'Barlow Semi Condensed', 'Arial Narrow', system-ui, sans-serif;
-  --font-body: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  --tabs-h: 64px;
+--paper: #F2F4F5; --card: #FFFFFF; --ink: #172027; --muted: #586873; --line: #D5DCE0;
+--accent: #1558B0; --accent-ink: #FFFFFF; --accent-soft: #E3EDFA;
+--good: #17703F; --good-bg: #DDF2E5; --warn: #8F4B00; --warn-bg: #FFEBCC; --bad: #B3261E; --bad-bg: #FBE0DD;
+--cam: #0E1418;
+--font-display: 'Barlow Semi Condensed', 'Arial Narrow', system-ui, sans-serif;
+--font-body: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+--tabs-h: 64px;
 }
 @media (prefers-color-scheme: dark) {
-  :root {
-    --paper: #12181C; --card: #1B2329; --ink: #E8EDF0; --muted: #9AA9B3; --line: #2C373E;
-    --accent: #6AA5FF; --accent-ink: #0A1522; --accent-soft: #1D2D44;
-    --good: #5ED28F; --good-bg: #17382A; --warn: #FFB454; --warn-bg: #3F2D12; --bad: #FF8A80; --bad-bg: #44201D;
-    --cam: #05080A;
-  }
-  .label { color: #000; }
+:root {
+--paper: #12181C; --card: #1B2329; --ink: #E8EDF0; --muted: #9AA9B3; --line: #2C373E;
+--accent: #6AA5FF; --accent-ink: #0A1522; --accent-soft: #1D2D44;
+--good: #5ED28F; --good-bg: #17382A; --warn: #FFB454; --warn-bg: #3F2D12; --bad: #FF8A80; --bad-bg: #44201D;
+--cam: #05080A;
+}
+.label { color: #000; }
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.4; -webkit-text-size-adjust: 100%; }
@@ -38,7 +37,6 @@ button { cursor: pointer; }
 .hidden { display: none !important; }
 .muted { color: var(--muted); }
 .num { font-variant-numeric: tabular-nums; }
-
 #app { max-width: 760px; margin: 0 auto; padding: 0 16px calc(var(--tabs-h) + 130px + env(safe-area-inset-bottom)); }
 .topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: calc(12px + env(safe-area-inset-top)) 0 12px; position: sticky; top: 0; background: var(--paper); z-index: 5; }
 .brand { font-family: var(--font-display); font-weight: 700; font-size: 24px; display: flex; align-items: center; gap: 10px; }
@@ -46,13 +44,11 @@ button { cursor: pointer; }
 .sync.wait { background: #E39A1B; } .sync.off { background: var(--bad); }
 .who { border: 1.5px solid var(--line); background: var(--card); border-radius: 999px; padding: 8px 14px; font-weight: 600; max-width: 55%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .who.empty { border-color: var(--accent); color: var(--accent); }
-
 .tabs { position: fixed; left: 0; right: 0; bottom: 0; background: var(--card); border-top: 1px solid var(--line); display: flex; justify-content: center; padding-bottom: env(safe-area-inset-bottom); z-index: 10; }
 .tabs-inner { display: flex; width: 100%; max-width: 760px; }
 .tab { flex: 1; min-height: var(--tabs-h); background: none; border: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 12px; font-weight: 600; color: var(--muted); }
 .tab svg { width: 24px; height: 24px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .tab[aria-selected="true"] { color: var(--accent); }
-
 .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 16px; margin-bottom: 14px; }
 .card h2 { font-size: 20px; margin-bottom: 10px; }
 .btn { border: 0; border-radius: 12px; padding: 12px 18px; font-weight: 700; background: var(--accent-soft); color: var(--accent); min-height: 46px; }
@@ -62,22 +58,20 @@ button { cursor: pointer; }
 .btn:disabled { opacity: .5; cursor: default; }
 .link { background: none; border: 0; color: var(--accent); font-weight: 600; padding: 6px 0; }
 input[type=text], input[type=search], input[type=number], input[type=password], textarea, select {
-  width: 100%; padding: 12px 14px; border-radius: 10px; border: 1.5px solid var(--line); background: var(--paper); min-height: 46px; }
+width: 100%; padding: 12px 14px; border-radius: 10px; border: 1.5px solid var(--line); background: var(--paper); min-height: 46px; }
 textarea { min-height: 120px; resize: vertical; }
 label.field { display: block; font-weight: 600; font-size: 14px; margin: 12px 0 6px; }
 .seg { display: flex; background: var(--paper); border: 1.5px solid var(--line); border-radius: 12px; padding: 3px; gap: 3px; }
 .seg button { flex: 1; border: 0; background: none; border-radius: 9px; padding: 9px 8px; font-weight: 600; color: var(--muted); }
 .seg button[aria-pressed="true"] { background: var(--card); color: var(--ink); box-shadow: 0 1px 3px rgba(0,0,0,.18); }
-
-/* camera */
 .cam { position: relative; background: var(--cam); border-radius: 14px; overflow: hidden; aspect-ratio: 4/3; max-height: 42vh; width: 100%; margin-bottom: 14px; display: grid; place-items: center; }
 .cam video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .cam .frame { position: absolute; inset: 18% 18%; border-radius: 16px; pointer-events: none; box-shadow: 0 0 0 2000px rgba(0,0,0,.28);
-  background:
-    linear-gradient(#fff,#fff) top left/28px 4px no-repeat, linear-gradient(#fff,#fff) top left/4px 28px no-repeat,
-    linear-gradient(#fff,#fff) top right/28px 4px no-repeat, linear-gradient(#fff,#fff) top right/4px 28px no-repeat,
-    linear-gradient(#fff,#fff) bottom left/28px 4px no-repeat, linear-gradient(#fff,#fff) bottom left/4px 28px no-repeat,
-    linear-gradient(#fff,#fff) bottom right/28px 4px no-repeat, linear-gradient(#fff,#fff) bottom right/4px 28px no-repeat; }
+background:
+linear-gradient(#fff,#fff) top left/28px 4px no-repeat, linear-gradient(#fff,#fff) top left/4px 28px no-repeat,
+linear-gradient(#fff,#fff) top right/28px 4px no-repeat, linear-gradient(#fff,#fff) top right/4px 28px no-repeat,
+linear-gradient(#fff,#fff) bottom left/28px 4px no-repeat, linear-gradient(#fff,#fff) bottom left/4px 28px no-repeat,
+linear-gradient(#fff,#fff) bottom right/28px 4px no-repeat, linear-gradient(#fff,#fff) bottom right/4px 28px no-repeat; }
 .cam .msg { position: relative; color: #fff; text-align: center; padding: 20px; display: grid; gap: 12px; justify-items: center; }
 .cam .msg p { margin: 0; color: #C5D0D8; }
 .cam .tools { position: absolute; right: 10px; top: 10px; display: flex; gap: 8px; }
@@ -86,8 +80,6 @@ label.field { display: block; font-weight: 600; font-size: 14px; margin: 12px 0 
 .cam.compact .frame { inset: 10% 30%; }
 .cam.flash { animation: flash .35s; }
 @keyframes flash { from { box-shadow: 0 0 0 6px var(--good); } to { box-shadow: 0 0 0 0 transparent; } }
-
-/* scan list */
 .batch-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
 .scan-row { display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 10px; padding: 12px 0; border-top: 1px solid var(--line); }
 .scan-row:first-of-type { border-top: 0; }
@@ -108,18 +100,14 @@ label.field { display: block; font-weight: 600; font-size: 14px; margin: 12px 0 
 .empty b { display: block; color: var(--ink); font-family: var(--font-display); font-size: 20px; margin-bottom: 4px; }
 .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
 .chip { border: 1.5px solid var(--line); background: var(--paper); border-radius: 999px; padding: 6px 12px; font-size: 14px; font-weight: 600; }
-
 .confirmbar { position: fixed; left: 0; right: 0; bottom: calc(var(--tabs-h) + env(safe-area-inset-bottom)); padding: 12px 16px; background: linear-gradient(to top, var(--paper) 70%, transparent); z-index: 9; }
 .confirmbar .btn { max-width: 728px; margin: 0 auto; display: block; font-size: 19px; min-height: 58px; font-family: var(--font-display); letter-spacing: .02em; }
-
 .done { text-align: center; padding: 22px 12px; }
 .done .tick { width: 64px; height: 64px; border-radius: 50%; background: var(--good-bg); color: var(--good); display: grid; place-items: center; margin: 0 auto 10px; }
 .done .tick svg { width: 34px; height: 34px; stroke: currentColor; fill: none; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
 .done h2 { margin-bottom: 6px; }
 .done .btn { margin-top: 14px; }
 .done ul { list-style: none; padding: 0; margin: 10px 0 14px; color: var(--muted); }
-
-/* lists */
 .tiles, .tiles.four { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 14px; }
 .tile { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 12px 16px; }
 .tile .n { font-family: var(--font-display); font-weight: 700; font-size: 34px; line-height: 1.1; }
@@ -140,21 +128,16 @@ label.field { display: block; font-weight: 600; font-size: 14px; margin: 12px 0 
 .log { display: grid; grid-template-columns: 64px 1fr; gap: 10px; padding: 11px 16px; border-top: 1px solid var(--line); font-size: 15px; }
 .log:first-child { border-top: 0; }
 .log time { color: var(--muted); font-size: 14px; }
-
-/* sheet */
 .overlay { position: fixed; inset: 0; background: rgba(8,14,18,.55); z-index: 30; display: flex; align-items: flex-end; justify-content: center; }
 .sheet { background: var(--paper); width: 100%; max-width: 760px; max-height: 90vh; overflow: auto; border-radius: 18px 18px 0 0; padding: 18px 16px calc(18px + env(safe-area-inset-bottom)); }
 .sheet-head { display: flex; justify-content: space-between; align-items: start; gap: 12px; margin-bottom: 12px; }
 .sheet h2 { font-size: 24px; }
 .stack { display: grid; gap: 10px; }
 .person { display: block; width: 100%; text-align: left; border: 1.5px solid var(--line); background: var(--card); border-radius: 12px; padding: 14px 16px; font-weight: 700; font-size: 18px; min-height: 56px; }
-
 .gate { min-height: 100vh; display: grid; place-items: center; padding: 24px; }
 .gate .card { max-width: 380px; width: 100%; }
 .toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(var(--tabs-h) + 92px + env(safe-area-inset-bottom)); background: var(--ink); color: var(--paper); padding: 10px 16px; border-radius: 999px; font-weight: 600; z-index: 40; max-width: 90vw; text-align: center; }
 .err { background: var(--bad-bg); color: var(--bad); border-radius: 10px; padding: 10px 12px; margin: 10px 0; font-weight: 600; }
-
-/* printing */
 #printArea { display: none; }
 .label { display: flex; align-items: center; gap: .12in; width: 2.45in; height: 1.15in; padding: .08in; border: 1px dashed #999; color: #000; background: #fff; break-inside: avoid; overflow: hidden; }
 .label-qr { width: .95in; height: .95in; flex: none; }
@@ -163,7 +146,6 @@ label.field { display: block; font-weight: 600; font-size: 14px; margin: 12px 0 
 .label-name { font: 700 12pt/1.1 var(--font-display); overflow-wrap: anywhere; }
 .label-code { font: 600 10pt/1.2 ui-monospace, Menlo, Consolas, monospace; margin-top: 3px; }
 .label-sub { font: 9pt/1.2 var(--font-body); color: #333; }
-/* dashboard + wide layout */
 button.tile { text-align: left; width: 100%; font: inherit; color: inherit; }
 button.tile:hover { border-color: var(--accent); }
 .dgrid { display: grid; gap: 14px; grid-template-columns: minmax(0, 1fr); }
@@ -185,21 +167,20 @@ input[type=file] { max-width: 100%; }
 .hrow { display: flex; justify-content: space-between; gap: 10px; font-weight: 700; }
 @media (max-width: 420px) { .tab { font-size: 11px; } }
 @media (min-width: 900px) {
-  :root { --tabs-h: 0px; }
-  #app { max-width: 1120px; padding: 0 24px 150px; }
-  .tabs { position: static; border: 0; background: none; padding: 0 0 16px; display: block; }
-  .tabs-inner { max-width: none; gap: 6px; border-bottom: 1px solid var(--line); padding-bottom: 10px; }
-  .tab { flex: none; flex-direction: row; min-height: 42px; padding: 0 16px; border-radius: 10px; font-size: 15px; gap: 8px; }
-  .tab[aria-selected="true"] { background: var(--accent-soft); }
-  .tiles.four { grid-template-columns: repeat(4, 1fr); }
-  .dgrid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
-  .item.tool { grid-template-columns: minmax(0, 2.2fr) minmax(0, 1.2fr) minmax(0, 1fr) auto; }
-  .item.tool .xc { display: block; }
-  .item.tool .r .s { display: none; }
-  #v-scan { max-width: 720px; margin: 0 auto; }
-  #v-materials, #v-activity { max-width: 880px; }
+:root { --tabs-h: 0px; }
+#app { max-width: 1120px; padding: 0 24px 150px; }
+.tabs { position: static; border: 0; background: none; padding: 0 0 16px; display: block; }
+.tabs-inner { max-width: none; gap: 6px; border-bottom: 1px solid var(--line); padding-bottom: 10px; }
+.tab { flex: none; flex-direction: row; min-height: 42px; padding: 0 16px; border-radius: 10px; font-size: 15px; gap: 8px; }
+.tab[aria-selected="true"] { background: var(--accent-soft); }
+.tiles.four { grid-template-columns: repeat(4, 1fr); }
+.dgrid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
+.item.tool { grid-template-columns: minmax(0, 2.2fr) minmax(0, 1.2fr) minmax(0, 1fr) auto; }
+.item.tool .xc { display: block; }
+.item.tool .r .s { display: none; }
+#v-scan { max-width: 720px; margin: 0 auto; }
+#v-materials, #v-activity { max-width: 880px; }
 }
-/* search + filters */
 .topright { display: flex; gap: 8px; align-items: center; min-width: 0; }
 .topright .who { max-width: 42vw; }
 .srchbtn { display: flex; align-items: center; gap: 8px; border: 1.5px solid var(--line); background: var(--card); border-radius: 999px; padding: 8px 14px; font-weight: 600; color: var(--ink); min-height: 40px; }
@@ -213,17 +194,19 @@ input[type=file] { max-width: 100%; }
 .badge { background: var(--accent); color: var(--accent-ink); border-radius: 999px; padding: 1px 8px; font-size: 12px; margin-left: 6px; }
 .fnote { color: var(--muted); font-size: 14px; margin: 10px 2px 0; }
 .item.retired { opacity: .75; }
+.fbar select, .sortrow select { width: auto; max-width: 100%; min-height: 38px; padding: 6px 30px 6px 10px; font-size: 14px; font-weight: 600; }
+.sortrow { display: flex; align-items: center; gap: 8px; margin-top: 10px; color: var(--muted); font-size: 14px; font-weight: 600; }
 @media (min-width: 900px) {
-  .srchbtn .lbl { display: inline; }
-  .topright .who { max-width: 260px; }
-  .fgrid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-  #v-find { max-width: 960px; }
+.srchbtn .lbl { display: inline; }
+.topright .who { max-width: 260px; }
+.fgrid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+#v-find { max-width: 960px; }
 }
 @media print {
-  html, body { background: #fff; }
-  #app, .tabs, .confirmbar, .toast, .overlay { display: none !important; }
-  #printArea { display: flex; flex-wrap: wrap; gap: .1in; }
-  @page { margin: .4in; }
+html, body { background: #fff; }
+#app, .tabs, .confirmbar, .toast, .overlay { display: none !important; }
+#printArea { display: flex; flex-wrap: wrap; gap: .1in; }
+@page { margin: .4in; }
 }
 @media (prefers-reduced-motion: reduce) { .cam.flash, .scan-row.pop { animation: none; } }
 </style>
@@ -237,1318 +220,6 @@ input[type=file] { max-width: 100%; }
 <script src="config.js"></script>
 <script src="jsQR.js"></script>
 <script src="qrcode.js"></script>
-<script>
-(function () {
-'use strict';
-
-/* ---------- small helpers ---------- */
-const CFG = Object.assign({ api: '', overdueDays: 7 }, window.TRACKER_CONFIG || {});
-const ATTR_ONLY = new Set(['list', 'for', 'role', 'inputmode', 'autocomplete', 'enterkeyhint']);
-function el(tag, props, ...kids) {
-  const n = document.createElement(tag);
-  for (const [k, v] of Object.entries(props || {})) {
-    if (v == null || v === false) continue;
-    if (k === 'class') n.className = v;
-    else if (k.startsWith('on') && typeof v === 'function') n.addEventListener(k.slice(2), v);
-    else if (k.startsWith('aria-') || k.startsWith('data-') || ATTR_ONLY.has(k)) n.setAttribute(k, v === true ? '' : v);
-    else n[k] = v;
-  }
-  for (const c of kids.flat()) { if (c == null || c === false) continue; n.append(c.nodeType ? c : document.createTextNode(String(c))); }
-  return n;
-}
-const $ = (s, r) => (r || document).querySelector(s);
-const LS = {
-  get(k, d) { try { const v = localStorage.getItem('tt.' + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
-  set(k, v) { try { localStorage.setItem('tt.' + k, JSON.stringify(v)); } catch (e) { /* storage unavailable */ } },
-  del(k) { try { localStorage.removeItem('tt.' + k); } catch (e) { /* ignore */ } }
-};
-const uid = () => (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2));
-const ICONS = {
-  search: 'M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM20 20l-4-4',
-  dash: 'M4 4h7v7H4zM13 4h7v4h-7zM13 10h7v10h-7zM4 13h7v7H4z',
-  scan: 'M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3M7 12h10',
-  tools: 'M14.7 6.3a4 4 0 0 0-5.4 5l-6.3 6.3 2.4 2.4 6.3-6.3a4 4 0 0 0 5-5.4l-2.6 2.6-2.2-.5-.5-2.2z',
-  materials: 'M3 7l9-4 9 4v10l-9 4-9-4zM3 7l9 4 9-4M12 11v10',
-  activity: 'M4 6h16M4 12h16M4 18h10',
-  setup: 'M4 7h10M18 7h2M4 17h2M10 17h10M14 5v4M6 15v4'
-};
-function icon(name) {
-  const s = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  s.setAttribute('viewBox', '0 0 24 24'); s.setAttribute('aria-hidden', 'true');
-  const p = document.createElementNS('http://www.w3.org/2000/svg', 'path'); p.setAttribute('d', ICONS[name]); s.append(p);
-  return s;
-}
-function tickIcon() {
-  const s = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  s.setAttribute('viewBox', '0 0 24 24'); s.setAttribute('aria-hidden', 'true');
-  const p = document.createElementNS('http://www.w3.org/2000/svg', 'path'); p.setAttribute('d', 'M5 12.5l4.5 4.5L19 7'); s.append(p);
-  return s;
-}
-let toastTimer;
-function toast(msg) {
-  const t = $('#toast'); t.textContent = msg; t.classList.remove('hidden');
-  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.add('hidden'), 2200);
-}
-function ago(iso) {
-  if (!iso) return '';
-  const m = Math.max(0, (Date.now() - new Date(iso).getTime()) / 60000);
-  if (m < 2) return 'just now';
-  if (m < 60) return Math.round(m) + ' min';
-  if (m < 60 * 24) return Math.round(m / 60) + ' hr';
-  const d = Math.floor(m / 1440);
-  return d + (d === 1 ? ' day' : ' days');
-}
-const daysOut = iso => iso ? (Date.now() - new Date(iso).getTime()) / 864e5 : 0;
-const fmtTime = iso => new Date(iso).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-const fmtDay = iso => {
-  const d = new Date(iso), t = new Date(); const y = new Date(); y.setDate(t.getDate() - 1);
-  if (d.toDateString() === t.toDateString()) return 'Today';
-  if (d.toDateString() === y.toDateString()) return 'Yesterday';
-  return d.toLocaleDateString([], { weekday: 'long', month: 'short', day: 'numeric' });
-};
-
-/* ---------- fuzzy search ---------- */
-const nrm = s => String(s == null ? '' : s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
-function osa(a, b) {
-  const al = a.length, bl = b.length; if (!al) return bl; if (!bl) return al;
-  let prev2 = null, prev = Array.from({ length: bl + 1 }, (_, j) => j);
-  for (let i = 1; i <= al; i++) {
-    const cur = [i];
-    for (let j = 1; j <= bl; j++) {
-      let v = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
-      if (i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) v = Math.min(v, prev2[j - 2] + 1);
-      cur[j] = v;
-    }
-    prev2 = prev; prev = cur;
-  }
-  return prev[bl];
-}
-const isSubseq = (q, t) => { let i = 0; for (let k = 0; k < t.length && i < q.length; k++) if (t[k] === q[i]) i++; return i === q.length; };
-function tokMatch(q, t) {
-  if (q === t) return 100;
-  if (t.startsWith(q)) return q.length >= 2 ? 90 : 50;
-  if (q.length >= 3 && t.includes(q)) return 60;
-  if (q.length >= 4) {
-    const thr = q.length >= 7 ? 2 : 1;
-    if (Math.abs(q.length - t.length) <= thr) { const d = osa(q, t); if (d <= thr) return 72 - d * 14; }
-    if (t.length > q.length) { const d = osa(q, t.slice(0, q.length)); if (d <= thr) return 64 - d * 14; }
-  }
-  if (q.length >= 3 && q.length <= t.length && t.length <= q.length * 2.5 + 1 && isSubseq(q, t)) return 30;
-  return 0;
-}
-function tokensOf(txt) {
-  const n = nrm(txt); if (!n) return [];
-  const out = new Set();
-  for (const w of n.split(' ')) {
-    out.add(w);
-    const parts = w.match(/[a-z]+|\d+/g); if (parts && parts.length > 1) parts.forEach(x => out.add(x));
-    if (w.length > 3 && w.endsWith('s')) out.add(w.slice(0, -1));
-  }
-  return [...out];
-}
-function bestFor(tok, fields) {
-  let best = 0;
-  for (const f of fields) for (const t of f.toks) { const m = tokMatch(tok, t) * f.wt; if (m > best) best = m; }
-  return best;
-}
-function wordScore(w, fields) {
-  let best = bestFor(w, fields);
-  if (w.length > 3 && w.endsWith('s')) best = Math.max(best, bestFor(w.slice(0, -1), fields));
-  const parts = w.match(/[a-z]+|\d+/g);
-  if (parts && parts.length > 1) { let mn = Infinity; for (const x of parts) mn = Math.min(mn, bestFor(x, fields)); if (mn > 0) best = Math.max(best, mn * 0.9); }
-  return best;
-}
-const ixCache = new WeakMap();
-function indexOf(it) {
-  const key = [it.name, it.category, it.code, it.holder, it.site, it.type].join('\u0001');
-  let c = ixCache.get(it); if (c && c.key === key) return c;
-  const mk = (txt, wt) => ({ toks: tokensOf(txt), wt });
-  c = { key, nameN: nrm(it.name), codeN: nrm(it.code),
-    fields: [mk(it.name, 1), mk(it.code, .9), mk(it.category, .7), mk(it.holder, .6), mk(it.site, .5), mk(it.type === 'Tool' ? 'tool' : 'material', .4)] };
-  ixCache.set(it, c); return c;
-}
-const parseQuery = q => { const n = nrm(q); return { n, words: n ? n.split(' ') : [] }; };
-function scoreItem(it, Q, any) {
-  if (!Q.words.length) return 1;
-  const ix = indexOf(it); let sum = 0, hit = 0;
-  for (const w of Q.words) { const s = wordScore(w, ix.fields); if (s > 0) { sum += s; hit++; } else if (!any) return 0; }
-  if (!hit) return 0;
-  let sc = sum / Q.words.length;
-  if (ix.nameN.includes(Q.n)) sc += 15;
-  if (ix.nameN.startsWith(Q.n)) sc += 10;
-  if (ix.codeN === Q.n) sc += 60;
-  return sc;
-}
-function scoreText(text, q) {
-  const Q = parseQuery(q); if (!Q.words.length) return 1;
-  const f = [{ toks: tokensOf(text), wt: 1 }]; let sum = 0;
-  for (const w of Q.words) { const s = wordScore(w, f); if (!s) return 0; sum += s; }
-  return sum / Q.words.length;
-}
-
-/* ---------- state ---------- */
-const S = {
-  pin: LS.get('pin', ''), me: LS.get('me', ''), askEachTime: LS.get('ask', false),
-  items: [], retired: [], settings: { overdueDays: CFG.overdueDays }, people: [], log: [], index: {},
-  batch: [], queue: LS.get('queue', []), tab: window.matchMedia && matchMedia('(min-width:900px)').matches ? 'dash' : 'scan', loaded: false, online: true,
-  find: { q: '', f: null, open: window.matchMedia && matchMedia('(min-width:900px)').matches, limit: 100 },
-  filter: 'all', q: '', done: null, lastAdded: [], busy: false, pendingHash: ''
-};
-const FDEF = { type: 'any', status: 'any', stock: 'any', holder: 'any', site: 'any', cat: 'any', moved: 'any', sort: 'best', retired: false };
-S.find.f = Object.assign({}, FDEF);
-const od = () => (S.settings && Number(S.settings.overdueDays)) || CFG.overdueDays;
-const saveCache = () => LS.set('cache', { items: S.items, retired: S.retired, settings: S.settings, people: S.people, log: S.log });
-function setState(st) {
-  S.items = st.items || []; S.people = st.people || []; S.log = st.log || [];
-  S.retired = st.retired || []; if (st.settings) S.settings = st.settings;
-  for (const q of S.queue) applyLocal(q.ops, q.personId, q.ts, true);
-  reindex(); S.loaded = true;
-  saveCache();
-}
-function reindex() { S.index = {}; for (const it of S.items) S.index[it.code.toUpperCase()] = it; }
-const byCode = c => S.index[String(c).toUpperCase()];
-const person = id => S.people.find(p => p.id === id);
-const meName = () => { const p = person(S.me); return p ? p.name : ''; };
-(function loadCache() {
-  const c = LS.get('cache'); if (c) { S.items = c.items || []; S.retired = c.retired || []; if (c.settings) S.settings = c.settings; S.people = c.people || []; S.log = c.log || []; reindex(); S.loaded = true; }
-})();
-
-function applyLocal(ops, personId, ts, skipSave) {
-  for (const op of ops) {
-    const it = byCode(op.code); if (!it) continue;
-    if (it.type === 'Tool') {
-      if (op.action === 'out') {
-        const pid = op.personId || personId, p = person(pid);
-        it.status = 'Out'; it.holder = p ? p.name : ''; it.holderId = pid; it.site = op.site || ''; it.since = ts;
-      } else { it.status = 'In'; it.holder = ''; it.holderId = ''; it.site = ''; it.since = ts; }
-    } else if (op.setQty != null) it.qty = Math.max(0, Number(op.setQty) || 0);
-    else it.qty = Math.max(0, (it.qty || 0) + (op.delta || 0));
-  }
-  if (!skipSave) saveCache();
-}
-
-/* ---------- server calls ---------- */
-async function call(payload, isGet) {
-  if (!CFG.api) throw new Error('noapi');
-  const ctl = new AbortController(); const to = setTimeout(() => ctl.abort(), 25000);
-  try {
-    const res = isGet
-      ? await fetch(CFG.api + '?' + new URLSearchParams({ action: 'state', pin: S.pin }), { signal: ctl.signal })
-      : await fetch(CFG.api, { method: 'POST', body: JSON.stringify(Object.assign({ pin: S.pin }, payload)), signal: ctl.signal });
-    const text = await res.text();
-    let data; try { data = JSON.parse(text); } catch (e) { const err = new Error('badresponse'); throw err; }
-    return data;
-  } finally { clearTimeout(to); }
-}
-let lastError = '';
-function explain(err) {
-  if (err.message === 'noapi') return 'This page is not connected yet. Paste the Web app URL into config.js.';
-  if (err.message === 'badresponse') return 'The Google script did not answer correctly. Check that it is deployed with access set to "Anyone".';
-  return '';
-}
-async function refresh() {
-  if (!S.pin || S.busy) return;
-  try {
-    const r = await call({}, true);
-    if (r.error === 'pin') { badPin(); return; }
-    if (!r.ok) { lastError = r.error || 'Error'; return; }
-    S.online = true; lastError = ''; setState(r.state);
-    if (S.pendingHash) { const h = S.pendingHash; S.pendingHash = ''; handleScan(h); }
-  } catch (e) { S.online = false; lastError = explain(e); }
-  renderAll();
-}
-function badPin() { S.pin = ''; LS.del('pin'); render(); }
-
-let flushP = null;
-function flushQueue() {
-  if (!S.queue.length || !S.pin) return Promise.resolve({});
-  if (!flushP) flushP = doFlush().finally(() => { flushP = null; });
-  return flushP;
-}
-async function doFlush() {
-  const results = {};
-  while (S.queue.length) {
-    const q = S.queue[0];
-    let r;
-    try { r = await call({ action: 'batch', batchId: q.batchId, personId: q.personId, ops: q.ops }); }
-    catch (e) { S.online = false; lastError = explain(e); break; }
-    if (r.error === 'pin') { badPin(); break; }
-    S.queue.shift(); LS.set('queue', S.queue);
-    if (r.ok) { results[q.batchId] = r.results; S.online = true; setState(r.state); }
-    else results[q.batchId] = [{ ok: false, msg: r.error || 'Not saved' }];
-  }
-  renderAll();
-  return results;
-}
-async function submit(ops, personId) {
-  const batch = { batchId: uid(), personId, ops, ts: new Date().toISOString() };
-  applyLocal(ops, personId, batch.ts);
-  S.queue.push(batch); LS.set('queue', S.queue);
-  const res = await flushQueue();
-  return { sent: !!res[batch.batchId], results: res[batch.batchId] || [] };
-}
-
-/* ---------- audio / haptics ---------- */
-let actx;
-function beep(ok) {
-  try {
-    actx = actx || new (window.AudioContext || window.webkitAudioContext)();
-    const o = actx.createOscillator(), g = actx.createGain();
-    o.frequency.value = ok ? 880 : 220; g.gain.value = .08; o.connect(g); g.connect(actx.destination);
-    o.start(); o.stop(actx.currentTime + (ok ? .09 : .2));
-  } catch (e) { /* audio blocked */ }
-  if (navigator.vibrate) navigator.vibrate(ok ? 40 : [60, 40, 60]);
-}
-
-/* ---------- scanning logic ---------- */
-function parseScan(raw) {
-  let t = String(raw || '').trim(); if (!t) return '';
-  const hi = t.lastIndexOf('#');
-  if (hi >= 0) t = t.slice(hi + 1);
-  else { const m = t.match(/[?&]c=([^&#]+)/); if (m) t = m[1]; }
-  try { t = decodeURIComponent(t); } catch (e) { /* keep as is */ }
-  return t.trim();
-}
-function handleScan(raw) {
-  const code = parseScan(raw); if (!code) return;
-  if (S.tab !== 'scan') setTab('scan');
-  const up = code.toUpperCase();
-  if (up === 'CMD-SEND') { beep(true); confirmBatch(); return; }
-  if (up === 'CMD-CLEAR') { beep(true); S.batch = []; renderScan(); toast('Cleared'); return; }
-  const p = S.people.find(x => x.id.toUpperCase() === up);
-  if (p) { S.me = p.id; LS.set('me', p.id); beep(true); toast('Hi ' + p.name); renderTop(); renderScan(); return; }
-  S.done = null;
-  const existing = S.batch.find(r => r.code.toUpperCase() === up);
-  const it = byCode(code);
-  if (existing) {
-    if (it && it.type === 'Material') { existing.qty++; beep(true); renderScan(existing.code); }
-    else { beep(false); toast('Already scanned'); renderScan(existing.code); }
-    return;
-  }
-  S.batch.push({ code: it ? it.code : code, action: null, qty: 1, mode: 'take' });
-  beep(!!it || !S.loaded); renderScan(it ? it.code : code);
-}
-function defaultAction(it) { return it.status === 'Out' && it.holderId === S.me ? 'in' : 'out'; }
-const rowAction = (r, it) => r.action || defaultAction(it);
-
-async function confirmBatch() {
-  if (!S.batch.length) return;
-  if (!S.me || !person(S.me)) { openPicker(() => confirmBatch()); return; }
-  const site = ($('#site') ? $('#site').value.trim() : '');
-  const ops = [], skipped = [];
-  for (const r of S.batch) {
-    const it = byCode(r.code);
-    if (!it) { skipped.push(r.code); continue; }
-    if (it.type === 'Tool') ops.push({ code: it.code, action: rowAction(r, it), site: rowAction(r, it) === 'out' ? site : '' });
-    else ops.push({ code: it.code, delta: r.mode === 'add' ? r.qty : -r.qty });
-  }
-  if (!ops.length) { toast('Nothing to send'); return; }
-  const who = meName();
-  S.busy = true; renderScan();
-  const { sent, results } = await submit(ops, S.me);
-  S.busy = false;
-  const lines = [];
-  for (const x of results) if (x.ok === false || x.action === 'NOCHANGE' || x.msg) lines.push((x.name || x.code || 'Item') + ': ' + (x.msg || 'not saved'));
-  for (const c of skipped) lines.push(c + ': not in the list, skipped');
-  const outs = ops.filter(o => o.action === 'out').length, ins = ops.filter(o => o.action === 'in').length;
-  const takes = ops.filter(o => o.delta < 0).length, adds = ops.filter(o => o.delta > 0).length;
-  const parts = [];
-  if (outs) parts.push(outs + (outs === 1 ? ' tool' : ' tools') + ' checked out to ' + who);
-  if (ins) parts.push(ins + (ins === 1 ? ' tool' : ' tools') + ' returned');
-  if (takes) parts.push(takes + (takes === 1 ? ' material' : ' materials') + ' taken');
-  if (adds) parts.push(adds + (adds === 1 ? ' material' : ' materials') + ' added');
-  if (site && outs) LS.set('site', site);
-  S.done = { title: sent ? 'Done' : 'Saved on this phone', parts, lines, queued: !sent };
-  S.batch = [];
-  if (S.askEachTime) { S.me = ''; LS.del('me'); }
-  renderTop(); renderScan(); setTimeout(() => { if (S.done && S.tab === 'scan') window.scrollTo({ top: 0, behavior: 'smooth' }); }, 50);
-}
-
-/* ---------- camera ---------- */
-const cam = { stream: null, running: false, detector: null, timer: 0, last: { code: '', t: 0 }, wanted: LS.get('cam', false), canvas: null, torch: false, note: '' };
-async function startCam() {
-  if (cam.running) return;
-  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { cam.note = 'This browser cannot open the camera here. Use a scanner, or open the page with https.'; renderCamBox(); return; }
-  try {
-    cam.stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false });
-  } catch (e) {
-    cam.note = e && e.name === 'NotAllowedError' ? 'Camera is blocked. Allow the camera for this site in your browser settings, then tap Start camera.' : 'No camera found.';
-    renderCamBox(); return;
-  }
-  cam.note = ''; cam.running = true; LS.set('cam', true);
-  const v = $('#camvideo'); v.srcObject = cam.stream; try { await v.play(); } catch (e) { /* autoplay quirks */ }
-  if ('BarcodeDetector' in window && !cam.detector) {
-    try { const f = await BarcodeDetector.getSupportedFormats(); if (f.includes('qr_code')) cam.detector = new BarcodeDetector({ formats: ['qr_code'] }); } catch (e) { cam.detector = null; }
-  }
-  renderCamBox(); tick();
-}
-function stopCam(forget) {
-  cam.running = false; clearTimeout(cam.timer);
-  if (cam.stream) cam.stream.getTracks().forEach(t => t.stop());
-  cam.stream = null; cam.torch = false; if (forget) LS.set('cam', false);
-  const v = $('#camvideo'); if (v) v.srcObject = null;
-}
-function tick() {
-  if (!cam.running) return;
-  scanFrame().catch(() => {}).finally(() => { cam.timer = setTimeout(tick, 120); });
-}
-async function scanFrame() {
-  const v = $('#camvideo'); if (!v || v.readyState < 2 || !v.videoWidth) return;
-  let codes = [];
-  if (cam.detector) { const r = await cam.detector.detect(v); codes = r.map(x => x.rawValue); }
-  else {
-    const w = Math.min(720, v.videoWidth), h = Math.round(v.videoHeight * w / v.videoWidth);
-    cam.canvas = cam.canvas || document.createElement('canvas'); cam.canvas.width = w; cam.canvas.height = h;
-    const c = cam.canvas.getContext('2d', { willReadFrequently: true }); c.drawImage(v, 0, 0, w, h);
-    const d = c.getImageData(0, 0, w, h), q = window.jsQR(d.data, w, h, { inversionAttempts: 'dontInvert' });
-    if (q && q.data) codes = [q.data];
-  }
-  const now = Date.now();
-  for (const raw of codes) {
-    const code = parseScan(raw);
-    if (code === cam.last.code && now - cam.last.t < 2000) { cam.last.t = now; continue; }
-    cam.last = { code, t: now };
-    const box = $('.cam'); if (box) { box.classList.remove('flash'); void box.offsetWidth; box.classList.add('flash'); }
-    handleScan(raw);
-  }
-}
-async function toggleTorch() {
-  const t = cam.stream && cam.stream.getVideoTracks()[0]; if (!t) return;
-  try { cam.torch = !cam.torch; await t.applyConstraints({ advanced: [{ torch: cam.torch }] }); } catch (e) { cam.torch = false; toast('No flashlight on this camera'); }
-}
-function torchSupported() { const t = cam.stream && cam.stream.getVideoTracks()[0]; return !!(t && t.getCapabilities && t.getCapabilities().torch); }
-
-/* hardware scanner typing into the page (Zebra DS8178 etc.) */
-(function keyboardScanner() {
-  let buf = '', last = 0, fast = true, timer;
-  function flush() { const b = buf; buf = ''; fast = true; if (b.length >= 3) handleScan(b); }
-  document.addEventListener('keydown', ev => {
-    const tg = ev.target, typing = tg && (tg.tagName === 'INPUT' || tg.tagName === 'TEXTAREA' || tg.tagName === 'SELECT');
-    if (ev.ctrlKey || ev.metaKey || ev.altKey) return;
-    if (typing) return;
-    const now = Date.now();
-    if (ev.key === 'Enter' || ev.key === 'Tab') { if (buf) { ev.preventDefault(); clearTimeout(timer); flush(); } return; }
-    if (ev.key.length !== 1) return;
-    if (buf && now - last > 80) fast = false;
-    last = now; buf += ev.key;
-    clearTimeout(timer); timer = setTimeout(() => { if (fast) flush(); else buf = ''; }, 150);
-  });
-})();
-
-/* ---------- views ---------- */
-const root = $('#root');
-let views = {};          // tab -> container
-function setTab(t) {
-  if (S.tab === 'scan' && t !== 'scan') { stopCam(false); renderCamBox(); }
-  if (S.tab !== t) S.q = '';
-  S.tab = t; renderAll();
-  if (t === 'scan' && (cam.wanted || LS.get('cam', false)) && !cam.running) startCam();
-  window.scrollTo(0, 0);
-}
-function render() {
-  root.textContent = '';
-  if (!CFG.api) { root.append(gate('Not connected yet', 'Open config.js and paste the Web app URL from the Google script. See SETUP.md.', null)); return; }
-  if (!S.pin) { root.append(pinGate()); return; }
-  const app = el('div', { id: 'app' });
-  app.append(el('div', { class: 'topbar', id: 'topbar' }));
-  app.append(el('nav', { class: 'tabs', 'aria-label': 'Sections' }, el('div', { class: 'tabs-inner', role: 'tablist' },
-    [['dash', 'Dashboard'], ['scan', 'Scan'], ['tools', 'Tools'], ['materials', 'Materials'], ['activity', 'Activity'], ['setup', 'Manage']].map(([k, label]) =>
-      el('button', { class: 'tab', role: 'tab', id: 'tab-' + k, 'aria-selected': S.tab === k ? 'true' : 'false', onclick: () => setTab(k) }, icon(k === 'setup' ? 'setup' : k), label)))));
-  for (const t of ['dash', 'find', 'scan', 'tools', 'materials', 'activity', 'setup']) { views[t] = el('main', { id: 'v-' + t, class: 'hidden' }); app.append(views[t]); }
-  root.append(app);
-  root.append(el('div', { class: 'confirmbar hidden', id: 'confirmbar' }));
-  buildScanView();
-  renderAll();
-}
-function renderAll() {
-  if (!views.scan || !views.scan.isConnected) return;
-  renderTop();
-  for (const t of Object.keys(views)) views[t].classList.toggle('hidden', t !== S.tab);
-  document.querySelectorAll('.tab').forEach(b => b.setAttribute('aria-selected', b.id === 'tab-' + S.tab ? 'true' : 'false'));
-  const ae = document.activeElement;
-  if (S.tab !== 'scan' && ae && /^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName) && views[S.tab].contains(ae)) return;
-  if (S.tab === 'scan') renderScan(); else $('#confirmbar').classList.add('hidden');
-  if (S.tab === 'dash') renderDash();
-  if (S.tab === 'find') renderFind();
-  if (S.tab === 'tools') renderTools();
-  if (S.tab === 'materials') renderMaterials();
-  if (S.tab === 'activity') renderActivity();
-  if (S.tab === 'setup') renderSetup();
-}
-function renderTop() {
-  const t = $('#topbar'); if (!t) return;
-  const waiting = S.queue.length;
-  const state = !S.online ? 'off' : waiting ? 'wait' : '';
-  const label = !S.online ? (waiting ? waiting + ' waiting to send (offline)' : 'Offline') : waiting ? waiting + ' sending' : 'Up to date';
-  t.textContent = '';
-  t.append(
-    el('div', { class: 'brand' }, 'Tool Tracker', el('span', { class: 'sync ' + state, title: label, role: 'img', 'aria-label': label })),
-    el('div', { class: 'topright' },
-      el('button', { class: 'srchbtn', 'aria-pressed': S.tab === 'find' ? 'true' : 'false', 'aria-label': 'Search tools and materials', onclick: openFind }, icon('search'), el('span', { class: 'lbl' }, 'Search')),
-      el('button', { class: 'who' + (meName() ? '' : ' empty'), onclick: () => openPicker() }, meName() || 'Who are you?')));
-}
-function gate(title, text, form) {
-  return el('div', { class: 'gate' }, el('div', { class: 'card' }, el('h1', { style: 'font-size:28px;margin-bottom:8px' }, title), el('p', { class: 'muted' }, text), form));
-}
-function pinGate() {
-  const inp = el('input', { type: 'password', id: 'pin', inputMode: 'numeric', autocomplete: 'off', placeholder: 'PIN' });
-  inp.setAttribute('inputmode', 'numeric');
-  const err = el('div', { class: 'err hidden', id: 'pinerr' });
-  const go = async () => {
-    const v = inp.value.trim(); if (!v) return;
-    S.pin = v; err.classList.add('hidden');
-    try {
-      const r = await call({}, true);
-      if (r.error === 'pin') { S.pin = ''; err.textContent = 'That PIN is not right.'; err.classList.remove('hidden'); return; }
-      if (!r.ok) { S.pin = ''; err.textContent = r.error || 'Something went wrong.'; err.classList.remove('hidden'); return; }
-      LS.set('pin', v); setState(r.state); S.online = true; render(); flushQueue();
-      if (S.pendingHash) { const x = S.pendingHash; S.pendingHash = ''; handleScan(x); }
-    } catch (e) { S.pin = ''; err.textContent = explain(e) || 'Could not reach the tracker. Check your signal and try again.'; err.classList.remove('hidden'); }
-  };
-  inp.addEventListener('keydown', e => { if (e.key === 'Enter') go(); });
-  return gate('Tool Tracker', 'Enter the team PIN. You only need to do this once on this phone.',
-    el('div', {}, el('label', { class: 'field', for: 'pin' }, 'Team PIN'), inp, err, el('div', { style: 'height:12px' }), el('button', { class: 'btn primary block', onclick: go }, 'Continue')));
-}
-
-/* scan view */
-function buildScanView() {
-  const v = views.scan; v.textContent = '';
-  v.append(el('div', { id: 'cambox' }), el('div', { id: 'donebox' }), el('div', { id: 'batchbox' }));
-  renderCamBox();
-}
-function renderCamBox() {
-  const b = $('#cambox'); if (!b) return;
-  b.textContent = '';
-  const video = el('video', { id: 'camvideo', playsInline: true, muted: true, autoplay: true });
-  video.setAttribute('playsinline', ''); video.muted = true;
-  const box = el('div', { class: 'cam' }, video);
-  if (cam.running) {
-    box.append(el('div', { class: 'frame' }));
-    const tools = el('div', { class: 'tools' });
-    if (torchSupported()) tools.append(el('button', { onclick: toggleTorch }, 'Light'));
-    tools.append(el('button', { onclick: () => { stopCam(true); renderCamBox(); } }, 'Stop'));
-    box.append(tools);
-    video.srcObject = cam.stream; video.play().catch(() => {});
-  } else {
-    box.append(el('div', { class: 'msg' },
-      el('p', {}, cam.note || 'Scan with the camera, or just use your scanner.'),
-      el('button', { class: 'btn primary', onclick: startCam }, 'Start camera')));
-  }
-  box.classList.toggle('compact', S.batch.length > 0);
-  b.append(box);
-}
-function renderScan(flashCode) {
-  if (!$('#batchbox')) return;
-  const done = $('#donebox'); done.textContent = '';
-  if (S.done) {
-    const d = S.done;
-    done.append(el('div', { class: 'card done' },
-      el('div', { class: 'tick' }, tickIcon()),
-      el('h2', {}, d.title),
-      d.parts.map(p => el('div', { style: 'font-weight:600' }, p)),
-      d.queued ? el('p', { class: 'muted' }, 'No signal right now. It will send by itself when you are back online.') : null,
-      d.lines.length ? el('ul', {}, d.lines.map(l => el('li', {}, l))) : null,
-      el('button', { class: 'btn', onclick: () => { S.done = null; renderScan(); } }, 'Scan more')));
-  }
-  const cb = $('.cam'); if (cb) cb.classList.toggle('compact', S.batch.length > 0);
-  const box = $('#batchbox'); box.textContent = '';
-  const card = el('div', { class: 'card' });
-  card.append(el('div', { class: 'batch-head' }, el('h2', {}, S.batch.length ? 'Scanned (' + S.batch.length + ')' : 'Scanned'),
-    S.batch.length ? el('button', { class: 'link', onclick: () => { S.batch = []; renderScan(); } }, 'Clear all') : null));
-  if (!S.batch.length) {
-    card.append(el('div', { class: 'empty' }, el('b', {}, 'Nothing scanned yet'), 'Point the camera at a tool’s QR code. Scan as many as you like, then press Confirm once.'));
-  }
-  let anyOut = false;
-  S.batch.forEach((r, i) => {
-    const it = byCode(r.code);
-    const row = el('div', { class: 'scan-row' + (flashCode && flashCode.toUpperCase() === r.code.toUpperCase() ? ' pop' : '') });
-    const main = el('div', {});
-    if (!it) {
-      main.append(el('div', { class: 'sr-name' }, S.loaded ? 'New code ' + r.code : 'Looking up…'), el('div', { class: 'sr-sub' }, S.loaded ? 'Not in the list yet' : r.code));
-      row.append(main, S.loaded ? el('button', { class: 'act', onclick: () => openAddUnknown(r.code) }, 'Add it') : el('span'), removeBtn(i));
-    } else if (it.type === 'Tool') {
-      const a = rowAction(r, it); if (a === 'out') anyOut = true;
-      const status = it.status === 'Out' ? 'With ' + (it.holder || 'someone') + (it.site ? ' at ' + it.site : '') + ' · ' + ago(it.since) : 'In the shop';
-      main.append(el('div', { class: 'sr-name' }, it.name), el('div', { class: 'sr-sub' }, 'Now: ' + status));
-      const label = a === 'in' ? 'Return' : (it.status === 'Out' && it.holderId !== S.me ? 'Take over' : 'Check out');
-      row.append(main, el('button', { class: 'act' + (a === 'in' ? ' in' : ''), 'aria-label': label + ' ' + it.name + '. Tap to switch.', onclick: () => { r.action = a === 'in' ? 'out' : 'in'; renderScan(); } }, label + ' ⇅'), removeBtn(i));
-    } else {
-      main.append(el('div', { class: 'sr-name' }, it.name), el('div', { class: 'sr-sub' }, (it.qty != null ? it.qty : 0) + ' on hand'));
-      const step = el('div', { class: 'stepper' },
-        el('button', { 'aria-label': 'One less', onclick: () => { r.qty = Math.max(1, r.qty - 1); renderScan(); } }, '−'),
-        el('b', { class: 'num' }, String(r.qty)),
-        el('button', { 'aria-label': 'One more', onclick: () => { r.qty++; renderScan(); } }, '+'));
-      const mode = el('button', { class: 'act ' + (r.mode === 'add' ? 'in' : 'take'), style: 'min-width:84px', onclick: () => { r.mode = r.mode === 'add' ? 'take' : 'add'; renderScan(); } }, r.mode === 'add' ? 'Add' : 'Take');
-      main.classList.add('sr-main'); row.classList.add('mat');
-      row.append(main, el('div', { class: 'stepper', style: 'gap:8px' }, step, mode), removeBtn(i));
-    }
-    card.append(row);
-  });
-  if (anyOut) {
-    const recent = [...new Set(S.log.filter(l => l.site).map(l => l.site))].slice(0, 5);
-    const inp = el('input', { type: 'text', id: 'site', placeholder: 'e.g. Maple St job (optional)', autocomplete: 'off', value: '' });
-    card.append(el('label', { class: 'field', for: 'site' }, 'Where are they going?'), inp,
-      recent.length ? el('div', { class: 'chips' }, recent.map(s => el('button', { class: 'chip', onclick: () => { inp.value = s; } }, s))) : null);
-  }
-  box.append(card);
-
-  const bar = $('#confirmbar');
-  if (S.batch.length && !S.busy) {
-    const outs = S.batch.filter(r => { const it = byCode(r.code); return it && it.type === 'Tool' && rowAction(r, it) === 'out'; }).length;
-    const ins = S.batch.filter(r => { const it = byCode(r.code); return it && it.type === 'Tool' && rowAction(r, it) === 'in'; }).length;
-    const mats = S.batch.filter(r => { const it = byCode(r.code); return it && it.type === 'Material'; }).length;
-    const bits = []; if (outs) bits.push(outs + ' out'); if (ins) bits.push(ins + ' back'); if (mats) bits.push(mats + (mats === 1 ? ' material' : ' materials'));
-    bar.textContent = ''; bar.append(el('button', { class: 'btn primary block', onclick: confirmBatch }, 'Confirm' + (bits.length ? ' · ' + bits.join(' · ') : '')));
-    bar.classList.remove('hidden');
-  } else if (S.busy) {
-    bar.textContent = ''; bar.append(el('button', { class: 'btn primary block', disabled: true }, 'Sending…')); bar.classList.remove('hidden');
-  } else bar.classList.add('hidden');
-}
-const removeBtn = i => el('button', { class: 'x', 'aria-label': 'Remove', onclick: () => { S.batch.splice(i, 1); renderScan(); } }, '×');
-
-/* tools */
-/* find */
-function openFind() { setTab('find'); const i = $('#find-q'); if (i) { i.focus(); i.select(); } }
-const openItem = it => { if (it._retired) return; if (it.type === 'Tool') openTool(it.code); else openMaterial(it.code); };
-function passes(it, F) {
-  const tool = it.type === 'Tool', out = tool && it.status === 'Out';
-  if (F.type !== 'any' && F.type !== it.type) return false;
-  if (F.status !== 'any') {
-    if (!tool) return false;
-    if (F.status === 'in' && out) return false;
-    if (F.status === 'out' && !out) return false;
-    if (F.status === 'overdue' && !(out && daysOut(it.since) >= od())) return false;
-  }
-  if (F.stock !== 'any') {
-    if (tool) return false;
-    const q = it.qty || 0;
-    if (F.stock === 'empty' && q > 0) return false;
-    if (F.stock === 'low' && !isLow(it)) return false;
-    if (F.stock === 'ok' && (q <= 0 || isLow(it))) return false;
-  }
-  if (F.holder !== 'any') { if (!tool) return false; if (F.holder === 'none' ? out : !(out && it.holderId === F.holder)) return false; }
-  if (F.site !== 'any') { if (!out) return false; const st = (it.site || '').trim(); if (F.site === '__none' ? st : st !== F.site) return false; }
-  if (F.cat !== 'any') { const c = (it.category || '').trim(); if (F.cat === '__none' ? c : c !== F.cat) return false; }
-  if (F.moved !== 'any') {
-    if (!tool || !it.since) return false;
-    const d = daysOut(it.since);
-    if (F.moved === 'today' && d >= 1) return false;
-    if (F.moved === 'w1' && d >= 7) return false;
-    if (F.moved === 'm1' && d >= 30) return false;
-    if (F.moved === 'o7' && d < 7) return false;
-    if (F.moved === 'o30' && d < 30) return false;
-    if (F.moved === 'o90' && d < 90) return false;
-  }
-  return true;
-}
-function findRow(it) {
-  const tool = it.type === 'Tool';
-  const sub = [it.code, it.category].filter(Boolean).join(' · ');
-  const extra = tool ? (it.status === 'Out' ? 'With ' + (it.holder || 'someone') + (it.site ? ' at ' + it.site : '') + ' · out ' + ago(it.since) : 'In the shop · ' + ago(it.since))
-    : (it.qty || 0) + ' on hand' + (it.min != null ? ' · reorder at ' + it.min : '');
-  if (it._retired) return el('div', { class: 'item retired' }, el('div', {}, el('div', { class: 't' }, it.name), el('div', { class: 's' }, sub + ' · ' + it.type), el('div', { class: 's' }, 'Retired')),
-    el('div', { class: 'r' }, el('button', { class: 'btn sm', onclick: () => restoreItem(it) }, 'Restore')));
-  return el('button', { class: 'item', onclick: () => openItem(it) },
-    el('div', {}, el('div', { class: 't' }, it.name), el('div', { class: 's' }, sub + ' · ' + it.type), el('div', { class: 's' }, extra)),
-    el('div', { class: 'r' }, tool ? toolStatus(it) : [el('div', { class: 'qty num' }, String(it.qty || 0)), isLow(it) ? el('span', { class: 'pill late' }, 'Low') : null]));
-}
-function renderFind() {
-  const v = views.find; v.textContent = '';
-  const F = S.find.f;
-  let last = [];
-  const input = el('input', { type: 'search', id: 'find-q', placeholder: 'Search tools and materials', value: S.find.q, autocomplete: 'off', enterKeyHint: 'search', 'aria-label': 'Search tools and materials', style: 'font-size:18px',
-    oninput: e => { S.find.q = e.target.value; S.find.limit = 100; fill(); },
-    onkeydown: e => {
-      if (e.key !== 'Enter') return; e.preventDefault();
-      const direct = byCode(parseScan(S.find.q));
-      if (direct) { openItem(direct); input.select(); return; }
-      if (last.length === 1) openItem(last[0]);
-    } });
-  const holder = el('div', {});
-  const set = (k, val) => { F[k] = F[k] === val ? FDEF[k] : val; S.find.limit = 100; renderFind(); };
-  const chip = (label, k, val) => el('button', { class: 'chip btnchip', 'aria-pressed': F[k] === val ? 'true' : 'false', onclick: () => set(k, val) }, label);
-  const chips = el('div', { class: 'chips' }, chip('Tools', 'type', 'Tool'), chip('Materials', 'type', 'Material'), chip('Checked out', 'status', 'out'), chip('Overdue', 'status', 'overdue'),
-    chip('In the shop', 'status', 'in'), chip('Low stock', 'stock', 'low'), S.me ? chip('Mine', 'holder', S.me) : null);
-  const active = Object.keys(FDEF).filter(k => k !== 'sort' && F[k] !== FDEF[k]).length;
-  const clear = () => { Object.assign(F, FDEF); S.find.q = ''; S.find.limit = 100; renderFind(); };
-  const bar = el('div', { class: 'fbar' },
-    el('button', { class: 'btn sm', 'aria-expanded': S.find.open ? 'true' : 'false', onclick: () => { S.find.open = !S.find.open; renderFind(); } }, 'Filters', active ? el('span', { class: 'badge' }, String(active)) : null),
-    (active || S.find.q) ? el('button', { class: 'btn sm', onclick: clear }, 'Clear all') : null);
-  const sel = (label, k, opts) => el('div', {}, el('label', { class: 'field' }, label),
-    el('select', { 'aria-label': label, onchange: e => { F[k] = e.target.value; S.find.limit = 100; renderFind(); } }, opts.map(([val, t]) => el('option', { value: val, selected: F[k] === val }, t))));
-  let panel = null;
-  if (S.find.open) {
-    const cats = [...new Set(S.items.map(i => (i.category || '').trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b));
-    const sites = [...new Set(S.items.filter(i => i.type === 'Tool' && i.status === 'Out').map(i => (i.site || '').trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b));
-    const noSite = S.items.some(i => i.type === 'Tool' && i.status === 'Out' && !(i.site || '').trim());
-    const noCat = S.items.some(i => !(i.category || '').trim());
-    panel = el('div', {}, el('div', { class: 'fgrid' },
-      sel('Show', 'type', [['any', 'Everything'], ['Tool', 'Tools only'], ['Material', 'Materials only']]),
-      sel('Tool status', 'status', [['any', 'Any status'], ['in', 'In the shop'], ['out', 'Checked out'], ['overdue', 'Overdue (' + od() + '+ days)']]),
-      sel('Material stock', 'stock', [['any', 'Any stock level'], ['ok', 'In stock'], ['low', 'Low (at or below reorder level)'], ['empty', 'Out of stock']]),
-      sel('Held by', 'holder', [['any', 'Anyone'], ['none', 'Nobody (in the shop)']].concat(S.people.slice().sort((a, b) => a.name.localeCompare(b.name)).map(p => [p.id, p.name]))),
-      sel('Job site', 'site', [['any', 'Any job site']].concat(sites.map(x => [x, x]), noSite ? [['__none', 'No site noted']] : [])),
-      sel('Category', 'cat', [['any', 'Any category']].concat(cats.map(x => [x, x]), noCat ? [['__none', 'No category']] : [])),
-      sel('Last moved (tools)', 'moved', [['any', 'Any time'], ['today', 'Today'], ['w1', 'Past 7 days'], ['m1', 'Past 30 days'], ['o7', 'More than 7 days ago'], ['o30', 'More than 30 days ago'], ['o90', 'More than 90 days ago']]),
-      sel('Sort by', 'sort', [['best', S.find.q.trim() ? 'Best match' : 'Name A to Z'], ['name', 'Name A to Z'], ['code', 'Code'], ['old', 'Longest since last move'], ['new', 'Most recently moved'], ['stock', 'Lowest stock first']])),
-      el('label', { for: 'inc-ret', style: 'display:flex;gap:10px;align-items:center;margin:10px 0 0;font-weight:600' },
-        el('input', { type: 'checkbox', id: 'inc-ret', checked: F.retired, onchange: e => { F.retired = e.target.checked; renderFind(); } }), 'Include retired items'),
-      el('p', { class: 'fnote' }, '"Last moved" is when a tool was last checked out or returned. Filters for tool status, holder, job site and last moved only show tools. The stock filter only shows materials.'));
-  }
-  v.append(input, chips, bar, panel, holder);
-
-  function fill() {
-    holder.textContent = '';
-    if (!S.items.length && !S.retired.length) { holder.append(el('div', { class: 'empty' }, el('b', {}, 'Nothing to search yet'), 'Add tools and materials in Manage and they show up here.')); return; }
-    const Q = parseQuery(S.find.q);
-    let pool = S.items.concat(F.retired ? S.retired.map(r => Object.assign({}, r, { _retired: true })) : []).filter(it => passes(it, F));
-    let scored, partial = false;
-    if (Q.words.length) {
-      scored = pool.map(it => [it, scoreItem(it, Q, false)]).filter(x => x[1] > 0);
-      if (!scored.length && Q.words.length > 1) { scored = pool.map(it => [it, scoreItem(it, Q, true)]).filter(x => x[1] > 0); partial = scored.length > 0; }
-    } else scored = pool.map(it => [it, 0]);
-    const nm = (a, b) => a[0].name.localeCompare(b[0].name, undefined, { numeric: true });
-    const since = x => x[0].type === 'Tool' && x[0].since ? new Date(x[0].since).getTime() : null;
-    const cmp = {
-      best: (a, b) => Q.words.length ? (b[1] - a[1] || nm(a, b)) : nm(a, b),
-      name: nm,
-      code: (a, b) => a[0].code.localeCompare(b[0].code, undefined, { numeric: true }),
-      old: (a, b) => (since(a) == null) - (since(b) == null) || (since(a) - since(b)) || nm(a, b),
-      new: (a, b) => (since(a) == null) - (since(b) == null) || (since(b) - since(a)) || nm(a, b),
-      stock: (a, b) => (a[0].type === 'Tool') - (b[0].type === 'Tool') || ((a[0].qty || 0) - (a[0].min || 0)) - ((b[0].qty || 0) - (b[0].min || 0)) || nm(a, b)
-    }[F.sort] || nm;
-    scored.sort(cmp);
-    last = scored.map(x => x[0]);
-    const shown = last.slice(0, S.find.limit);
-    holder.append(el('div', { class: 'fbar' }, el('span', { class: 'muted', style: 'font-weight:600' }, last.length + (last.length === 1 ? ' result' : ' results') + ' of ' + (S.items.length + (F.retired ? S.retired.length : 0))),
-      el('span', { class: 'sp' }),
-      last.length ? el('button', { class: 'btn sm', onclick: () => downloadCsv('search-results-' + stamp() + '.csv', [INV_HEAD].concat(last.map(invRow))) }, 'Download results (CSV)') : null));
-    if (partial) holder.append(el('p', { class: 'fnote' }, 'Nothing matched every word, so these match some of them.'));
-    if (!last.length) {
-      holder.append(el('div', { class: 'empty' }, el('b', {}, 'No matches'), (active ? 'Try clearing a filter. ' : '') + 'Fewer letters or a different word can help.',
-        (active || S.find.q) ? el('div', { style: 'margin-top:12px' }, el('button', { class: 'btn sm', onclick: clear }, 'Clear search and filters')) : null));
-      return;
-    }
-    holder.append(el('div', { class: 'list' }, shown.map(findRow)));
-    if (last.length > shown.length) holder.append(el('div', { style: 'margin-top:12px;text-align:center' }, el('button', { class: 'btn', onclick: () => { S.find.limit += 100; fill(); } }, 'Show more (' + (last.length - shown.length) + ' left)')));
-  }
-  fill();
-}
-
-/* dashboard */
-function pickPerson(title, onPick) {
-  const list = el('div', { class: 'stack' });
-  const search = el('input', { type: 'search', placeholder: 'Search names', 'aria-label': 'Search names' });
-  function fill() {
-    list.textContent = ''; const q = search.value.trim().toLowerCase();
-    const ppl = S.people.filter(p => !q || scoreText(p.name, q) > 0).sort((a, b) => a.name.localeCompare(b.name));
-    ppl.forEach(p => list.append(el('button', { class: 'person', onclick: () => { closeSheet(); onPick(p); } }, p.name)));
-    if (!ppl.length) list.append(el('div', { class: 'muted' }, S.people.length ? 'No one by that name.' : 'No one is in the list yet. Add people in Manage.'));
-  }
-  search.addEventListener('input', fill);
-  openSheet(title, el('div', { class: 'stack' }, search, list)); fill();
-}
-async function returnTool(it) {
-  closeSheet(); await submit([{ code: it.code, action: 'in', site: '' }], S.me || '');
-  toast(it.name + ' is back in the shop'); renderAll();
-}
-function assignTool(it) {
-  const site = it.status === 'Out' ? (it.site || '') : '';
-  pickPerson((it.status === 'Out' ? 'Reassign ' : 'Assign ') + it.name + ' to…', async p => {
-    await submit([{ code: it.code, action: 'out', site, personId: p.id }], S.me || '');
-    toast(it.name + ' is now with ' + p.name); renderAll();
-  });
-}
-const logWhen = iso => new Date(iso).toDateString() === new Date().toDateString() ? fmtTime(iso) : new Date(iso).toLocaleDateString([], { month: 'short', day: 'numeric' });
-function renderDash() {
-  const v = views.dash; v.textContent = '';
-  const tools = S.items.filter(i => i.type === 'Tool'), mats = S.items.filter(i => i.type === 'Material');
-  if (S.items.length) v.append(el('input', { type: 'search', placeholder: 'Search tools and materials', 'aria-label': 'Search tools and materials', autocomplete: 'off', style: 'margin-bottom:14px;font-size:18px',
-    oninput: e => { S.find.q = e.target.value; S.find.limit = 100; setTab('find'); const i = $('#find-q'); if (i) { i.focus(); i.setSelectionRange(i.value.length, i.value.length); } } }));
-  if (!S.items.length) {
-    v.append(el('div', { class: 'card' }, el('h2', {}, 'Nothing in the inventory yet'),
-      el('p', { class: 'muted', style: 'margin-top:0' }, S.loaded ? 'Add your tools and materials, print their labels, and this page fills in as people scan.' : 'Loading…'),
-      el('button', { class: 'btn primary', onclick: () => setTab('setup') }, 'Add tools and materials')));
-    return;
-  }
-  const out = tools.filter(i => i.status === 'Out');
-  const late = out.filter(i => daysOut(i.since) >= od()).sort((a, b) => new Date(a.since) - new Date(b.since));
-  const low = mats.filter(isLow).sort((a, b) => (a.qty || 0) - (b.qty || 0));
-  const tile = (n, label, cls, fn) => el('button', { class: 'tile ' + cls, onclick: fn }, el('div', { class: 'n num' }, String(n)), el('div', { class: 'l' }, label));
-  v.append(el('div', { class: 'tiles four' },
-    tile(out.length, 'Tools out now', out.length ? 'warn' : '', () => { S.filter = 'out'; setTab('tools'); }),
-    tile(late.length, 'Overdue (' + od() + '+ days)', late.length ? 'bad' : '', () => { S.filter = 'late'; setTab('tools'); }),
-    tile(low.length, 'Materials running low', low.length ? 'bad' : '', () => setTab('materials')),
-    tile(tools.length - out.length, 'Tools in the shop', '', () => { S.filter = 'in'; setTab('tools'); })));
-
-  /* needs attention */
-  const att = el('div', { class: 'card' }, el('h2', {}, 'Needs attention'));
-  const rows = el('div', { class: 'rows' });
-  late.slice(0, 8).forEach(it => rows.append(el('div', { class: 'arow' },
-    el('div', { class: 'grow' }, el('div', { class: 't' }, it.name),
-      el('div', { class: 's' }, 'With ' + (it.holder || 'someone') + (it.site ? ' at ' + it.site : '') + ' · out ' + ago(it.since))),
-    el('div', { class: 'acts' },
-      el('button', { class: 'btn sm primary', onclick: () => returnTool(it) }, 'Mark returned'),
-      el('button', { class: 'btn sm', onclick: () => assignTool(it) }, 'Reassign')))));
-  if (late.length > 8) rows.append(el('div', {}, el('button', { class: 'btn sm', onclick: () => { S.filter = 'late'; setTab('tools'); } }, 'See all ' + late.length + ' overdue tools')));
-  low.slice(0, 8).forEach(it => rows.append(el('div', { class: 'arow' },
-    el('div', { class: 'grow' }, el('div', { class: 't' }, it.name), el('div', { class: 's' }, (it.qty || 0) + ' left · reorder at ' + it.min)),
-    el('div', { class: 'acts' }, el('button', { class: 'btn sm primary', onclick: () => openMaterial(it.code) }, 'Add stock')))));
-  att.append(rows.children.length ? rows : el('p', { class: 'muted', style: 'margin:0' }, 'Nothing overdue and nothing running low.'));
-
-  /* who has what */
-  const by = {};
-  out.forEach(it => { const k = it.holderId || it.holder || '?'; (by[k] = by[k] || { name: it.holder || 'Unknown', items: [] }).items.push(it); });
-  const groups = Object.values(by).sort((a, b) => b.items.length - a.items.length || a.name.localeCompare(b.name));
-  const who = el('div', { class: 'card' }, el('h2', {}, 'Who has what'));
-  if (!groups.length) who.append(el('p', { class: 'muted', style: 'margin:0' }, 'Every tool is back in the shop.'));
-  else who.append(el('div', { class: 'rows' }, groups.map(g => el('div', {},
-    el('div', { class: 'hrow' }, el('span', {}, g.name), el('span', { class: 'sub num' }, g.items.length + (g.items.length === 1 ? ' tool' : ' tools'))),
-    el('div', { class: 'chips' }, g.items.map(it => el('button', { class: 'chip btnchip' + (daysOut(it.since) >= od() ? ' late' : ''), onclick: () => openTool(it.code) }, it.name)))))));
-
-  /* by job site */
-  const sites = {};
-  out.forEach(it => { const k = (it.site || '').trim() || 'No site noted'; (sites[k] = sites[k] || []).push(it); });
-  const sk = Object.keys(sites).sort((a, b) => sites[b].length - sites[a].length || a.localeCompare(b));
-  const siteCard = sk.length ? el('div', { class: 'card' }, el('h2', {}, 'Out by job site'), el('div', { class: 'rows' }, sk.map(k => el('div', {},
-    el('div', { class: 'hrow' }, el('span', {}, k), el('span', { class: 'sub num' }, sites[k].length)),
-    el('div', { class: 'sub' }, sites[k].map(i => i.name).join(', ')))))) : null;
-
-  /* recent */
-  const lg = S.log.slice(0, 8);
-  const rec = el('div', { class: 'card' }, el('h2', {}, 'Recent activity'),
-    lg.length ? el('div', { style: 'margin:0 -16px' }, lg.map(l => el('div', { class: 'log' }, el('time', { class: 'num' }, logWhen(l.time)), el('div', {}, logText(l)))))
-      : el('p', { class: 'muted', style: 'margin:0' }, 'Check-outs and returns show up here.'),
-    lg.length ? el('div', { style: 'margin-top:10px' }, el('button', { class: 'btn sm', onclick: () => setTab('activity') }, 'See all activity')) : null);
-
-  v.append(el('div', { class: 'dgrid' }, el('div', { class: 'dcol' }, att, rec), el('div', { class: 'dcol' }, who, siteCard)));
-}
-
-function toolStatus(it) {
-  if (it.status !== 'Out') return el('span', { class: 'pill in' }, 'In shop');
-  const late = daysOut(it.since) >= od();
-  return el('span', { class: 'pill ' + (late ? 'late' : 'out') }, 'Out · ' + (it.holder || '?'));
-}
-function renderTools() {
-  const v = views.tools; v.textContent = '';
-  const tools = S.items.filter(i => i.type === 'Tool');
-  const isLate = i => i.status === 'Out' && daysOut(i.since) >= od();
-  const out = tools.filter(i => i.status === 'Out'), late = out.filter(isLate);
-  v.append(el('div', { class: 'tiles' },
-    el('div', { class: 'tile' + (out.length ? ' warn' : '') }, el('div', { class: 'n num' }, String(out.length)), el('div', { class: 'l' }, 'Out now')),
-    el('div', { class: 'tile' + (late.length ? ' bad' : '') }, el('div', { class: 'n num' }, String(late.length)), el('div', { class: 'l' }, 'Out ' + od() + '+ days'))));
-  const search = el('input', { type: 'search', placeholder: 'Search tools', value: S.q, 'aria-label': 'Search tools', oninput: e => { S.q = e.target.value; fill(); } });
-  const seg = el('div', { class: 'seg', style: 'margin-top:10px' }, [['all', 'All'], ['out', 'Out'], ['late', 'Overdue'], ['in', 'In shop']].map(([k, l]) =>
-    el('button', { 'aria-pressed': S.filter === k ? 'true' : 'false', onclick: () => { S.filter = k; renderTools(); } }, l)));
-  const holder = el('div', {});
-  v.append(search, seg, holder);
-  const okF = i => S.filter === 'all' || (S.filter === 'late' ? isLate(i) : (S.filter === 'out') === (i.status === 'Out'));
-  function fill() {
-    holder.textContent = '';
-    const q = S.q.trim(), Q = parseQuery(q), sc = new Map();
-    let list = tools.filter(i => okF(i) && (!Q.words.length || (sc.set(i, scoreItem(i, Q)), sc.get(i) > 0)));
-    if (Q.words.length) list.sort((a, b) => sc.get(b) - sc.get(a) || a.name.localeCompare(b.name));
-    else list.sort((a, b) => (a.status === 'Out' ? 0 : 1) - (b.status === 'Out' ? 0 : 1) || (a.status === 'Out' ? new Date(a.since) - new Date(b.since) : a.name.localeCompare(b.name)));
-    if (!list.length) { holder.append(el('div', { class: 'empty' }, el('b', {}, tools.length ? 'No matches' : 'No tools yet'), tools.length ? 'Try a different search or filter.' : 'Add tools in Manage, then print their labels.')); return; }
-    holder.append(el('div', { class: 'list' }, list.map(it => el('button', { class: 'item tool', onclick: () => openTool(it.code) },
-      el('div', {}, el('div', { class: 't' }, it.name), el('div', { class: 's' }, it.code + (it.category ? ' · ' + it.category : ''))),
-      el('div', { class: 'xc s' }, it.status === 'Out' ? (it.site || 'No site noted') : ''),
-      el('div', { class: 'xc s' }, it.status === 'Out' ? 'Out ' + ago(it.since) : ''),
-      el('div', { class: 'r' }, toolStatus(it), it.status === 'Out' ? el('div', { class: 's' }, (it.site ? it.site + ' · ' : '') + ago(it.since)) : null)))));
-  }
-  fill();
-}
-
-/* materials */
-function renderMaterials() {
-  const v = views.materials; v.textContent = '';
-  const mats = S.items.filter(i => i.type === 'Material');
-  const low = mats.filter(i => i.min != null && (i.qty || 0) <= i.min);
-  v.append(el('div', { class: 'tiles' },
-    el('div', { class: 'tile' }, el('div', { class: 'n num' }, String(mats.length)), el('div', { class: 'l' }, 'Materials')),
-    el('div', { class: 'tile' + (low.length ? ' bad' : '') }, el('div', { class: 'n num' }, String(low.length)), el('div', { class: 'l' }, 'Running low'))));
-  const holder = el('div', {});
-  v.append(el('input', { type: 'search', placeholder: 'Search materials', 'aria-label': 'Search materials', value: S.q, oninput: e => { S.q = e.target.value; fill(); } }), holder);
-  function fill() {
-    holder.textContent = '';
-    const Q = parseQuery(S.q), sc = new Map();
-    const list = mats.filter(i => !Q.words.length || (sc.set(i, scoreItem(i, Q)), sc.get(i) > 0))
-      .sort((a, b) => Q.words.length ? (sc.get(b) - sc.get(a) || a.name.localeCompare(b.name)) : (isLow(b) - isLow(a)) || a.name.localeCompare(b.name));
-    if (!list.length) { holder.append(el('div', { class: 'empty' }, el('b', {}, mats.length ? 'No matches' : 'No materials yet'), mats.length ? 'Try a different search.' : 'Add materials in Manage, with how many you have and the level to reorder at.')); return; }
-    holder.append(el('div', { class: 'list' }, list.map(it => el('button', { class: 'item', onclick: () => openMaterial(it.code) },
-      el('div', {}, el('div', { class: 't' }, it.name), el('div', { class: 's' }, it.code + (it.category ? ' · ' + it.category : '') + (it.min != null ? ' · reorder at ' + it.min : ''))),
-      el('div', { class: 'r' }, el('div', { class: 'qty num' }, String(it.qty || 0)), isLow(it) ? el('span', { class: 'pill late' }, 'Low') : null)))));
-  }
-  fill();
-}
-const isLow = it => it.min != null && (it.qty || 0) <= it.min ? 1 : 0;
-
-/* activity */
-const VERB = { OUT: 'checked out', IN: 'returned', TRANSFER: 'took over', TAKE: 'took', RESTOCK: 'added', ADD: 'was added', EDIT: 'was edited', RETIRE: 'was retired', RESTORE: 'was restored', ADJUST: 'recounted' };
-function logText(l) {
-  const who = l.person || 'Someone';
-  if (l.action === 'TAKE' || l.action === 'RESTOCK') return who + ' ' + VERB[l.action] + ' ' + l.qty + ' × ' + l.item;
-  if (l.action === 'ADD' || l.action === 'EDIT' || l.action === 'RETIRE' || l.action === 'RESTORE') return l.item + ' ' + VERB[l.action];
-  if (l.action === 'ADJUST') return who + ' recounted ' + l.item + (l.note ? ' · ' + l.note : '');
-  return who + ' ' + VERB[l.action] + ' ' + l.item + (l.site && l.action !== 'IN' ? ' (' + l.site + ')' : '') + (l.note ? ' · ' + l.note : '');
-}
-function renderActivity() {
-  const v = views.activity; v.textContent = '';
-  const holder = el('div', {});
-  v.append(el('input', { type: 'search', placeholder: 'Search activity', 'aria-label': 'Search activity', value: S.q, oninput: e => { S.q = e.target.value; fill(); } }), holder);
-  function fill() {
-    holder.textContent = '';
-    const q = S.q.trim();
-    const list = S.log.filter(l => !q || scoreText(logText(l) + ' ' + l.code, q) > 0);
-    if (!list.length) { holder.append(el('div', { class: 'empty' }, el('b', {}, 'No activity yet'), 'Check-outs and returns show up here.')); return; }
-    let day = '', box = null;
-    for (const l of list) {
-      const d = fmtDay(l.time);
-      if (d !== day) { day = d; holder.append(el('div', { class: 'daylabel' }, d)); box = el('div', { class: 'list', style: 'margin-top:0' }); holder.append(box); }
-      box.append(el('div', { class: 'log' }, el('time', { class: 'num' }, fmtTime(l.time)), el('div', {}, logText(l))));
-    }
-  }
-  fill();
-}
-
-/* sheets */
-function openSheet(title, body, onclose) {
-  closeSheet();
-  const ov = el('div', { class: 'overlay', id: 'overlay', onclick: e => { if (e.target === ov) closeSheet(); } });
-  const sh = el('div', { class: 'sheet', role: 'dialog', 'aria-modal': 'true', 'aria-label': title },
-    el('div', { class: 'sheet-head' }, el('h2', {}, title), el('button', { class: 'x', 'aria-label': 'Close', onclick: closeSheet }, '×')), body);
-  ov.append(sh); document.body.append(ov); ov._onclose = onclose;
-  const first = sh.querySelector('input,textarea'); if (first && !('ontouchstart' in window)) first.focus();
-}
-function closeSheet() { const o = $('#overlay'); if (o) { const f = o._onclose; o.remove(); if (f) f(); } }
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSheet(); });
-
-function openPicker(after) {
-  const body = el('div', { class: 'stack' });
-  const list = el('div', { class: 'stack' });
-  const search = el('input', { type: 'search', placeholder: 'Search names', 'aria-label': 'Search names' });
-  function fill() {
-    list.textContent = ''; const q = search.value.trim().toLowerCase();
-    const ppl = S.people.filter(p => !q || scoreText(p.name, q) > 0).sort((a, b) => a.name.localeCompare(b.name));
-    ppl.forEach(p => list.append(el('button', { class: 'person', onclick: () => { S.me = p.id; LS.set('me', p.id); closeSheet(); renderTop(); renderScan(); if (after) after(); } }, p.name)));
-    if (!ppl.length) list.append(el('div', { class: 'muted' }, S.people.length ? 'No one by that name.' : 'No one is in the list yet. Add your name below.'));
-  }
-  search.addEventListener('input', fill);
-  const nameIn = el('input', { type: 'text', placeholder: 'Your name', autocomplete: 'off' });
-  const err = el('div', { class: 'err hidden' });
-  const add = el('button', { class: 'btn', onclick: async () => {
-    const n = nameIn.value.trim(); if (!n) return; err.classList.add('hidden');
-    try {
-      const r = await call({ action: 'addPerson', name: n });
-      if (!r.ok) { err.textContent = r.error || 'Could not add that name.'; err.classList.remove('hidden'); return; }
-      setState(r.state); S.me = r.person.id; LS.set('me', S.me); closeSheet(); renderAll(); if (after) after();
-    } catch (e) { err.textContent = explain(e) || 'No signal. Try again when you are online.'; err.classList.remove('hidden'); }
-  } }, 'Add me');
-  body.append(search, list, el('label', { class: 'field' }, 'Not in the list?'), nameIn, err, add);
-  openSheet('Who are you?', body); fill();
-}
-
-function histNode(it) {
-  const hist = S.log.filter(l => l.code.toUpperCase() === it.code.toUpperCase()).slice(0, 8);
-  if (!hist.length) return null;
-  return el('div', {}, el('h3', { style: 'font-size:18px;margin:6px 0 0' }, 'History'), el('div', { class: 'list', style: 'margin-top:8px' },
-    hist.map(l => el('div', { class: 'log' }, el('time', {}, new Date(l.time).toLocaleDateString([], { month: 'short', day: 'numeric' })), el('div', {}, logText(l))))));
-}
-function openTool(code) {
-  const it = byCode(code); if (!it) return;
-  const body = el('div', { class: 'stack' });
-  const detail = it.status === 'Out' ? 'With ' + (it.holder || 'someone') + (it.site ? ' at ' + it.site : '') + ' · ' + ago(it.since) : 'In the shop';
-  body.append(el('div', {}, toolStatus(it), el('div', { class: 'muted', style: 'margin-top:6px' }, it.code + (it.category ? ' · ' + it.category : '') + ' · ' + detail)));
-  const act = async (action) => {
-    if (action === 'in') { await returnTool(it); return; }
-    if (!S.me) { openPicker(() => act(action)); return; }
-    closeSheet(); await submit([{ code: it.code, action, site: '' }], S.me); toast('Checked out to ' + meName()); renderAll();
-  };
-  if (it.status === 'Out') body.append(el('button', { class: 'btn primary block', onclick: () => act('in') }, 'Mark returned to shop'),
-    it.holderId !== S.me ? el('button', { class: 'btn block', onclick: () => act('out') }, 'I have it now') : null);
-  else body.append(el('button', { class: 'btn primary block', onclick: () => act('out') }, 'Check out' + (meName() ? ' to ' + meName() : '')));
-  body.append(el('button', { class: 'btn block', onclick: () => assignTool(it) }, it.status === 'Out' ? 'Reassign to someone else…' : 'Assign to someone…'));
-  body.append(el('div', { class: 'seg', style: 'display:flex' }, el('button', { onclick: () => { closeSheet(); printLabels([it]); } }, 'Print label'), el('button', { onclick: () => { closeSheet(); openEdit(it.code); } }, 'Edit')));
-  const h = histNode(it); if (h) body.append(h);
-  openSheet(it.name, body);
-}
-function openMaterial(code) {
-  const it = byCode(code); if (!it) return;
-  let n = 1;
-  const body = el('div', { class: 'stack' });
-  const num = el('b', { class: 'num', style: 'font-size:28px;min-width:40px;text-align:center' }, '1');
-  const set = d => { n = Math.max(1, n + d); num.textContent = String(n); };
-  const go = async (sign) => {
-    if (!S.me) { openPicker(() => go(sign)); return; }
-    closeSheet(); await submit([{ code: it.code, delta: sign * n }], S.me); toast((sign < 0 ? 'Took ' : 'Added ') + n); renderAll();
-  };
-  const cnt = el('input', { type: 'number', inputMode: 'numeric', min: '0', placeholder: 'Exact count', 'aria-label': 'Exact count on hand' });
-  const setCount = async () => {
-    if (cnt.value === '') return;
-    const q = Math.max(0, Math.round(Number(cnt.value)));
-    closeSheet(); await submit([{ code: it.code, setQty: q }], S.me || ''); toast('Count set to ' + q); renderAll();
-  };
-  body.append(el('div', { class: 'muted' }, it.code + (it.category ? ' · ' + it.category : '') + (it.min != null ? ' · reorder at ' + it.min : '')),
-    el('div', { class: 'qty num', style: 'font-size:44px' }, (it.qty || 0) + ' on hand'),
-    el('div', { style: 'display:flex;align-items:center;justify-content:center;gap:14px' },
-      el('button', { class: 'btn', style: 'min-width:56px', onclick: () => set(-1) }, '−'), num, el('button', { class: 'btn', style: 'min-width:56px', onclick: () => set(1) }, '+')),
-    el('div', { style: 'display:grid;grid-template-columns:1fr 1fr;gap:10px' }, el('button', { class: 'btn danger', onclick: () => go(-1) }, 'Take'), el('button', { class: 'btn primary', onclick: () => go(1) }, 'Add stock')),
-    el('div', {}, el('label', { class: 'field' }, 'Recount: type what is really on the shelf'),
-      el('div', { style: 'display:grid;grid-template-columns:1fr auto;gap:10px' }, cnt, el('button', { class: 'btn', onclick: setCount }, 'Set count'))),
-    el('div', { class: 'seg', style: 'display:flex' }, el('button', { onclick: () => { closeSheet(); printLabels([it]); } }, 'Print label'), el('button', { onclick: () => { closeSheet(); openEdit(it.code); } }, 'Edit')));
-  const h = histNode(it); if (h) body.append(h);
-  openSheet(it.name, body);
-}
-function openEdit(code) {
-  const it = byCode(code); if (!it) return;
-  const name = el('input', { type: 'text', value: it.name }), cat = el('input', { type: 'text', value: it.category || '' });
-  const min = it.type === 'Material' ? el('input', { type: 'number', inputMode: 'numeric', value: it.min == null ? '' : it.min }) : null;
-  const err = el('div', { class: 'err hidden' });
-  let armed = false;
-  const retire = el('button', { class: 'btn danger block', onclick: async () => {
-    if (!armed) { armed = true; retire.textContent = 'Tap again to retire ' + it.name; return; }
-    await save({ active: false });
-  } }, 'Retire this item');
-  async function save(extra) {
-    const fields = Object.assign({ name: name.value, category: cat.value }, min ? { min: min.value === '' ? null : Number(min.value) } : {}, extra || {});
-    try {
-      const r = await call({ action: 'updateItem', code: it.code, fields });
-      if (!r.ok) { err.textContent = r.error || 'Could not save.'; err.classList.remove('hidden'); return; }
-      setState(r.state); closeSheet(); renderAll(); toast('Saved');
-    } catch (e) { err.textContent = explain(e) || 'No signal. Try again when you are online.'; err.classList.remove('hidden'); }
-  }
-  openSheet('Edit ' + it.code, el('div', {}, el('label', { class: 'field' }, 'Name'), name, el('label', { class: 'field' }, 'Category'), cat,
-    min ? [el('label', { class: 'field' }, 'Reorder at'), min] : null, err, el('div', { style: 'height:14px' }),
-    el('div', { class: 'stack' }, el('button', { class: 'btn primary block', onclick: () => save() }, 'Save'), retire)));
-}
-function openAddUnknown(code) {
-  let type = 'Tool';
-  const name = el('input', { type: 'text', placeholder: 'What is it? e.g. DeWalt impact driver', autocomplete: 'off' });
-  const extra = el('div', {});
-  const err = el('div', { class: 'err hidden' });
-  const qty = el('input', { type: 'number', inputMode: 'numeric', placeholder: 'How many on hand' });
-  const seg = el('div', { class: 'seg' });
-  function drawSeg() {
-    seg.textContent = '';
-    for (const t of ['Tool', 'Material']) seg.append(el('button', { 'aria-pressed': type === t ? 'true' : 'false', onclick: () => { type = t; drawSeg(); } }, t));
-    extra.textContent = ''; if (type === 'Material') extra.append(el('label', { class: 'field' }, 'On hand'), qty);
-  }
-  drawSeg();
-  openSheet('Add ' + code, el('div', {}, el('p', { class: 'muted' }, 'This code is not in the list yet. Name it and it is ready to scan.'), seg, el('label', { class: 'field' }, 'Name'), name, extra, err, el('div', { style: 'height:14px' }),
-    el('button', { class: 'btn primary block', onclick: async () => {
-      if (!name.value.trim()) { err.textContent = 'Enter a name.'; err.classList.remove('hidden'); return; }
-      try {
-        const r = await call({ action: 'addItems', items: [{ code, type, name: name.value, qty: Number(qty.value) || 0 }] });
-        if (!r.ok) { err.textContent = r.error || 'Could not add it.'; err.classList.remove('hidden'); return; }
-        setState(r.state); closeSheet(); renderAll(); toast('Added');
-      } catch (e) { err.textContent = explain(e) || 'No signal. Try again when you are online.'; err.classList.remove('hidden'); }
-    } }, 'Add')));
-}
-
-/* manage */
-const csvCell = v => { v = v == null ? '' : String(v); if (/^[=+\-@]/.test(v)) v = "'" + v; return /[",\r\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
-function downloadCsv(name, rows) {
-  const blob = new Blob(['﻿' + rows.map(r => r.map(csvCell).join(',')).join('\r\n')], { type: 'text/csv;charset=utf-8' });
-  const a = el('a', { href: URL.createObjectURL(blob), download: name }); document.body.append(a); a.click();
-  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
-}
-const stamp = () => new Date().toISOString().slice(0, 10);
-const showErr = (box, e) => { box.textContent = explain(e) || 'No signal. Try again when you are online.'; box.classList.remove('hidden'); };
-
-const INV_HEAD = ['Code', 'Type', 'Name', 'Category', 'Status', 'With', 'Job site', 'Since', 'On hand', 'Reorder at'];
-const invRow = i => [i.code, i.type, i.name, i.category || '', i.type === 'Tool' ? (i.status === 'Out' ? 'Out' : 'In shop') : '', i.holder || '', i.site || '', i.since ? new Date(i.since).toLocaleString() : '', i.qty == null ? '' : i.qty, i.min == null ? '' : i.min];
-async function restoreItem(it) {
-  try {
-    const r = await call({ action: 'updateItem', code: it.code, fields: { active: true } });
-    if (!r.ok) { toast(r.error || 'Could not restore'); return; }
-    setState(r.state); renderAll(); toast(it.name + ' restored');
-  } catch (e) { toast(explain(e) || 'No signal. Try again when you are online.'); }
-}
-function openRename(p) {
-  const inp = el('input', { type: 'text', value: p.name, autocomplete: 'off', 'aria-label': 'Name' });
-  const err = el('div', { class: 'err hidden' });
-  const save = async () => {
-    err.classList.add('hidden');
-    try {
-      const r = await call({ action: 'renamePerson', id: p.id, name: inp.value });
-      if (!r.ok) { err.textContent = r.error || 'Could not rename.'; err.classList.remove('hidden'); return; }
-      setState(r.state); closeSheet(); renderAll(); toast('Renamed');
-    } catch (e) { showErr(err, e); }
-  };
-  inp.addEventListener('keydown', e => { if (e.key === 'Enter') save(); });
-  openSheet('Rename', el('div', { class: 'stack' }, inp, err, el('button', { class: 'btn primary block', onclick: save }, 'Save')));
-}
-function openRemove(p) {
-  const n = S.items.filter(i => i.type === 'Tool' && i.status === 'Out' && i.holderId === p.id).length;
-  let armed = false; const err = el('div', { class: 'err hidden' });
-  const btn = el('button', { class: 'btn danger block', onclick: async () => {
-    if (!armed) { armed = true; btn.textContent = 'Tap again to remove ' + p.name; return; }
-    try {
-      const r = await call({ action: 'removePerson', id: p.id });
-      if (!r.ok) { err.textContent = r.error || 'Could not remove.'; err.classList.remove('hidden'); return; }
-      if (S.me === p.id) { S.me = ''; LS.del('me'); }
-      setState(r.state); closeSheet(); renderAll(); toast('Removed ' + p.name);
-    } catch (e) { showErr(err, e); }
-  } }, 'Remove ' + p.name);
-  openSheet('Remove ' + p.name + '?', el('div', { class: 'stack' },
-    el('p', { class: 'muted', style: 'margin:0' }, 'They disappear from the name list. Their past activity stays in the log.' + (n ? ' ' + n + (n === 1 ? ' tool is' : ' tools are') + ' still out under this name, so return or reassign ' + (n === 1 ? 'it' : 'them') + ' first.' : '')),
-    err, btn));
-}
-
-function splitRow(line) {
-  if (line.includes('\t')) return line.split('\t').map(x => x.trim());
-  const out = []; let cur = '', q = false;
-  for (let i = 0; i < line.length; i++) {
-    const c = line[i];
-    if (q) { if (c === '"') { if (line[i + 1] === '"') { cur += '"'; i++; } else q = false; } else cur += c; }
-    else if (c === '"') q = true;
-    else if (c === ',') { out.push(cur.trim()); cur = ''; }
-    else cur += c;
-  }
-  out.push(cur.trim()); return out;
-}
-function renderSetup() {
-  const v = views.setup; v.textContent = '';
-
-  /* add items */
-  const cardAdd = () => {
-    let type = 'Tool';
-    const ta = el('textarea', { id: 'bulk', placeholder: '' });
-    const hint = el('p', { class: 'muted', style: 'margin:6px 0 0;font-size:14px' });
-    const seg = el('div', { class: 'seg' });
-    const err = el('div', { class: 'err hidden' });
-    function drawType() {
-      seg.textContent = '';
-      for (const t of ['Tool', 'Material']) seg.append(el('button', { 'aria-pressed': type === t ? 'true' : 'false', onclick: () => { type = t; drawType(); } }, t));
-      ta.placeholder = type === 'Tool' ? 'DeWalt impact driver, Power tools\nMilwaukee 18in pipe wrench, Plumbing' : '1/4" drywall screws, 500, 100\nPVC primer, 6, 2';
-      hint.textContent = type === 'Tool' ? 'One tool per line. Add a category after a comma if you like.' : 'One per line: name, how many on hand, reorder level.';
-    }
-    drawType();
-    const addBtn = el('button', { class: 'btn primary block', onclick: async () => {
-      err.classList.add('hidden');
-      const items = ta.value.split('\n').map(l => l.trim()).filter(Boolean).map(l => {
-        const p = l.split(',').map(x => x.trim());
-        return type === 'Tool' ? { type, name: p[0], category: p[1] || '' } : { type, name: p[0], qty: Number(p[1]) || 0, min: p[2] === undefined || p[2] === '' ? '' : Number(p[2]) };
-      });
-      if (!items.length) return;
-      try {
-        const r = await call({ action: 'addItems', items });
-        if (!r.ok) { err.textContent = r.error || 'Could not add.'; err.classList.remove('hidden'); return; }
-        setState(r.state); S.lastAdded = r.added.map(a => a.code); ta.value = ''; toast(r.added.length + ' added'); renderSetup();
-      } catch (e) { showErr(err, e); }
-    } }, 'Add to inventory');
-    return el('div', { class: 'card' }, el('h2', {}, 'Add tools and materials'), seg, el('label', { class: 'field', for: 'bulk' }, 'List'), ta, hint, err, el('div', { style: 'height:12px' }), addBtn);
-  };
-
-  /* import own tags */
-  const cardImport = () => {
-    let type = 'Tool';
-    const ta = el('textarea', { id: 'imp', placeholder: '', style: 'min-height:130px' });
-    const seg = el('div', { class: 'seg' });
-    const hint = el('p', { class: 'muted', style: 'margin:6px 0 0;font-size:14px' });
-    const out = el('div', { style: 'margin-top:10px;font-size:15px' });
-    const err = el('div', { class: 'err hidden' });
-    const file = el('input', { type: 'file', accept: '.csv,.tsv,.txt,text/csv,text/plain', 'aria-label': 'Choose a CSV or text file' });
-    file.addEventListener('change', async () => { const f = file.files[0]; if (f) { ta.value = await f.text(); out.textContent = ''; } });
-    function draw() {
-      seg.textContent = '';
-      for (const t of ['Tool', 'Material']) seg.append(el('button', { 'aria-pressed': type === t ? 'true' : 'false', onclick: () => { type = t; draw(); } }, t));
-      ta.placeholder = type === 'Tool' ? 'A-1001, Hilti drill, Power tools\nA-1002, Pipe wrench, Plumbing' : 'B-2001, 1/4in drywall screws, 500, 100\nB-2002, PVC primer, 6, 2';
-      hint.textContent = type === 'Tool' ? 'One per line: the code on your tag, the name, then a category if you like.' : 'One per line: the code on your tag, the name, how many on hand, reorder level.';
-    }
-    draw();
-    const go = el('button', { class: 'btn primary block', onclick: async () => {
-      err.classList.add('hidden'); out.textContent = '';
-      const rows = ta.value.split(/\r?\n/).map(l => l.trim()).filter(Boolean).map(splitRow);
-      if (rows.length && /^(code|tag|id|barcode|qr)/i.test(rows[0][0])) rows.shift();
-      const issues = [], items = [], seen = new Set();
-      for (const p of rows) {
-        const code = parseScan(p[0]), name = (p[1] || '').trim(); if (!code) continue;
-        const up = code.toUpperCase();
-        if (!name) issues.push(code + ': no name given');
-        else if (/^CMD-(SEND|CLEAR)$/.test(up) || /^P\d+$/.test(up)) issues.push(code + ': reserved for name badges and shop scanner commands');
-        else if (byCode(code) || seen.has(up)) issues.push(code + ': already in the list');
-        else if (S.retired.some(r => r.code.toUpperCase() === up)) issues.push(code + ': is a retired item, restore it instead');
-        else { seen.add(up); items.push(type === 'Tool' ? { type, code, name, category: p[2] || '' } : { type, code, name, qty: Number(p[2]) || 0, min: p[3] === undefined || p[3] === '' ? '' : Number(p[3]) }); }
-      }
-      if (!items.length) { out.textContent = issues.length ? 'Nothing imported. ' + issues.slice(0, 6).join('; ') + '.' : 'Paste or choose a list first.'; return; }
-      go.disabled = true;
-      try {
-        const r = await call({ action: 'addItems', items });
-        if (!r.ok) { err.textContent = r.error || 'Could not import.'; err.classList.remove('hidden'); return; }
-        setState(r.state); ta.value = ''; file.value = '';
-        out.textContent = r.added.length + ' imported.' + (issues.length ? ' Skipped ' + issues.length + ': ' + issues.slice(0, 6).join('; ') + (issues.length > 6 ? '; and ' + (issues.length - 6) + ' more' : '') + '.' : '');
-        toast(r.added.length + ' imported'); renderAll();
-        // renderAll keeps this card because the textarea is not focused; refill message after it redraws
-        const m = document.querySelector('#imp-out'); if (m) m.textContent = out.textContent;
-      } catch (e) { showErr(err, e); } finally { go.disabled = false; }
-    } }, 'Import');
-    out.id = 'imp-out';
-    return el('div', { class: 'card' }, el('h2', {}, 'Import your own tags'),
-      el('p', { class: 'muted', style: 'margin-top:0' }, 'Already have QR or barcode tags on your gear? Paste a list or choose a spreadsheet file (CSV) and every tag works right away, with no labels to print.'),
-      seg, el('label', { class: 'field', for: 'imp' }, 'List'), ta, hint,
-      el('label', { class: 'field', style: 'margin-top:12px' }, 'Or choose a file'), file, err, el('div', { style: 'height:12px' }), go, out);
-  };
-
-  /* labels */
-  const cardLabels = () => el('div', { class: 'card' }, el('h2', {}, 'Labels and badges'),
-    el('p', { class: 'muted', style: 'margin-top:0' }, 'Each QR label works with the phone camera and the shop scanner. Print at 100% size, then stick one on every tool and bin.'),
-    el('div', { class: 'stack' },
-      S.lastAdded.length ? el('button', { class: 'btn primary block', onclick: () => printLabels(S.lastAdded.map(byCode).filter(Boolean)) }, 'Print the ' + S.lastAdded.length + ' you just added') : null,
-      el('button', { class: 'btn block', onclick: () => openLabelPicker() }, 'Choose labels to print'),
-      el('button', { class: 'btn block', onclick: () => printBadges() }, 'Print name badges'),
-      el('button', { class: 'btn block', onclick: () => printCommands() }, 'Print Send and Clear codes for the shop scanner')));
-
-  /* people */
-  const cardPeople = () => {
-    const inp = el('input', { type: 'text', placeholder: 'Add a person', autocomplete: 'off', 'aria-label': 'Add a person' });
-    const err = el('div', { class: 'err hidden' });
-    const held = id => S.items.filter(i => i.type === 'Tool' && i.status === 'Out' && i.holderId === id).length;
-    const add = async () => {
-      const n = inp.value.trim(); if (!n) return; err.classList.add('hidden');
-      try { const r = await call({ action: 'addPerson', name: n }); if (!r.ok) { err.textContent = r.error; err.classList.remove('hidden'); return; } setState(r.state); renderSetup(); }
-      catch (e) { showErr(err, e); }
-    };
-    inp.addEventListener('keydown', e => { if (e.key === 'Enter') add(); });
-    return el('div', { class: 'card' }, el('h2', {}, 'People (' + S.people.length + ')'),
-      S.people.length ? el('div', { class: 'rows', style: 'margin-bottom:12px' }, S.people.slice().sort((a, b) => a.name.localeCompare(b.name)).map(p => el('div', { class: 'arow' },
-        el('div', { class: 'grow' }, el('div', { class: 't' }, p.name), el('div', { class: 's' }, held(p.id) ? held(p.id) + ' out now' : 'Nothing out')),
-        el('div', { class: 'acts' }, el('button', { class: 'btn sm', onclick: () => openRename(p) }, 'Rename'), el('button', { class: 'btn sm danger', onclick: () => openRemove(p) }, 'Remove')))))
-        : el('p', { class: 'muted' }, 'No one yet. Workers can add their own name the first time they open the page.'),
-      inp, err, el('div', { style: 'height:10px' }), el('button', { class: 'btn block', onclick: add }, 'Add person'));
-  };
-
-  /* retired */
-  const cardRetired = () => el('div', { class: 'card' }, el('h2', {}, 'Retired items' + (S.retired.length ? ' (' + S.retired.length + ')' : '')),
-    S.retired.length ? el('div', { class: 'rows' }, S.retired.map(it => el('div', { class: 'arow' },
-      el('div', { class: 'grow' }, el('div', { class: 't' }, it.name), el('div', { class: 's' }, it.code + ' · ' + it.type)),
-      el('button', { class: 'btn sm', onclick: () => restoreItem(it) }, 'Restore')))) : el('p', { class: 'muted', style: 'margin:0' }, 'Nothing retired. If you retire a tool or material, it shows up here so you can bring it back.'));
-
-  /* export */
-  const cardExport = () => {
-    const err = el('div', { class: 'err hidden' });
-    return el('div', { class: 'card' }, el('h2', {}, 'Download your data'),
-      el('p', { class: 'muted', style: 'margin-top:0' }, 'Opens in Excel or Numbers. Use these for records, insurance or job costing.'),
-      el('div', { class: 'stack' },
-        el('button', { class: 'btn block', onclick: () => {
-          downloadCsv('inventory-' + stamp() + '.csv', [INV_HEAD].concat(S.items.map(invRow)));
-        } }, 'Inventory (CSV)'),
-        el('button', { class: 'btn block', onclick: async () => {
-          err.classList.add('hidden');
-          try {
-            const r = await call({ action: 'fullLog' });
-            if (!r.ok) { err.textContent = r.error || 'Could not get the log.'; err.classList.remove('hidden'); return; }
-            downloadCsv('activity-' + stamp() + '.csv', [['When', 'Code', 'Item', 'What happened', 'Person', 'Job site', 'Quantity', 'Note']]
-              .concat(r.log.map(l => [l.time ? new Date(l.time).toLocaleString() : '', l.code, l.item, l.action, l.person, l.site, l.qty, l.note])));
-          } catch (e) { showErr(err, e); }
-        } }, 'Full activity history (CSV)'), err));
-  };
-
-  /* settings */
-  const cardSettings = () => {
-    const days = el('input', { type: 'number', inputMode: 'numeric', min: '1', max: '365', value: String(od()), 'aria-label': 'Days before a tool counts as overdue' });
-    const derr = el('div', { class: 'err hidden' });
-    const pin = el('input', { type: 'text', autocomplete: 'off', placeholder: 'New team PIN', 'aria-label': 'New team PIN' });
-    const perr = el('div', { class: 'err hidden' });
-    let armed = false;
-    const pinBtn = el('button', { class: 'btn block', onclick: async () => {
-      perr.classList.add('hidden');
-      const np = pin.value.trim();
-      if (!/^[A-Za-z0-9]{4,20}$/.test(np)) { perr.textContent = 'Use 4 to 20 letters or numbers.'; perr.classList.remove('hidden'); return; }
-      if (!armed) { armed = true; pinBtn.textContent = 'Tap again. Everyone else will need the new PIN.'; return; }
-      try {
-        const r = await call({ action: 'setPin', newPin: np });
-        if (!r.ok) { perr.textContent = r.error || 'Could not change the PIN.'; perr.classList.remove('hidden'); armed = false; pinBtn.textContent = 'Change PIN'; return; }
-        S.pin = np; LS.set('pin', np); pin.value = ''; armed = false; pinBtn.textContent = 'Change PIN'; toast('PIN changed. Tell your team.');
-      } catch (e) { showErr(perr, e); armed = false; pinBtn.textContent = 'Change PIN'; }
-    } }, 'Change PIN');
-    return el('div', { class: 'card' }, el('h2', {}, 'Settings'),
-      el('label', { class: 'field' }, 'A tool counts as overdue after this many days out'),
-      el('div', { style: 'display:grid;grid-template-columns:1fr auto;gap:10px' }, days, el('button', { class: 'btn', onclick: async () => {
-        derr.classList.add('hidden');
-        try {
-          const r = await call({ action: 'setSettings', overdueDays: days.value });
-          if (!r.ok) { derr.textContent = r.error || 'Could not save.'; derr.classList.remove('hidden'); return; }
-          setState(r.state); renderAll(); toast('Saved');
-        } catch (e) { showErr(derr, e); }
-      } }, 'Save')), derr,
-      el('label', { class: 'field', style: 'margin-top:16px' }, 'Team PIN'),
-      el('p', { class: 'muted', style: 'margin:0 0 8px;font-size:14px' }, 'Changing it signs out every other phone and computer until they enter the new PIN.'),
-      pin, perr, el('div', { style: 'height:10px' }), pinBtn);
-  };
-
-  /* this device */
-  const cardDevice = () => {
-    const ask = el('input', { type: 'checkbox', id: 'ask', checked: S.askEachTime, onchange: e => { S.askEachTime = e.target.checked; LS.set('ask', S.askEachTime); } });
-    return el('div', { class: 'card' }, el('h2', {}, 'This device'),
-      el('p', { class: 'muted', style: 'margin-top:0' }, 'Signed in as ' + (meName() || 'no one') + '. ' + (lastError ? lastError : (S.online ? 'Connected.' : 'Offline.')) + (S.queue.length ? ' ' + S.queue.length + ' waiting to send.' : '')),
-      el('label', { for: 'ask', style: 'display:flex;gap:10px;align-items:center;margin:8px 0 14px;font-weight:600' }, ask, 'Shared computer: ask for a name after every Confirm'),
-      el('div', { class: 'stack' },
-        el('button', { class: 'btn block', onclick: () => refresh().then(() => toast('Refreshed')) }, 'Refresh now'),
-        el('button', { class: 'btn danger block', onclick: () => { S.pin = ''; LS.del('pin'); LS.del('me'); S.me = ''; stopCam(true); render(); } }, 'Sign this device out')));
-  };
-
-  v.append(el('div', { class: 'dgrid' },
-    el('div', { class: 'dcol' }, cardAdd(), cardImport(), cardLabels(), cardExport()),
-    el('div', { class: 'dcol' }, cardPeople(), cardRetired(), cardSettings(), cardDevice())));
-}
-function openLabelPicker() {
-  const sel = new Set(S.items.map(i => i.code));
-  const body = el('div', { class: 'stack' });
-  const list = el('div', { class: 'list', style: 'margin-top:0' });
-  function draw() {
-    list.textContent = '';
-    for (const it of [...S.items].sort((a, b) => a.type.localeCompare(b.type) || a.name.localeCompare(b.name))) {
-      const cb = el('input', { type: 'checkbox', checked: sel.has(it.code), style: 'width:22px;height:22px', onchange: e => { e.target.checked ? sel.add(it.code) : sel.delete(it.code); } });
-      list.append(el('label', { class: 'item', style: 'grid-template-columns:auto 1fr;justify-content:start;cursor:pointer' }, cb, el('div', {}, el('div', { class: 't' }, it.name), el('div', { class: 's' }, it.code + ' · ' + it.type))));
-    }
-    if (!S.items.length) list.append(el('div', { class: 'empty' }, 'Nothing to print yet.'));
-  }
-  draw();
-  body.append(el('div', { style: 'display:grid;grid-template-columns:1fr 1fr;gap:10px' },
-    el('button', { class: 'btn', onclick: () => { S.items.forEach(i => sel.add(i.code)); draw(); } }, 'Select all'), el('button', { class: 'btn', onclick: () => { sel.clear(); draw(); } }, 'Select none')),
-    list, el('button', { class: 'btn primary block', onclick: () => { const picked = S.items.filter(i => sel.has(i.code)); closeSheet(); printLabels(picked); } }, 'Print selected'));
-  openSheet('Choose labels', body);
-}
-
-/* printing */
-const baseUrl = () => location.origin + location.pathname;
-function labelNode(code, name, sub, payload) {
-  const qr = qrcode(0, 'M'); qr.addData(payload || (baseUrl() + '#' + encodeURIComponent(code))); qr.make();
-  const q = el('div', { class: 'label-qr' }); q.innerHTML = qr.createSvgTag({ cellSize: 4, margin: 0, scalable: true });
-  return el('div', { class: 'label' }, q, el('div', { class: 'label-txt' }, el('div', { class: 'label-name' }, name), sub ? el('div', { class: 'label-sub' }, sub) : null, el('div', { class: 'label-code' }, code)));
-}
-function printNodes(nodes) {
-  if (!nodes.length) { toast('Nothing to print'); return; }
-  const pa = $('#printArea'); pa.textContent = ''; nodes.forEach(n => pa.append(n));
-  setTimeout(() => window.print(), 80);
-}
-const printLabels = items => printNodes(items.map(it => labelNode(it.code, it.name, it.category || it.type)));
-const printBadges = () => printNodes(S.people.map(p => labelNode(p.id, p.name, 'Scan to sign in')));
-const printCommands = () => printNodes([labelNode('CMD-SEND', 'SEND', 'Scan to confirm'), labelNode('CMD-CLEAR', 'CLEAR', 'Scan to start over')]);
-
-/* ---------- boot ---------- */
-window.addEventListener('online', () => { S.online = true; flushQueue().then(refresh); });
-window.addEventListener('offline', () => { S.online = false; renderTop(); });
-document.addEventListener('visibilitychange', () => {
-  if (document.hidden) { if (cam.running) { stopCam(false); renderCamBox(); } }
-  else { refresh(); flushQueue(); if (S.tab === 'scan' && LS.get('cam', false) && !cam.running) startCam(); }
-});
-window.addEventListener('hashchange', () => { const h = location.hash.slice(1); if (h) { history.replaceState(null, '', location.pathname + location.search); handleScan(h); } });
-setInterval(() => { if (!document.hidden) { if (S.queue.length) flushQueue(); else refresh(); } }, 60000);
-
-(function boot() {
-  const h = location.hash.slice(1);
-  if (h) { S.pendingHash = h; history.replaceState(null, '', location.pathname + location.search); }
-  render();
-  if (S.pin) {
-    if (S.pendingHash && S.loaded) { const x = S.pendingHash; S.pendingHash = ''; handleScan(x); }
-    refresh().then(flushQueue);
-    if (LS.get('cam', false)) startCam();
-  }
-  window.__tt = { S, handleScan, parseScan };   // handy for testing
-})();
-})();
-</script>
+<script>!function(){"use strict";const t=Object.assign({api:"",overdueDays:7},window.TRACKER_CONFIG||{}),e=new Set(["list","for","role","inputmode","autocomplete","enterkeyhint"]);function n(t,n,...a){const o=document.createElement(t);for(const[t,a]of Object.entries(n||{}))null!=a&&!1!==a&&("class"===t?o.className=a:t.startsWith("on")&&"function"==typeof a?o.addEventListener(t.slice(2),a):t.startsWith("aria-")||t.startsWith("data-")||e.has(t)?o.setAttribute(t,!0===a?"":a):o[t]=a);for(const t of a.flat())null!=t&&!1!==t&&o.append(t.nodeType?t:document.createTextNode(String(t)));return o}const a=(t,e)=>(e||document).querySelector(t),o={get(t,e){try{const n=localStorage.getItem("tt."+t);return null==n?e:JSON.parse(n)}catch(t){return e}},set(t,e){try{localStorage.setItem("tt."+t,JSON.stringify(e))}catch(t){}},del(t){try{localStorage.removeItem("tt."+t)}catch(t){}}},s={search:"M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM20 20l-4-4",dash:"M4 4h7v7H4zM13 4h7v4h-7zM13 10h7v10h-7zM4 13h7v7H4z",scan:"M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3M7 12h10",tools:"M14.7 6.3a4 4 0 0 0-5.4 5l-6.3 6.3 2.4 2.4 6.3-6.3a4 4 0 0 0 5-5.4l-2.6 2.6-2.2-.5-.5-2.2z",materials:"M3 7l9-4 9 4v10l-9 4-9-4zM3 7l9 4 9-4M12 11v10",activity:"M4 6h16M4 12h16M4 18h10",setup:"M4 7h10M18 7h2M4 17h2M10 17h10M14 5v4M6 15v4"};function i(t){const e=document.createElementNS("http://www.w3.org/2000/svg","svg");e.setAttribute("viewBox","0 0 24 24"),e.setAttribute("aria-hidden","true");const n=document.createElementNS("http://www.w3.org/2000/svg","path");return n.setAttribute("d",s[t]),e.append(n),e}let l;function c(t){const e=a("#toast");e.textContent=t,e.classList.remove("hidden"),clearTimeout(l),l=setTimeout(()=>e.classList.add("hidden"),2200)}function r(t){if(!t)return"";const e=Math.max(0,(Date.now()-new Date(t).getTime())/6e4);if(e<2)return"just now";if(e<60)return Math.round(e)+" min";if(e<1440)return Math.round(e/60)+" hr";const n=Math.floor(e/1440);return n+(1===n?" day":" days")}const d=t=>t?(Date.now()-new Date(t).getTime())/864e5:0,u=t=>new Date(t).toLocaleTimeString([],{hour:"numeric",minute:"2-digit"}),p=t=>{const e=new Date(t),n=new Date,a=new Date;return a.setDate(n.getDate()-1),e.toDateString()===n.toDateString()?"Today":e.toDateString()===a.toDateString()?"Yesterday":e.toLocaleDateString([],{weekday:"long",month:"short",day:"numeric"})},m=t=>String(null==t?"":t).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g," ").trim();function h(t,e){const n=t.length,a=e.length;if(!n)return a;if(!a)return n;let o=null,s=Array.from({length:a+1},(t,e)=>e);for(let i=1;i<=n;i++){const n=[i];for(let l=1;l<=a;l++){let a=Math.min(s[l]+1,n[l-1]+1,s[l-1]+(t[i-1]===e[l-1]?0:1));i>1&&l>1&&t[i-1]===e[l-2]&&t[i-2]===e[l-1]&&(a=Math.min(a,o[l-2]+1)),n[l]=a}o=s,s=n}return s[a]}function f(t,e){if(t===e)return 100;if(e.startsWith(t))return t.length>=2?90:50;if(t.length>=3&&e.includes(t))return 60;if(t.length>=4){const n=t.length>=7?2:1;if(Math.abs(t.length-e.length)<=n){const a=h(t,e);if(a<=n)return 72-14*a}if(e.length>t.length){const a=h(t,e.slice(0,t.length));if(a<=n)return 64-14*a}}return t.length>=3&&t.length<=e.length&&e.length<=2.5*t.length+1&&((t,e)=>{let n=0;for(let a=0;a<e.length&&n<t.length;a++)e[a]===t[n]&&n++;return n===t.length})(t,e)?30:0}function g(t){const e=m(t);if(!e)return[];const n=new Set;for(const t of e.split(" ")){n.add(t);const e=t.match(/[a-z]+|\d+/g);e&&e.length>1&&e.forEach(t=>n.add(t)),t.length>3&&t.endsWith("s")&&n.add(t.slice(0,-1))}return[...n]}function y(t,e){let n=0;for(const a of e)for(const e of a.toks){const o=f(t,e)*a.wt;o>n&&(n=o)}return n}function v(t,e){let n=y(t,e);t.length>3&&t.endsWith("s")&&(n=Math.max(n,y(t.slice(0,-1),e)));const a=t.match(/[a-z]+|\d+/g);if(a&&a.length>1){let t=1/0;for(const n of a)t=Math.min(t,y(n,e));t>0&&(n=Math.max(n,.9*t))}return n}const b=new WeakMap,w=t=>{const e=m(t);return{n:e,words:e?e.split(" "):[]}};function k(t,e,n){if(!e.words.length)return 1;const a=function(t){const e=[t.name,t.category,t.code,t.holder,t.site,t.type].join("");let n=b.get(t);if(n&&n.key===e)return n;const a=(t,e)=>({toks:g(t),wt:e});return n={key:e,nameN:m(t.name),codeN:m(t.code),fields:[a(t.name,1),a(t.code,.9),a(t.category,.7),a(t.holder,.6),a(t.site,.5),a("Tool"===t.type?"tool":"material",.4)]},b.set(t,n),n}(t);let o=0,s=0;for(const t of e.words){const e=v(t,a.fields);if(e>0)o+=e,s++;else if(!n)return 0}if(!s)return 0;let i=o/e.words.length;return a.nameN.includes(e.n)&&(i+=15),a.nameN.startsWith(e.n)&&(i+=10),a.codeN===e.n&&(i+=60),i}function x(t,e){const n=w(e);if(!n.words.length)return 1;const a=[{toks:g(t),wt:1}];let o=0;for(const t of n.words){const e=v(t,a);if(!e)return 0;o+=e}return o/n.words.length}const C=(t,e)=>String(t).localeCompare(String(e),void 0,{numeric:!0,sensitivity:"base"}),S=(t,e)=>(n,a)=>{const o=t(n),s=t(a),i=null==o||""===o,l=null==s||""===s;return i&&l?0:i?1:l?-1:e(o,s)},T=t=>"Tool"===t.type&&"Out"===t.status,N=t=>"Tool"===t.type&&t.since?new Date(t.since).getTime():null,M={name:S(t=>t.name,C),name_d:S(t=>t.name,(t,e)=>C(e,t)),code:S(t=>t.code,C),code_d:S(t=>t.code,(t,e)=>C(e,t)),cat:S(t=>(t.category||"").trim(),C),holder:S(t=>T(t)?t.holder:"",C),site:S(t=>T(t)?(t.site||"").trim():"",C),old:S(N,(t,e)=>t-e),new:S(N,(t,e)=>e-t),stock:S(t=>"Material"===t.type?t.qty||0:null,(t,e)=>t-e),stock_d:S(t=>"Material"===t.type?t.qty||0:null,(t,e)=>e-t)},L={name:"Name A to Z",name_d:"Name Z to A",code:"Code, low to high",code_d:"Code, high to low",cat:"Category A to Z",holder:"Held by A to Z",site:"Job site A to Z",old:"Longest since last move",new:"Most recently moved",stock:"Lowest stock first",stock_d:"Highest stock first"},E=(t,e)=>t.sort((t,n)=>M[e](t,n)||M.name(t,n));function q(t,e,a,o){return n("select",{"aria-label":"Sort by",onchange:t=>o(t.target.value)},[[t[0],t[1]]].concat(e.map(t=>[t,L[t]])).map(([t,e])=>n("option",{value:t,selected:a===t},e)))}const O=t=>n("div",{class:"sortrow"},"Sort",t),A={pin:o.get("pin",""),me:o.get("me",""),askEachTime:o.get("ask",!1),items:[],retired:[],settings:{overdueDays:t.overdueDays},people:[],log:[],index:{},batch:[],queue:o.get("queue",[]),tab:window.matchMedia&&matchMedia("(min-width:900px)").matches?"dash":"scan",loaded:!1,online:!0,find:{q:"",f:null,open:window.matchMedia&&matchMedia("(min-width:900px)").matches,limit:100},tsort:"default",msort:"default",asort:"new",filter:"all",q:"",done:null,lastAdded:[],busy:!1,pendingHash:""},I={type:"any",status:"any",stock:"any",holder:"any",site:"any",cat:"any",moved:"any",sort:"best",retired:!1};A.find.f=Object.assign({},I);const D=()=>A.settings&&Number(A.settings.overdueDays)||t.overdueDays,R=()=>o.set("cache",{items:A.items,retired:A.retired,settings:A.settings,people:A.people,log:A.log});function P(t){A.items=t.items||[],A.people=t.people||[],A.log=t.log||[],A.retired=t.retired||[],t.settings&&(A.settings=t.settings);for(const t of A.queue)z(t.ops,t.personId,t.ts,!0);j(),A.loaded=!0,R()}function j(){A.index={};for(const t of A.items)A.index[t.code.toUpperCase()]=t}const U=t=>A.index[String(t).toUpperCase()],_=t=>A.people.find(e=>e.id===t),W=()=>{const t=_(A.me);return t?t.name:""};function z(t,e,n,a){for(const a of t){const t=U(a.code);if(t)if("Tool"===t.type)if("out"===a.action){const o=a.personId||e,s=_(o);t.status="Out",t.holder=s?s.name:"",t.holderId=o,t.site=a.site||"",t.since=n}else t.status="In",t.holder="",t.holderId="",t.site="",t.since=n;else null!=a.setQty?t.qty=Math.max(0,Number(a.setQty)||0):t.qty=Math.max(0,(t.qty||0)+(a.delta||0))}a||R()}async function H(e,n){if(!t.api)throw new Error("noapi");const a=new AbortController,o=setTimeout(()=>a.abort(),25e3);try{const o=n?await fetch(t.api+"?"+new URLSearchParams({action:"state",pin:A.pin}),{signal:a.signal}):await fetch(t.api,{method:"POST",body:JSON.stringify(Object.assign({pin:A.pin},e)),signal:a.signal}),s=await o.text();let i;try{i=JSON.parse(s)}catch(t){throw new Error("badresponse")}return i}finally{clearTimeout(o)}}!function(){const t=o.get("cache");t&&(A.items=t.items||[],A.retired=t.retired||[],t.settings&&(A.settings=t.settings),A.people=t.people||[],A.log=t.log||[],j(),A.loaded=!0)}();let B="";function V(t){return"noapi"===t.message?"This page is not connected yet. Paste the Web app URL into config.js.":"badresponse"===t.message?'The Google script did not answer correctly. Check that it is deployed with access set to "Anyone".':""}async function J(){if(A.pin&&!A.busy){try{const t=await H({},!0);if("pin"===t.error)return void F();if(!t.ok)return void(B=t.error||"Error");if(A.online=!0,B="",P(t.state),A.pendingHash){const t=A.pendingHash;A.pendingHash="",X(t)}}catch(t){A.online=!1,B=V(t)}ut()}}function F(){A.pin="",o.del("pin"),dt()}let K,Q=null;function Z(){return A.queue.length&&A.pin?(Q||(Q=async function(){const t={};for(;A.queue.length;){const e=A.queue[0];let n;try{n=await H({action:"batch",batchId:e.batchId,personId:e.personId,ops:e.ops})}catch(t){A.online=!1,B=V(t);break}if("pin"===n.error){F();break}A.queue.shift(),o.set("queue",A.queue),n.ok?(t[e.batchId]=n.results,A.online=!0,P(n.state)):t[e.batchId]=[{ok:!1,msg:n.error||"Not saved"}]}return ut(),t}().finally(()=>{Q=null})),Q):Promise.resolve({})}async function G(t,e){const n={batchId:crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random().toString(16).slice(2),personId:e,ops:t,ts:(new Date).toISOString()};z(t,e,n.ts),A.queue.push(n),o.set("queue",A.queue);const a=await Z();return{sent:!!a[n.batchId],results:a[n.batchId]||[]}}function $(t){try{K=K||new(window.AudioContext||window.webkitAudioContext);const e=K.createOscillator(),n=K.createGain();e.frequency.value=t?880:220,n.gain.value=.08,e.connect(n),n.connect(K.destination),e.start(),e.stop(K.currentTime+(t?.09:.2))}catch(t){}navigator.vibrate&&navigator.vibrate(t?40:[60,40,60])}function Y(t){let e=String(t||"").trim();if(!e)return"";const n=e.lastIndexOf("#");if(n>=0)e=e.slice(n+1);else{const t=e.match(/[?&]c=([^&#]+)/);t&&(e=t[1])}try{e=decodeURIComponent(e)}catch(t){}return e.trim()}function X(t){const e=Y(t);if(!e)return;"scan"!==A.tab&&rt("scan");const n=e.toUpperCase();if("CMD-SEND"===n)return $(!0),void et();if("CMD-CLEAR"===n)return $(!0),A.batch=[],ft(),void c("Cleared");const a=A.people.find(t=>t.id.toUpperCase()===n);if(a)return A.me=a.id,o.set("me",a.id),$(!0),c("Hi "+a.name),pt(),void ft();A.done=null;const s=A.batch.find(t=>t.code.toUpperCase()===n),i=U(e);s?i&&"Material"===i.type?(s.qty++,$(!0),ft(s.code)):($(!1),c("Already scanned"),ft(s.code)):(A.batch.push({code:i?i.code:e,action:null,qty:1,mode:"take"}),$(!!i||!A.loaded),ft(i?i.code:e))}const tt=(t,e)=>t.action||function(t){return"Out"===t.status&&t.holderId===A.me?"in":"out"}(e);async function et(){if(!A.batch.length)return;if(!A.me||!_(A.me))return void It(()=>et());const t=a("#site")?a("#site").value.trim():"",e=[],n=[];for(const a of A.batch){const o=U(a.code);o?"Tool"===o.type?e.push({code:o.code,action:tt(a,o),site:"out"===tt(a,o)?t:""}):e.push({code:o.code,delta:"add"===a.mode?a.qty:-a.qty}):n.push(a.code)}if(!e.length)return void c("Nothing to send");const s=W();A.busy=!0,ft();const{sent:i,results:l}=await G(e,A.me);A.busy=!1;const r=[];for(const t of l)(!1===t.ok||"NOCHANGE"===t.action||t.msg)&&r.push((t.name||t.code||"Item")+": "+(t.msg||"not saved"));for(const t of n)r.push(t+": not in the list, skipped");const d=e.filter(t=>"out"===t.action).length,u=e.filter(t=>"in"===t.action).length,p=e.filter(t=>t.delta<0).length,m=e.filter(t=>t.delta>0).length,h=[];d&&h.push(d+(1===d?" tool":" tools")+" checked out to "+s),u&&h.push(u+(1===u?" tool":" tools")+" returned"),p&&h.push(p+(1===p?" material":" materials")+" taken"),m&&h.push(m+(1===m?" material":" materials")+" added"),t&&d&&o.set("site",t),A.done={title:i?"Done":"Saved on this phone",parts:h,lines:r,queued:!i},A.batch=[],A.askEachTime&&(A.me="",o.del("me")),pt(),ft(),setTimeout(()=>{A.done&&"scan"===A.tab&&window.scrollTo({top:0,behavior:"smooth"})},50)}const nt={stream:null,running:!1,detector:null,timer:0,last:{code:"",t:0},wanted:o.get("cam",!1),canvas:null,torch:!1,note:""};async function at(){if(nt.running)return;if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)return nt.note="This browser cannot open the camera here. Use a scanner, or open the page with https.",void ht();try{nt.stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"},width:{ideal:1280},height:{ideal:720}},audio:!1})}catch(t){return nt.note=t&&"NotAllowedError"===t.name?"Camera is blocked. Allow the camera for this site in your browser settings, then tap Start camera.":"No camera found.",void ht()}nt.note="",nt.running=!0,o.set("cam",!0);const t=a("#camvideo");t.srcObject=nt.stream;try{await t.play()}catch(t){}if("BarcodeDetector"in window&&!nt.detector)try{(await BarcodeDetector.getSupportedFormats()).includes("qr_code")&&(nt.detector=new BarcodeDetector({formats:["qr_code"]}))}catch(t){nt.detector=null}ht(),st()}function ot(t){nt.running=!1,clearTimeout(nt.timer),nt.stream&&nt.stream.getTracks().forEach(t=>t.stop()),nt.stream=null,nt.torch=!1,t&&o.set("cam",!1);const e=a("#camvideo");e&&(e.srcObject=null)}function st(){nt.running&&async function(){const t=a("#camvideo");if(!t||t.readyState<2||!t.videoWidth)return;let e=[];if(nt.detector)e=(await nt.detector.detect(t)).map(t=>t.rawValue);else{const n=Math.min(720,t.videoWidth),a=Math.round(t.videoHeight*n/t.videoWidth);nt.canvas=nt.canvas||document.createElement("canvas"),nt.canvas.width=n,nt.canvas.height=a;const o=nt.canvas.getContext("2d",{willReadFrequently:!0});o.drawImage(t,0,0,n,a);const s=o.getImageData(0,0,n,a),i=window.jsQR(s.data,n,a,{inversionAttempts:"dontInvert"});i&&i.data&&(e=[i.data])}const n=Date.now();for(const t of e){const e=Y(t);if(e===nt.last.code&&n-nt.last.t<2e3){nt.last.t=n;continue}nt.last={code:e,t:n};const o=a(".cam");o&&(o.classList.remove("flash"),o.offsetWidth,o.classList.add("flash")),X(t)}}().catch(()=>{}).finally(()=>{nt.timer=setTimeout(st,120)})}async function it(){const t=nt.stream&&nt.stream.getVideoTracks()[0];if(t)try{nt.torch=!nt.torch,await t.applyConstraints({advanced:[{torch:nt.torch}]})}catch(t){nt.torch=!1,c("No flashlight on this camera")}}!function(){let t,e="",n=0,a=!0;function o(){const t=e;e="",a=!0,t.length>=3&&X(t)}document.addEventListener("keydown",s=>{const i=s.target,l=i&&("INPUT"===i.tagName||"TEXTAREA"===i.tagName||"SELECT"===i.tagName);if(s.ctrlKey||s.metaKey||s.altKey)return;if(l)return;const c=Date.now();"Enter"!==s.key&&"Tab"!==s.key?1===s.key.length&&(e&&c-n>80&&(a=!1),n=c,e+=s.key,clearTimeout(t),t=setTimeout(()=>{a?o():e=""},150)):e&&(s.preventDefault(),clearTimeout(t),o())})}();const lt=a("#root");let ct={};function rt(t){"scan"===A.tab&&"scan"!==t&&(ot(!1),ht()),A.tab!==t&&(A.q=""),A.tab=t,ut(),"scan"!==t||!nt.wanted&&!o.get("cam",!1)||nt.running||at(),window.scrollTo(0,0)}function dt(){if(lt.textContent="",!t.api)return void lt.append(mt("Not connected yet","Open config.js and paste the Web app URL from the Google script. See SETUP.md.",null));if(!A.pin)return void lt.append(function(){const t=n("input",{type:"password",id:"pin",inputMode:"numeric",autocomplete:"off",placeholder:"PIN"});t.setAttribute("inputmode","numeric");const e=n("div",{class:"err hidden",id:"pinerr"}),a=async()=>{const n=t.value.trim();if(n){A.pin=n,e.classList.add("hidden");try{const t=await H({},!0);if("pin"===t.error)return A.pin="",e.textContent="That PIN is not right.",void e.classList.remove("hidden");if(!t.ok)return A.pin="",e.textContent=t.error||"Something went wrong.",void e.classList.remove("hidden");if(o.set("pin",n),P(t.state),A.online=!0,dt(),Z(),A.pendingHash){const t=A.pendingHash;A.pendingHash="",X(t)}}catch(t){A.pin="",e.textContent=V(t)||"Could not reach the tracker. Check your signal and try again.",e.classList.remove("hidden")}}};return t.addEventListener("keydown",t=>{"Enter"===t.key&&a()}),mt("Tool Tracker","Enter the team PIN. You only need to do this once on this phone.",n("div",{},n("label",{class:"field",for:"pin"},"Team PIN"),t,e,n("div",{style:"height:12px"}),n("button",{class:"btn primary block",onclick:a},"Continue")))}());const e=n("div",{id:"app"});e.append(n("div",{class:"topbar",id:"topbar"})),e.append(n("nav",{class:"tabs","aria-label":"Sections"},n("div",{class:"tabs-inner",role:"tablist"},[["dash","Dashboard"],["scan","Scan"],["tools","Tools"],["materials","Materials"],["activity","Activity"],["setup","Manage"]].map(([t,e])=>n("button",{class:"tab",role:"tab",id:"tab-"+t,"aria-selected":A.tab===t?"true":"false",onclick:()=>rt(t)},i("setup"===t?"setup":t),e)))));for(const t of["dash","find","scan","tools","materials","activity","setup"])ct[t]=n("main",{id:"v-"+t,class:"hidden"}),e.append(ct[t]);lt.append(e),lt.append(n("div",{class:"confirmbar hidden",id:"confirmbar"})),function(){const t=ct.scan;t.textContent="",t.append(n("div",{id:"cambox"}),n("div",{id:"donebox"}),n("div",{id:"batchbox"})),ht()}(),ut()}function ut(){if(!ct.scan||!ct.scan.isConnected)return;pt();for(const t of Object.keys(ct))ct[t].classList.toggle("hidden",t!==A.tab);document.querySelectorAll(".tab").forEach(t=>t.setAttribute("aria-selected",t.id==="tab-"+A.tab?"true":"false"));const t=document.activeElement;"scan"!==A.tab&&t&&/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)&&ct[A.tab].contains(t)||("scan"===A.tab?ft():a("#confirmbar").classList.add("hidden"),"dash"===A.tab&&function(){const t=ct.dash;t.textContent="";const e=A.items.filter(t=>"Tool"===t.type),o=A.items.filter(t=>"Material"===t.type);if(A.items.length&&t.append(n("input",{type:"search",placeholder:"Search tools and materials","aria-label":"Search tools and materials",autocomplete:"off",style:"margin-bottom:14px;font-size:18px",oninput:t=>{A.find.q=t.target.value,A.find.limit=100,rt("find");const e=a("#find-q");e&&(e.focus(),e.setSelectionRange(e.value.length,e.value.length))}})),!A.items.length)return void t.append(n("div",{class:"card"},n("h2",{},"Nothing in the inventory yet"),n("p",{class:"muted",style:"margin-top:0"},A.loaded?"Add your tools and materials, print their labels, and this page fills in as people scan.":"Loading\u2026"),n("button",{class:"btn primary",onclick:()=>rt("setup")},"Add tools and materials")));const s=e.filter(t=>"Out"===t.status),i=s.filter(t=>d(t.since)>=D()).sort((t,e)=>new Date(t.since)-new Date(e.since)),l=o.filter(Mt).sort((t,e)=>(t.qty||0)-(e.qty||0)),c=(t,e,a,o)=>n("button",{class:"tile "+a,onclick:o},n("div",{class:"n num"},String(t)),n("div",{class:"l"},e));t.append(n("div",{class:"tiles four"},c(s.length,"Tools out now",s.length?"warn":"",()=>{A.filter="out",rt("tools")}),c(i.length,"Overdue ("+D()+"+ days)",i.length?"bad":"",()=>{A.filter="late",rt("tools")}),c(l.length,"Materials running low",l.length?"bad":"",()=>rt("materials")),c(e.length-s.length,"Tools in the shop","",()=>{A.filter="in",rt("tools")})));const u=n("div",{class:"card"},n("h2",{},"Needs attention")),p=n("div",{class:"rows"});i.slice(0,8).forEach(t=>p.append(n("div",{class:"arow"},n("div",{class:"grow"},n("div",{class:"t"},t.name),n("div",{class:"s"},"With "+(t.holder||"someone")+(t.site?" at "+t.site:"")+" \u00b7 out "+r(t.since))),n("div",{class:"acts"},n("button",{class:"btn sm primary",onclick:()=>kt(t)},"Mark returned"),n("button",{class:"btn sm",onclick:()=>xt(t)},"Reassign"))))),i.length>8&&p.append(n("div",{},n("button",{class:"btn sm",onclick:()=>{A.filter="late",rt("tools")}},"See all "+i.length+" overdue tools"))),l.slice(0,8).forEach(t=>p.append(n("div",{class:"arow"},n("div",{class:"grow"},n("div",{class:"t"},t.name),n("div",{class:"s"},(t.qty||0)+" left \u00b7 reorder at "+t.min)),n("div",{class:"acts"},n("button",{class:"btn sm primary",onclick:()=>Pt(t.code)},"Add stock"))))),u.append(p.children.length?p:n("p",{class:"muted",style:"margin:0"},"Nothing overdue and nothing running low."));const m={};s.forEach(t=>{const e=t.holderId||t.holder||"?";(m[e]=m[e]||{name:t.holder||"Unknown",items:[]}).items.push(t)});const h=Object.values(m).sort((t,e)=>e.items.length-t.items.length||t.name.localeCompare(e.name)),f=n("div",{class:"card"},n("h2",{},"Who has what"));h.length?f.append(n("div",{class:"rows"},h.map(t=>n("div",{},n("div",{class:"hrow"},n("span",{},t.name),n("span",{class:"sub num"},t.items.length+(1===t.items.length?" tool":" tools"))),n("div",{class:"chips"},t.items.map(t=>n("button",{class:"chip btnchip"+(d(t.since)>=D()?" late":""),onclick:()=>Rt(t.code)},t.name))))))):f.append(n("p",{class:"muted",style:"margin:0"},"Every tool is back in the shop."));const g={};s.forEach(t=>{const e=(t.site||"").trim()||"No site noted";(g[e]=g[e]||[]).push(t)});const y=Object.keys(g).sort((t,e)=>g[e].length-g[t].length||t.localeCompare(e)),v=y.length?n("div",{class:"card"},n("h2",{},"Out by job site"),n("div",{class:"rows"},y.map(t=>n("div",{},n("div",{class:"hrow"},n("span",{},t),n("span",{class:"sub num"},g[t].length)),n("div",{class:"sub"},g[t].map(t=>t.name).join(", ")))))):null,b=A.log.slice(0,8),w=n("div",{class:"card"},n("h2",{},"Recent activity"),b.length?n("div",{style:"margin:0 -16px"},b.map(t=>n("div",{class:"log"},n("time",{class:"num"},Ct(t.time)),n("div",{},Et(t))))):n("p",{class:"muted",style:"margin:0"},"Check-outs and returns show up here."),b.length?n("div",{style:"margin-top:10px"},n("button",{class:"btn sm",onclick:()=>rt("activity")},"See all activity")):null);t.append(n("div",{class:"dgrid"},n("div",{class:"dcol"},u,w),n("div",{class:"dcol"},f,v)))}(),"find"===A.tab&&wt(),"tools"===A.tab&&Tt(),"materials"===A.tab&&Nt(),"activity"===A.tab&&qt(),"setup"===A.tab&&Ft())}function pt(){const t=a("#topbar");if(!t)return;const e=A.queue.length,o=A.online?e?"wait":"":"off",s=A.online?e?e+" sending":"Up to date":e?e+" waiting to send (offline)":"Offline";t.textContent="",t.append(n("div",{class:"brand"},"Tool Tracker",n("span",{class:"sync "+o,title:s,role:"img","aria-label":s})),n("div",{class:"topright"},n("button",{class:"srchbtn","aria-pressed":"find"===A.tab?"true":"false","aria-label":"Search tools and materials",onclick:yt},i("search"),n("span",{class:"lbl"},"Search")),n("button",{class:"who"+(W()?"":" empty"),onclick:()=>It()},W()||"Who are you?")))}function mt(t,e,a){return n("div",{class:"gate"},n("div",{class:"card"},n("h1",{style:"font-size:28px;margin-bottom:8px"},t),n("p",{class:"muted"},e),a))}function ht(){const t=a("#cambox");if(!t)return;t.textContent="";const e=n("video",{id:"camvideo",playsInline:!0,muted:!0,autoplay:!0});e.setAttribute("playsinline",""),e.muted=!0;const o=n("div",{class:"cam"},e);if(nt.running){o.append(n("div",{class:"frame"}));const t=n("div",{class:"tools"});(function(){const t=nt.stream&&nt.stream.getVideoTracks()[0];return!!(t&&t.getCapabilities&&t.getCapabilities().torch)})()&&t.append(n("button",{onclick:it},"Light")),t.append(n("button",{onclick:()=>{ot(!0),ht()}},"Stop")),o.append(t),e.srcObject=nt.stream,e.play().catch(()=>{})}else o.append(n("div",{class:"msg"},n("p",{},nt.note||"Scan with the camera, or just use your scanner."),n("button",{class:"btn primary",onclick:at},"Start camera")));o.classList.toggle("compact",A.batch.length>0),t.append(o)}function ft(t){if(!a("#batchbox"))return;const e=a("#donebox");if(e.textContent="",A.done){const t=A.done;e.append(n("div",{class:"card done"},n("div",{class:"tick"},function(){const t=document.createElementNS("http://www.w3.org/2000/svg","svg");t.setAttribute("viewBox","0 0 24 24"),t.setAttribute("aria-hidden","true");const e=document.createElementNS("http://www.w3.org/2000/svg","path");return e.setAttribute("d","M5 12.5l4.5 4.5L19 7"),t.append(e),t}()),n("h2",{},t.title),t.parts.map(t=>n("div",{style:"font-weight:600"},t)),t.queued?n("p",{class:"muted"},"No signal right now. It will send by itself when you are back online."):null,t.lines.length?n("ul",{},t.lines.map(t=>n("li",{},t))):null,n("button",{class:"btn",onclick:()=>{A.done=null,ft()}},"Scan more")))}const o=a(".cam");o&&o.classList.toggle("compact",A.batch.length>0);const s=a("#batchbox");s.textContent="";const i=n("div",{class:"card"});i.append(n("div",{class:"batch-head"},n("h2",{},A.batch.length?"Scanned ("+A.batch.length+")":"Scanned"),A.batch.length?n("button",{class:"link",onclick:()=>{A.batch=[],ft()}},"Clear all"):null)),A.batch.length||i.append(n("div",{class:"empty"},n("b",{},"Nothing scanned yet"),"Point the camera at a tool\u2019s QR code. Scan as many as you like, then press Confirm once."));let l=!1;if(A.batch.forEach((e,a)=>{const o=U(e.code),s=n("div",{class:"scan-row"+(t&&t.toUpperCase()===e.code.toUpperCase()?" pop":"")}),d=n("div",{});if(o)if("Tool"===o.type){const t=tt(e,o);"out"===t&&(l=!0);const i="Out"===o.status?"With "+(o.holder||"someone")+(o.site?" at "+o.site:"")+" \u00b7 "+r(o.since):"In the shop";d.append(n("div",{class:"sr-name"},o.name),n("div",{class:"sr-sub"},"Now: "+i));const c="in"===t?"Return":"Out"===o.status&&o.holderId!==A.me?"Take over":"Check out";s.append(d,n("button",{class:"act"+("in"===t?" in":""),"aria-label":c+" "+o.name+". Tap to switch.",onclick:()=>{e.action="in"===t?"out":"in",ft()}},c+" \u21c5"),gt(a))}else{d.append(n("div",{class:"sr-name"},o.name),n("div",{class:"sr-sub"},(null!=o.qty?o.qty:0)+" on hand"));const t=n("div",{class:"stepper"},n("button",{"aria-label":"One less",onclick:()=>{e.qty=Math.max(1,e.qty-1),ft()}},"\u2212"),n("b",{class:"num"},String(e.qty)),n("button",{"aria-label":"One more",onclick:()=>{e.qty++,ft()}},"+")),i=n("button",{class:"act "+("add"===e.mode?"in":"take"),style:"min-width:84px",onclick:()=>{e.mode="add"===e.mode?"take":"add",ft()}},"add"===e.mode?"Add":"Take");d.classList.add("sr-main"),s.classList.add("mat"),s.append(d,n("div",{class:"stepper",style:"gap:8px"},t,i),gt(a))}else d.append(n("div",{class:"sr-name"},A.loaded?"New code "+e.code:"Looking up\u2026"),n("div",{class:"sr-sub"},A.loaded?"Not in the list yet":e.code)),s.append(d,A.loaded?n("button",{class:"act",onclick:()=>function(t){let e="Tool";const a=n("input",{type:"text",placeholder:"What is it? e.g. DeWalt impact driver",autocomplete:"off"}),o=n("div",{}),s=n("div",{class:"err hidden"}),i=n("input",{type:"number",inputMode:"numeric",placeholder:"How many on hand"}),l=n("div",{class:"seg"});(function t(){l.textContent="";for(const a of["Tool","Material"])l.append(n("button",{"aria-pressed":e===a?"true":"false",onclick:()=>{e=a,t()}},a));o.textContent="","Material"===e&&o.append(n("label",{class:"field"},"On hand"),i)})(),Ot("Add "+t,n("div",{},n("p",{class:"muted"},"This code is not in the list yet. Name it and it is ready to scan."),l,n("label",{class:"field"},"Name"),a,o,s,n("div",{style:"height:14px"}),n("button",{class:"btn primary block",onclick:async()=>{if(!a.value.trim())return s.textContent="Enter a name.",void s.classList.remove("hidden");try{const n=await H({action:"addItems",items:[{code:t,type:e,name:a.value,qty:Number(i.value)||0}]});if(!n.ok)return s.textContent=n.error||"Could not add it.",void s.classList.remove("hidden");P(n.state),At(),ut(),c("Added")}catch(t){s.textContent=V(t)||"No signal. Try again when you are online.",s.classList.remove("hidden")}}},"Add")))}(e.code)},"Add it"):n("span"),gt(a));i.append(s)}),l){const t=[...new Set(A.log.filter(t=>t.site).map(t=>t.site))].slice(0,5),e=n("input",{type:"text",id:"site",placeholder:"e.g. Maple St job (optional)",autocomplete:"off",value:""});i.append(n("label",{class:"field",for:"site"},"Where are they going?"),e,t.length?n("div",{class:"chips"},t.map(t=>n("button",{class:"chip",onclick:()=>{e.value=t}},t))):null)}s.append(i);const d=a("#confirmbar");if(A.batch.length&&!A.busy){const t=A.batch.filter(t=>{const e=U(t.code);return e&&"Tool"===e.type&&"out"===tt(t,e)}).length,e=A.batch.filter(t=>{const e=U(t.code);return e&&"Tool"===e.type&&"in"===tt(t,e)}).length,a=A.batch.filter(t=>{const e=U(t.code);return e&&"Material"===e.type}).length,o=[];t&&o.push(t+" out"),e&&o.push(e+" back"),a&&o.push(a+(1===a?" material":" materials")),d.textContent="",d.append(n("button",{class:"btn primary block",onclick:et},"Confirm"+(o.length?" \u00b7 "+o.join(" \u00b7 "):""))),d.classList.remove("hidden")}else A.busy?(d.textContent="",d.append(n("button",{class:"btn primary block",disabled:!0},"Sending\u2026")),d.classList.remove("hidden")):d.classList.add("hidden")}const gt=t=>n("button",{class:"x","aria-label":"Remove",onclick:()=>{A.batch.splice(t,1),ft()}},"\u00d7");function yt(){rt("find");const t=a("#find-q");t&&(t.focus(),t.select())}const vt=t=>{t._retired||("Tool"===t.type?Rt(t.code):Pt(t.code))};function bt(t){const e="Tool"===t.type,a=[t.code,t.category].filter(Boolean).join(" \u00b7 "),o=e?"Out"===t.status?"With "+(t.holder||"someone")+(t.site?" at "+t.site:"")+" \u00b7 out "+r(t.since):"In the shop \u00b7 "+r(t.since):(t.qty||0)+" on hand"+(null!=t.min?" \u00b7 reorder at "+t.min:"");return t._retired?n("div",{class:"item retired"},n("div",{},n("div",{class:"t"},t.name),n("div",{class:"s"},a+" \u00b7 "+t.type),n("div",{class:"s"},"Retired")),n("div",{class:"r"},n("button",{class:"btn sm",onclick:()=>Vt(t)},"Restore"))):n("button",{class:"item",onclick:()=>vt(t)},n("div",{},n("div",{class:"t"},t.name),n("div",{class:"s"},a+" \u00b7 "+t.type),n("div",{class:"s"},o)),n("div",{class:"r"},e?St(t):[n("div",{class:"qty num"},String(t.qty||0)),Mt(t)?n("span",{class:"pill late"},"Low"):null]))}function wt(){const t=ct.find;t.textContent="";const e=A.find.f;let a=[];const o=n("input",{type:"search",id:"find-q",placeholder:"Search tools and materials",value:A.find.q,autocomplete:"off",enterKeyHint:"search","aria-label":"Search tools and materials",style:"font-size:18px",oninput:t=>{A.find.q=t.target.value,A.find.limit=100,h()},onkeydown:t=>{if("Enter"!==t.key)return;t.preventDefault();const e=U(Y(A.find.q));if(e)return vt(e),void o.select();1===a.length&&vt(a[0])}}),s=n("div",{}),i=(t,a,o)=>n("button",{class:"chip btnchip","aria-pressed":e[a]===o?"true":"false",onclick:()=>((t,n)=>{e[t]=e[t]===n?I[t]:n,A.find.limit=100,wt()})(a,o)},t),l=n("div",{class:"chips"},i("Tools","type","Tool"),i("Materials","type","Material"),i("Checked out","status","out"),i("Overdue","status","overdue"),i("In the shop","status","in"),i("Low stock","stock","low"),A.me?i("Mine","holder",A.me):null),c=Object.keys(I).filter(t=>"sort"!==t&&e[t]!==I[t]).length,r=()=>{Object.assign(e,I),A.find.q="",A.find.limit=100,wt()},u=n("div",{class:"fbar"},n("button",{class:"btn sm","aria-expanded":A.find.open?"true":"false",onclick:()=>{A.find.open=!A.find.open,wt()}},"Filters",c?n("span",{class:"badge"},String(c)):null),c||A.find.q?n("button",{class:"btn sm",onclick:r},"Clear all"):null,n("span",{class:"sp"}),n("span",{class:"muted",style:"font-weight:600;font-size:14px"},"Sort"),q(["best",A.find.q.trim()?"Best match":"Default (name)"],["name","name_d","code","code_d","cat","holder","site","old","new","stock","stock_d"],e.sort,t=>{e.sort=t,wt()})),p=(t,a,o)=>n("div",{},n("label",{class:"field"},t),n("select",{"aria-label":t,onchange:t=>{e[a]=t.target.value,A.find.limit=100,wt()}},o.map(([t,o])=>n("option",{value:t,selected:e[a]===t},o))));let m=null;if(A.find.open){const t=[...new Set(A.items.map(t=>(t.category||"").trim()).filter(Boolean))].sort((t,e)=>t.localeCompare(e)),a=[...new Set(A.items.filter(t=>"Tool"===t.type&&"Out"===t.status).map(t=>(t.site||"").trim()).filter(Boolean))].sort((t,e)=>t.localeCompare(e)),o=A.items.some(t=>"Tool"===t.type&&"Out"===t.status&&!(t.site||"").trim()),s=A.items.some(t=>!(t.category||"").trim());m=n("div",{},n("div",{class:"fgrid"},p("Show","type",[["any","Everything"],["Tool","Tools only"],["Material","Materials only"]]),p("Tool status","status",[["any","Any status"],["in","In the shop"],["out","Checked out"],["overdue","Overdue ("+D()+"+ days)"]]),p("Material stock","stock",[["any","Any stock level"],["ok","In stock"],["low","Low (at or below reorder level)"],["empty","Out of stock"]]),p("Held by","holder",[["any","Anyone"],["none","Nobody (in the shop)"]].concat(A.people.slice().sort((t,e)=>t.name.localeCompare(e.name)).map(t=>[t.id,t.name]))),p("Job site","site",[["any","Any job site"]].concat(a.map(t=>[t,t]),o?[["__none","No site noted"]]:[])),p("Category","cat",[["any","Any category"]].concat(t.map(t=>[t,t]),s?[["__none","No category"]]:[])),p("Last moved (tools)","moved",[["any","Any time"],["today","Today"],["w1","Past 7 days"],["m1","Past 30 days"],["o7","More than 7 days ago"],["o30","More than 30 days ago"],["o90","More than 90 days ago"]])),n("label",{for:"inc-ret",style:"display:flex;gap:10px;align-items:center;margin:10px 0 0;font-weight:600"},n("input",{type:"checkbox",id:"inc-ret",checked:e.retired,onchange:t=>{e.retired=t.target.checked,wt()}}),"Include retired items"),n("p",{class:"fnote"},'"Last moved" is when a tool was last checked out or returned. Filters for tool status, holder, job site and last moved only show tools. The stock filter only shows materials.'))}function h(){if(s.textContent="",!A.items.length&&!A.retired.length)return void s.append(n("div",{class:"empty"},n("b",{},"Nothing to search yet"),"Add tools and materials in Manage and they show up here."));const t=w(A.find.q);let o,i=A.items.concat(e.retired?A.retired.map(t=>Object.assign({},t,{_retired:!0})):[]).filter(t=>function(t,e){const n="Tool"===t.type,a=n&&"Out"===t.status;if("any"!==e.type&&e.type!==t.type)return!1;if("any"!==e.status){if(!n)return!1;if("in"===e.status&&a)return!1;if("out"===e.status&&!a)return!1;if("overdue"===e.status&&!(a&&d(t.since)>=D()))return!1}if("any"!==e.stock){if(n)return!1;const a=t.qty||0;if("empty"===e.stock&&a>0)return!1;if("low"===e.stock&&!Mt(t))return!1;if("ok"===e.stock&&(a<=0||Mt(t)))return!1}if("any"!==e.holder){if(!n)return!1;if("none"===e.holder?a:!a||t.holderId!==e.holder)return!1}if("any"!==e.site){if(!a)return!1;const n=(t.site||"").trim();if("__none"===e.site?n:n!==e.site)return!1}if("any"!==e.cat){const n=(t.category||"").trim();if("__none"===e.cat?n:n!==e.cat)return!1}if("any"!==e.moved){if(!n||!t.since)return!1;const a=d(t.since);if("today"===e.moved&&a>=1)return!1;if("w1"===e.moved&&a>=7)return!1;if("m1"===e.moved&&a>=30)return!1;if("o7"===e.moved&&a<7)return!1;if("o30"===e.moved&&a<30)return!1;if("o90"===e.moved&&a<90)return!1}return!0}(t,e)),l=!1;t.words.length?(o=i.map(e=>[e,k(e,t,!1)]).filter(t=>t[1]>0),!o.length&&t.words.length>1&&(o=i.map(e=>[e,k(e,t,!0)]).filter(t=>t[1]>0),l=o.length>0)):o=i.map(t=>[t,0]),"best"===e.sort?o.sort((e,n)=>t.words.length&&n[1]-e[1]||M.name(e[0],n[0])):o.sort((t,n)=>M[e.sort](t[0],n[0])||M.name(t[0],n[0])),a=o.map(t=>t[0]);const u=a.slice(0,A.find.limit);s.append(n("div",{class:"fbar"},n("span",{class:"muted",style:"font-weight:600"},a.length+(1===a.length?" result":" results")+" of "+(A.items.length+(e.retired?A.retired.length:0))),n("span",{class:"sp"}),a.length?n("button",{class:"btn sm",onclick:()=>_t("search-results-"+Wt()+".csv",[Ht].concat(a.map(Bt)))},"Download results (CSV)"):null)),l&&s.append(n("p",{class:"fnote"},"Nothing matched every word, so these match some of them.")),a.length?(s.append(n("div",{class:"list"},u.map(bt))),a.length>u.length&&s.append(n("div",{style:"margin-top:12px;text-align:center"},n("button",{class:"btn",onclick:()=>{A.find.limit+=100,h()}},"Show more ("+(a.length-u.length)+" left)")))):s.append(n("div",{class:"empty"},n("b",{},"No matches"),(c?"Try clearing a filter. ":"")+"Fewer letters or a different word can help.",c||A.find.q?n("div",{style:"margin-top:12px"},n("button",{class:"btn sm",onclick:r},"Clear search and filters")):null))}t.append(o,l,u,...m?[m]:[],s),h()}async function kt(t){At(),await G([{code:t.code,action:"in",site:""}],A.me||""),c(t.name+" is back in the shop"),ut()}function xt(t){const e="Out"===t.status&&t.site||"";!function(a){const o=n("div",{class:"stack"}),s=n("input",{type:"search",placeholder:"Search names","aria-label":"Search names"});function i(){o.textContent="";const a=s.value.trim().toLowerCase(),i=A.people.filter(t=>!a||x(t.name,a)>0).sort((t,e)=>t.name.localeCompare(e.name));i.forEach(a=>o.append(n("button",{class:"person",onclick:()=>{At(),(async n=>{await G([{code:t.code,action:"out",site:e,personId:n.id}],A.me||""),c(t.name+" is now with "+n.name),ut()})(a)}},a.name))),i.length||o.append(n("div",{class:"muted"},A.people.length?"No one by that name.":"No one is in the list yet. Add people in Manage."))}s.addEventListener("input",i),Ot(a,n("div",{class:"stack"},s,o)),i()}(("Out"===t.status?"Reassign ":"Assign ")+t.name+" to\u2026")}const Ct=t=>new Date(t).toDateString()===(new Date).toDateString()?u(t):new Date(t).toLocaleDateString([],{month:"short",day:"numeric"});function St(t){return"Out"!==t.status?n("span",{class:"pill in"},"In shop"):n("span",{class:"pill "+(d(t.since)>=D()?"late":"out")},"Out \u00b7 "+(t.holder||"?"))}function Tt(){const t=ct.tools;t.textContent="";const e=A.items.filter(t=>"Tool"===t.type),a=t=>"Out"===t.status&&d(t.since)>=D(),o=e.filter(t=>"Out"===t.status),s=o.filter(a);t.append(n("div",{class:"tiles"},n("div",{class:"tile"+(o.length?" warn":"")},n("div",{class:"n num"},String(o.length)),n("div",{class:"l"},"Out now")),n("div",{class:"tile"+(s.length?" bad":"")},n("div",{class:"n num"},String(s.length)),n("div",{class:"l"},"Out "+D()+"+ days"))));const i=n("input",{type:"search",placeholder:"Search tools",value:A.q,"aria-label":"Search tools",oninput:t=>{A.q=t.target.value,p()}}),l=n("div",{class:"seg",style:"margin-top:10px"},[["all","All"],["out","Out"],["late","Overdue"],["in","In shop"]].map(([t,e])=>n("button",{"aria-pressed":A.filter===t?"true":"false",onclick:()=>{A.filter=t,Tt()}},e))),c=n("div",{});t.append(i,l,O(q(["default","Default (out first)"],["name","name_d","code","code_d","cat","holder","site","old","new"],A.tsort,t=>{A.tsort=t,Tt()})),c);const u=t=>"all"===A.filter||("late"===A.filter?a(t):"out"===A.filter==("Out"===t.status));function p(){c.textContent="";const t=A.q.trim(),a=w(t),o=new Map;let s=e.filter(t=>u(t)&&(!a.words.length||(o.set(t,k(t,a)),o.get(t)>0)));"default"!==A.tsort?E(s,A.tsort):a.words.length?s.sort((t,e)=>o.get(e)-o.get(t)||t.name.localeCompare(e.name)):s.sort((t,e)=>("Out"===t.status?0:1)-("Out"===e.status?0:1)||("Out"===t.status?new Date(t.since)-new Date(e.since):t.name.localeCompare(e.name))),s.length?c.append(n("div",{class:"list"},s.map(t=>n("button",{class:"item tool",onclick:()=>Rt(t.code)},n("div",{},n("div",{class:"t"},t.name),n("div",{class:"s"},t.code+(t.category?" \u00b7 "+t.category:""))),n("div",{class:"xc s"},"Out"===t.status?t.site||"No site noted":""),n("div",{class:"xc s"},"Out"===t.status?"Out "+r(t.since):""),n("div",{class:"r"},St(t),"Out"===t.status?n("div",{class:"s"},(t.site?t.site+" \u00b7 ":"")+r(t.since)):null))))):c.append(n("div",{class:"empty"},n("b",{},e.length?"No matches":"No tools yet"),e.length?"Try a different search or filter.":"Add tools in Manage, then print their labels."))}p()}function Nt(){const t=ct.materials;t.textContent="";const e=A.items.filter(t=>"Material"===t.type),a=e.filter(t=>null!=t.min&&(t.qty||0)<=t.min);t.append(n("div",{class:"tiles"},n("div",{class:"tile"},n("div",{class:"n num"},String(e.length)),n("div",{class:"l"},"Materials")),n("div",{class:"tile"+(a.length?" bad":"")},n("div",{class:"n num"},String(a.length)),n("div",{class:"l"},"Running low"))));const o=n("div",{});function s(){o.textContent="";const t=w(A.q),a=new Map,s=e.filter(e=>!t.words.length||(a.set(e,k(e,t)),a.get(e)>0));"default"!==A.msort?E(s,A.msort):s.sort((e,n)=>t.words.length?a.get(n)-a.get(e)||e.name.localeCompare(n.name):Mt(n)-Mt(e)||e.name.localeCompare(n.name)),s.length?o.append(n("div",{class:"list"},s.map(t=>n("button",{class:"item",onclick:()=>Pt(t.code)},n("div",{},n("div",{class:"t"},t.name),n("div",{class:"s"},t.code+(t.category?" \u00b7 "+t.category:"")+(null!=t.min?" \u00b7 reorder at "+t.min:""))),n("div",{class:"r"},n("div",{class:"qty num"},String(t.qty||0)),Mt(t)?n("span",{class:"pill late"},"Low"):null))))):o.append(n("div",{class:"empty"},n("b",{},e.length?"No matches":"No materials yet"),e.length?"Try a different search.":"Add materials in Manage, with how many you have and the level to reorder at."))}t.append(n("input",{type:"search",placeholder:"Search materials","aria-label":"Search materials",value:A.q,oninput:t=>{A.q=t.target.value,s()}}),O(q(["default","Default (low stock first)"],["name","name_d","code","code_d","cat","stock","stock_d"],A.msort,t=>{A.msort=t,Nt()})),o),s()}const Mt=t=>null!=t.min&&(t.qty||0)<=t.min?1:0,Lt={OUT:"checked out",IN:"returned",TRANSFER:"took over",TAKE:"took",RESTOCK:"added",ADD:"was added",EDIT:"was edited",RETIRE:"was retired",RESTORE:"was restored",ADJUST:"recounted"};function Et(t){const e=t.person||"Someone";return"TAKE"===t.action||"RESTOCK"===t.action?e+" "+Lt[t.action]+" "+t.qty+" \u00d7 "+t.item:"ADD"===t.action||"EDIT"===t.action||"RETIRE"===t.action||"RESTORE"===t.action?t.item+" "+Lt[t.action]:"ADJUST"===t.action?e+" recounted "+t.item+(t.note?" \u00b7 "+t.note:""):e+" "+Lt[t.action]+" "+t.item+(t.site&&"IN"!==t.action?" ("+t.site+")":"")+(t.note?" \u00b7 "+t.note:"")}function qt(){const t=ct.activity;t.textContent="";const e=n("div",{});function a(){e.textContent="";const t=A.q.trim(),a=A.log.filter(e=>!t||x(Et(e)+" "+e.code,t)>0);if("old"===A.asort&&a.reverse(),!a.length)return void e.append(n("div",{class:"empty"},n("b",{},"No activity yet"),"Check-outs and returns show up here."));let o="",s=null;for(const t of a){const a=p(t.time);a!==o&&(o=a,e.append(n("div",{class:"daylabel"},a)),s=n("div",{class:"list",style:"margin-top:0"}),e.append(s)),s.append(n("div",{class:"log"},n("time",{class:"num"},u(t.time)),n("div",{},Et(t))))}}t.append(n("input",{type:"search",placeholder:"Search activity","aria-label":"Search activity",value:A.q,oninput:t=>{A.q=t.target.value,a()}}),O(n("select",{"aria-label":"Sort by",onchange:t=>{A.asort=t.target.value,qt()}},[["new","Newest first"],["old","Oldest first"]].map(([t,e])=>n("option",{value:t,selected:A.asort===t},e)))),e),a()}function Ot(t,e,a){At();const o=n("div",{class:"overlay",id:"overlay",onclick:t=>{t.target===o&&At()}}),s=n("div",{class:"sheet",role:"dialog","aria-modal":"true","aria-label":t},n("div",{class:"sheet-head"},n("h2",{},t),n("button",{class:"x","aria-label":"Close",onclick:At},"\u00d7")),e);o.append(s),document.body.append(o),o._onclose=a;const i=s.querySelector("input,textarea");i&&!("ontouchstart"in window)&&i.focus()}function At(){const t=a("#overlay");if(t){const e=t._onclose;t.remove(),e&&e()}}function It(t){const e=n("div",{class:"stack"}),a=n("div",{class:"stack"}),s=n("input",{type:"search",placeholder:"Search names","aria-label":"Search names"});function i(){a.textContent="";const e=s.value.trim().toLowerCase(),i=A.people.filter(t=>!e||x(t.name,e)>0).sort((t,e)=>t.name.localeCompare(e.name));i.forEach(e=>a.append(n("button",{class:"person",onclick:()=>{A.me=e.id,o.set("me",e.id),At(),pt(),ft(),t&&t()}},e.name))),i.length||a.append(n("div",{class:"muted"},A.people.length?"No one by that name.":"No one is in the list yet. Add your name below."))}s.addEventListener("input",i);const l=n("input",{type:"text",placeholder:"Your name",autocomplete:"off"}),c=n("div",{class:"err hidden"}),r=n("button",{class:"btn",onclick:async()=>{const e=l.value.trim();if(e){c.classList.add("hidden");try{const n=await H({action:"addPerson",name:e});if(!n.ok)return c.textContent=n.error||"Could not add that name.",void c.classList.remove("hidden");P(n.state),A.me=n.person.id,o.set("me",A.me),At(),ut(),t&&t()}catch(t){c.textContent=V(t)||"No signal. Try again when you are online.",c.classList.remove("hidden")}}}},"Add me");e.append(s,a,n("label",{class:"field"},"Not in the list?"),l,c,r),Ot("Who are you?",e),i()}function Dt(t){const e=A.log.filter(e=>e.code.toUpperCase()===t.code.toUpperCase()).slice(0,8);return e.length?n("div",{},n("h3",{style:"font-size:18px;margin:6px 0 0"},"History"),n("div",{class:"list",style:"margin-top:8px"},e.map(t=>n("div",{class:"log"},n("time",{},new Date(t.time).toLocaleDateString([],{month:"short",day:"numeric"})),n("div",{},Et(t)))))):null}function Rt(t){const e=U(t);if(!e)return;const a=n("div",{class:"stack"}),o="Out"===e.status?"With "+(e.holder||"someone")+(e.site?" at "+e.site:"")+" \u00b7 "+r(e.since):"In the shop";a.append(n("div",{},St(e),n("div",{class:"muted",style:"margin-top:6px"},e.code+(e.category?" \u00b7 "+e.category:"")+" \u00b7 "+o)));const s=async t=>{"in"!==t?A.me?(At(),await G([{code:e.code,action:t,site:""}],A.me),c("Checked out to "+W()),ut()):It(()=>s(t)):await kt(e)};"Out"===e.status?a.append(n("button",{class:"btn primary block",onclick:()=>s("in")},"Mark returned to shop"),e.holderId!==A.me?n("button",{class:"btn block",onclick:()=>s("out")},"I have it now"):null):a.append(n("button",{class:"btn primary block",onclick:()=>s("out")},"Check out"+(W()?" to "+W():""))),a.append(n("button",{class:"btn block",onclick:()=>xt(e)},"Out"===e.status?"Reassign to someone else\u2026":"Assign to someone\u2026")),a.append(n("div",{class:"seg",style:"display:flex"},n("button",{onclick:()=>{At(),Zt([e])}},"Print label"),n("button",{onclick:()=>{At(),jt(e.code)}},"Edit")));const i=Dt(e);i&&a.append(i),Ot(e.name,a)}function Pt(t){const e=U(t);if(!e)return;let a=1;const o=n("div",{class:"stack"}),s=n("b",{class:"num",style:"font-size:28px;min-width:40px;text-align:center"},"1"),i=t=>{a=Math.max(1,a+t),s.textContent=String(a)},l=async t=>{A.me?(At(),await G([{code:e.code,delta:t*a}],A.me),c((t<0?"Took ":"Added ")+a),ut()):It(()=>l(t))},r=n("input",{type:"number",inputMode:"numeric",min:"0",placeholder:"Exact count","aria-label":"Exact count on hand"});o.append(n("div",{class:"muted"},e.code+(e.category?" \u00b7 "+e.category:"")+(null!=e.min?" \u00b7 reorder at "+e.min:"")),n("div",{class:"qty num",style:"font-size:44px"},(e.qty||0)+" on hand"),n("div",{style:"display:flex;align-items:center;justify-content:center;gap:14px"},n("button",{class:"btn",style:"min-width:56px",onclick:()=>i(-1)},"\u2212"),s,n("button",{class:"btn",style:"min-width:56px",onclick:()=>i(1)},"+")),n("div",{style:"display:grid;grid-template-columns:1fr 1fr;gap:10px"},n("button",{class:"btn danger",onclick:()=>l(-1)},"Take"),n("button",{class:"btn primary",onclick:()=>l(1)},"Add stock")),n("div",{},n("label",{class:"field"},"Recount: type what is really on the shelf"),n("div",{style:"display:grid;grid-template-columns:1fr auto;gap:10px"},r,n("button",{class:"btn",onclick:async()=>{if(""===r.value)return;const t=Math.max(0,Math.round(Number(r.value)));At(),await G([{code:e.code,setQty:t}],A.me||""),c("Count set to "+t),ut()}},"Set count"))),n("div",{class:"seg",style:"display:flex"},n("button",{onclick:()=>{At(),Zt([e])}},"Print label"),n("button",{onclick:()=>{At(),jt(e.code)}},"Edit")));const d=Dt(e);d&&o.append(d),Ot(e.name,o)}function jt(t){const e=U(t);if(!e)return;const a=n("input",{type:"text",value:e.name}),o=n("input",{type:"text",value:e.category||""}),s="Material"===e.type?n("input",{type:"number",inputMode:"numeric",value:null==e.min?"":e.min}):null,i=n("div",{class:"err hidden"});let l=!1;const r=n("button",{class:"btn danger block",onclick:async()=>{if(!l)return l=!0,void(r.textContent="Tap again to retire "+e.name);await d({active:!1})}},"Retire this item");async function d(t){const n=Object.assign({name:a.value,category:o.value},s?{min:""===s.value?null:Number(s.value)}:{},t||{});try{const t=await H({action:"updateItem",code:e.code,fields:n});if(!t.ok)return i.textContent=t.error||"Could not save.",void i.classList.remove("hidden");P(t.state),At(),ut(),c("Saved")}catch(t){i.textContent=V(t)||"No signal. Try again when you are online.",i.classList.remove("hidden")}}Ot("Edit "+e.code,n("div",{},n("label",{class:"field"},"Name"),a,n("label",{class:"field"},"Category"),o,s?[n("label",{class:"field"},"Reorder at"),s]:null,i,n("div",{style:"height:14px"}),n("div",{class:"stack"},n("button",{class:"btn primary block",onclick:()=>d()},"Save"),r)))}document.addEventListener("keydown",t=>{"Escape"===t.key&&At()});const Ut=t=>(t=null==t?"":String(t),/^[=+\-@]/.test(t)&&(t="'"+t),/[",\r\n]/.test(t)?'"'+t.replace(/"/g,'""')+'"':t);function _t(t,e){const a=new Blob(["\ufeff"+e.map(t=>t.map(Ut).join(",")).join("\r\n")],{type:"text/csv;charset=utf-8"}),o=n("a",{href:URL.createObjectURL(a),download:t});document.body.append(o),o.click(),setTimeout(()=>{URL.revokeObjectURL(o.href),o.remove()},1500)}const Wt=()=>(new Date).toISOString().slice(0,10),zt=(t,e)=>{t.textContent=V(e)||"No signal. Try again when you are online.",t.classList.remove("hidden")},Ht=["Code","Type","Name","Category","Status","With","Job site","Since","On hand","Reorder at"],Bt=t=>[t.code,t.type,t.name,t.category||"","Tool"===t.type?"Out"===t.status?"Out":"In shop":"",t.holder||"",t.site||"",t.since?new Date(t.since).toLocaleString():"",null==t.qty?"":t.qty,null==t.min?"":t.min];async function Vt(t){try{const e=await H({action:"updateItem",code:t.code,fields:{active:!0}});if(!e.ok)return void c(e.error||"Could not restore");P(e.state),ut(),c(t.name+" restored")}catch(t){c(V(t)||"No signal. Try again when you are online.")}}function Jt(t){if(t.includes("\t"))return t.split("\t").map(t=>t.trim());const e=[];let n="",a=!1;for(let o=0;o<t.length;o++){const s=t[o];a?'"'===s?'"'===t[o+1]?(n+='"',o++):a=!1:n+=s:'"'===s?a=!0:","===s?(e.push(n.trim()),n=""):n+=s}return e.push(n.trim()),e}function Ft(){const t=ct.setup;t.textContent="",t.append(n("div",{class:"dgrid"},n("div",{class:"dcol"},(()=>{let t="Tool";const e=n("textarea",{id:"bulk",placeholder:""}),a=n("p",{class:"muted",style:"margin:6px 0 0;font-size:14px"}),o=n("div",{class:"seg"}),s=n("div",{class:"err hidden"});!function s(){o.textContent="";for(const e of["Tool","Material"])o.append(n("button",{"aria-pressed":t===e?"true":"false",onclick:()=>{t=e,s()}},e));e.placeholder="Tool"===t?"DeWalt impact driver, Power tools\nMilwaukee 18in pipe wrench, Plumbing":'1/4" drywall screws, 500, 100\nPVC primer, 6, 2',a.textContent="Tool"===t?"One tool per line. Add a category after a comma if you like.":"One per line: name, how many on hand, reorder level."}();const i=n("button",{class:"btn primary block",onclick:async()=>{s.classList.add("hidden");const n=e.value.split("\n").map(t=>t.trim()).filter(Boolean).map(e=>{const n=e.split(",").map(t=>t.trim());return"Tool"===t?{type:t,name:n[0],category:n[1]||""}:{type:t,name:n[0],qty:Number(n[1])||0,min:void 0===n[2]||""===n[2]?"":Number(n[2])}});if(n.length)try{const t=await H({action:"addItems",items:n});if(!t.ok)return s.textContent=t.error||"Could not add.",void s.classList.remove("hidden");P(t.state),A.lastAdded=t.added.map(t=>t.code),e.value="",c(t.added.length+" added"),Ft()}catch(t){zt(s,t)}}},"Add to inventory");return n("div",{class:"card"},n("h2",{},"Add tools and materials"),o,n("label",{class:"field",for:"bulk"},"List"),e,a,s,n("div",{style:"height:12px"}),i)})(),(()=>{let t="Tool";const e=n("textarea",{id:"imp",placeholder:"",style:"min-height:130px"}),a=n("div",{class:"seg"}),o=n("p",{class:"muted",style:"margin:6px 0 0;font-size:14px"}),s=n("div",{style:"margin-top:10px;font-size:15px"}),i=n("div",{class:"err hidden"}),l=n("input",{type:"file",accept:".csv,.tsv,.txt,text/csv,text/plain","aria-label":"Choose a CSV or text file"});l.addEventListener("change",async()=>{const t=l.files[0];t&&(e.value=await t.text(),s.textContent="")}),function s(){a.textContent="";for(const e of["Tool","Material"])a.append(n("button",{"aria-pressed":t===e?"true":"false",onclick:()=>{t=e,s()}},e));e.placeholder="Tool"===t?"A-1001, Hilti drill, Power tools\nA-1002, Pipe wrench, Plumbing":"B-2001, 1/4in drywall screws, 500, 100\nB-2002, PVC primer, 6, 2",o.textContent="Tool"===t?"One per line: the code on your tag, the name, then a category if you like.":"One per line: the code on your tag, the name, how many on hand, reorder level."}();const r=n("button",{class:"btn primary block",onclick:async()=>{i.classList.add("hidden"),s.textContent="";const n=e.value.split(/\r?\n/).map(t=>t.trim()).filter(Boolean).map(Jt);n.length&&/^(code|tag|id|barcode|qr)/i.test(n[0][0])&&n.shift();const a=[],o=[],d=new Set;for(const e of n){const n=Y(e[0]),s=(e[1]||"").trim();if(!n)continue;const i=n.toUpperCase();s?/^CMD-(SEND|CLEAR)$/.test(i)||/^P\d+$/.test(i)?a.push(n+": reserved for name badges and shop scanner commands"):U(n)||d.has(i)?a.push(n+": already in the list"):A.retired.some(t=>t.code.toUpperCase()===i)?a.push(n+": is a retired item, restore it instead"):(d.add(i),o.push("Tool"===t?{type:t,code:n,name:s,category:e[2]||""}:{type:t,code:n,name:s,qty:Number(e[2])||0,min:void 0===e[3]||""===e[3]?"":Number(e[3])})):a.push(n+": no name given")}if(o.length){r.disabled=!0;try{const t=await H({action:"addItems",items:o});if(!t.ok)return i.textContent=t.error||"Could not import.",void i.classList.remove("hidden");P(t.state),e.value="",l.value="",s.textContent=t.added.length+" imported."+(a.length?" Skipped "+a.length+": "+a.slice(0,6).join("; ")+(a.length>6?"; and "+(a.length-6)+" more":"")+".":""),c(t.added.length+" imported"),ut();const n=document.querySelector("#imp-out");n&&(n.textContent=s.textContent)}catch(t){zt(i,t)}finally{r.disabled=!1}}else s.textContent=a.length?"Nothing imported. "+a.slice(0,6).join("; ")+".":"Paste or choose a list first."}},"Import");return s.id="imp-out",n("div",{class:"card"},n("h2",{},"Import your own tags"),n("p",{class:"muted",style:"margin-top:0"},"Already have QR or barcode tags on your gear? Paste a list or choose a spreadsheet file (CSV) and every tag works right away, with no labels to print."),a,n("label",{class:"field",for:"imp"},"List"),e,o,n("label",{class:"field",style:"margin-top:12px"},"Or choose a file"),l,i,n("div",{style:"height:12px"}),r,s)})(),n("div",{class:"card"},n("h2",{},"Labels and badges"),n("p",{class:"muted",style:"margin-top:0"},"Each QR label works with the phone camera and the shop scanner. Print at 100% size, then stick one on every tool and bin."),n("div",{class:"stack"},A.lastAdded.length?n("button",{class:"btn primary block",onclick:()=>Zt(A.lastAdded.map(U).filter(Boolean))},"Print the "+A.lastAdded.length+" you just added"):null,n("button",{class:"btn block",onclick:()=>function(){const t=new Set(A.items.map(t=>t.code)),e=n("div",{class:"stack"}),a=n("div",{class:"list",style:"margin-top:0"});function o(){a.textContent="";for(const e of[...A.items].sort((t,e)=>t.type.localeCompare(e.type)||t.name.localeCompare(e.name))){const o=n("input",{type:"checkbox",checked:t.has(e.code),style:"width:22px;height:22px",onchange:n=>{n.target.checked?t.add(e.code):t.delete(e.code)}});a.append(n("label",{class:"item",style:"grid-template-columns:auto 1fr;justify-content:start;cursor:pointer"},o,n("div",{},n("div",{class:"t"},e.name),n("div",{class:"s"},e.code+" \u00b7 "+e.type))))}A.items.length||a.append(n("div",{class:"empty"},"Nothing to print yet."))}o(),e.append(n("div",{style:"display:grid;grid-template-columns:1fr 1fr;gap:10px"},n("button",{class:"btn",onclick:()=>{A.items.forEach(e=>t.add(e.code)),o()}},"Select all"),n("button",{class:"btn",onclick:()=>{t.clear(),o()}},"Select none")),a,n("button",{class:"btn primary block",onclick:()=>{const e=A.items.filter(e=>t.has(e.code));At(),Zt(e)}},"Print selected")),Ot("Choose labels",e)}()},"Choose labels to print"),n("button",{class:"btn block",onclick:()=>Gt()},"Print name badges"),n("button",{class:"btn block",onclick:()=>$t()},"Print Send and Clear codes for the shop scanner"))),(()=>{const t=n("div",{class:"err hidden"});return n("div",{class:"card"},n("h2",{},"Download your data"),n("p",{class:"muted",style:"margin-top:0"},"Opens in Excel or Numbers. Use these for records, insurance or job costing."),n("div",{class:"stack"},n("button",{class:"btn block",onclick:()=>{_t("inventory-"+Wt()+".csv",[Ht].concat(A.items.map(Bt)))}},"Inventory (CSV)"),n("button",{class:"btn block",onclick:async()=>{t.classList.add("hidden");try{const e=await H({action:"fullLog"});if(!e.ok)return t.textContent=e.error||"Could not get the log.",void t.classList.remove("hidden");_t("activity-"+Wt()+".csv",[["When","Code","Item","What happened","Person","Job site","Quantity","Note"]].concat(e.log.map(t=>[t.time?new Date(t.time).toLocaleString():"",t.code,t.item,t.action,t.person,t.site,t.qty,t.note])))}catch(e){zt(t,e)}}},"Full activity history (CSV)"),t))})()),n("div",{class:"dcol"},(()=>{const t=n("input",{type:"text",placeholder:"Add a person",autocomplete:"off","aria-label":"Add a person"}),e=n("div",{class:"err hidden"}),a=t=>A.items.filter(e=>"Tool"===e.type&&"Out"===e.status&&e.holderId===t).length,s=async()=>{const n=t.value.trim();if(n){e.classList.add("hidden");try{const t=await H({action:"addPerson",name:n});if(!t.ok)return e.textContent=t.error,void e.classList.remove("hidden");P(t.state),Ft()}catch(t){zt(e,t)}}};return t.addEventListener("keydown",t=>{"Enter"===t.key&&s()}),n("div",{class:"card"},n("h2",{},"People ("+A.people.length+")"),A.people.length?n("div",{class:"rows",style:"margin-bottom:12px"},A.people.slice().sort((t,e)=>t.name.localeCompare(e.name)).map(t=>n("div",{class:"arow"},n("div",{class:"grow"},n("div",{class:"t"},t.name),n("div",{class:"s"},a(t.id)?a(t.id)+" out now":"Nothing out")),n("div",{class:"acts"},n("button",{class:"btn sm",onclick:()=>function(t){const e=n("input",{type:"text",value:t.name,autocomplete:"off","aria-label":"Name"}),a=n("div",{class:"err hidden"}),o=async()=>{a.classList.add("hidden");try{const n=await H({action:"renamePerson",id:t.id,name:e.value});if(!n.ok)return a.textContent=n.error||"Could not rename.",void a.classList.remove("hidden");P(n.state),At(),ut(),c("Renamed")}catch(t){zt(a,t)}};e.addEventListener("keydown",t=>{"Enter"===t.key&&o()}),Ot("Rename",n("div",{class:"stack"},e,a,n("button",{class:"btn primary block",onclick:o},"Save")))}(t)},"Rename"),n("button",{class:"btn sm danger",onclick:()=>function(t){const e=A.items.filter(e=>"Tool"===e.type&&"Out"===e.status&&e.holderId===t.id).length;let a=!1;const s=n("div",{class:"err hidden"}),i=n("button",{class:"btn danger block",onclick:async()=>{if(!a)return a=!0,void(i.textContent="Tap again to remove "+t.name);try{const e=await H({action:"removePerson",id:t.id});if(!e.ok)return s.textContent=e.error||"Could not remove.",void s.classList.remove("hidden");A.me===t.id&&(A.me="",o.del("me")),P(e.state),At(),ut(),c("Removed "+t.name)}catch(t){zt(s,t)}}},"Remove "+t.name);Ot("Remove "+t.name+"?",n("div",{class:"stack"},n("p",{class:"muted",style:"margin:0"},"They disappear from the name list. Their past activity stays in the log."+(e?" "+e+(1===e?" tool is":" tools are")+" still out under this name, so return or reassign "+(1===e?"it":"them")+" first.":"")),s,i))}(t)},"Remove"))))):n("p",{class:"muted"},"No one yet. Workers can add their own name the first time they open the page."),t,e,n("div",{style:"height:10px"}),n("button",{class:"btn block",onclick:s},"Add person"))})(),n("div",{class:"card"},n("h2",{},"Retired items"+(A.retired.length?" ("+A.retired.length+")":"")),A.retired.length?n("div",{class:"rows"},A.retired.map(t=>n("div",{class:"arow"},n("div",{class:"grow"},n("div",{class:"t"},t.name),n("div",{class:"s"},t.code+" \u00b7 "+t.type)),n("button",{class:"btn sm",onclick:()=>Vt(t)},"Restore")))):n("p",{class:"muted",style:"margin:0"},"Nothing retired. If you retire a tool or material, it shows up here so you can bring it back.")),(()=>{const t=n("input",{type:"number",inputMode:"numeric",min:"1",max:"365",value:String(D()),"aria-label":"Days before a tool counts as overdue"}),e=n("div",{class:"err hidden"}),a=n("input",{type:"text",autocomplete:"off",placeholder:"New team PIN","aria-label":"New team PIN"}),s=n("div",{class:"err hidden"});let i=!1;const l=n("button",{class:"btn block",onclick:async()=>{s.classList.add("hidden");const t=a.value.trim();if(!/^[A-Za-z0-9]{4,20}$/.test(t))return s.textContent="Use 4 to 20 letters or numbers.",void s.classList.remove("hidden");if(!i)return i=!0,void(l.textContent="Tap again. Everyone else will need the new PIN.");try{const e=await H({action:"setPin",newPin:t});if(!e.ok)return s.textContent=e.error||"Could not change the PIN.",s.classList.remove("hidden"),i=!1,void(l.textContent="Change PIN");A.pin=t,o.set("pin",t),a.value="",i=!1,l.textContent="Change PIN",c("PIN changed. Tell your team.")}catch(t){zt(s,t),i=!1,l.textContent="Change PIN"}}},"Change PIN");return n("div",{class:"card"},n("h2",{},"Settings"),n("label",{class:"field"},"A tool counts as overdue after this many days out"),n("div",{style:"display:grid;grid-template-columns:1fr auto;gap:10px"},t,n("button",{class:"btn",onclick:async()=>{e.classList.add("hidden");try{const n=await H({action:"setSettings",overdueDays:t.value});if(!n.ok)return e.textContent=n.error||"Could not save.",void e.classList.remove("hidden");P(n.state),ut(),c("Saved")}catch(t){zt(e,t)}}},"Save")),e,n("label",{class:"field",style:"margin-top:16px"},"Team PIN"),n("p",{class:"muted",style:"margin:0 0 8px;font-size:14px"},"Changing it signs out every other phone and computer until they enter the new PIN."),a,s,n("div",{style:"height:10px"}),l)})(),(()=>{const t=n("input",{type:"checkbox",id:"ask",checked:A.askEachTime,onchange:t=>{A.askEachTime=t.target.checked,o.set("ask",A.askEachTime)}});return n("div",{class:"card"},n("h2",{},"This device"),n("p",{class:"muted",style:"margin-top:0"},"Signed in as "+(W()||"no one")+". "+(B||(A.online?"Connected.":"Offline."))+(A.queue.length?" "+A.queue.length+" waiting to send.":"")),n("label",{for:"ask",style:"display:flex;gap:10px;align-items:center;margin:8px 0 14px;font-weight:600"},t,"Shared computer: ask for a name after every Confirm"),n("div",{class:"stack"},n("button",{class:"btn block",onclick:()=>J().then(()=>c("Refreshed"))},"Refresh now"),n("button",{class:"btn danger block",onclick:()=>{A.pin="",o.del("pin"),o.del("me"),A.me="",ot(!0),dt()}},"Sign this device out")))})())))}function Kt(t,e,a,o){const s=qrcode(0,"M");s.addData(o||location.origin+location.pathname+"#"+encodeURIComponent(t)),s.make();const i=n("div",{class:"label-qr"});return i.innerHTML=s.createSvgTag({cellSize:4,margin:0,scalable:!0}),n("div",{class:"label"},i,n("div",{class:"label-txt"},n("div",{class:"label-name"},e),a?n("div",{class:"label-sub"},a):null,n("div",{class:"label-code"},t)))}function Qt(t){if(!t.length)return void c("Nothing to print");const e=a("#printArea");e.textContent="",t.forEach(t=>e.append(t)),setTimeout(()=>window.print(),80)}const Zt=t=>Qt(t.map(t=>Kt(t.code,t.name,t.category||t.type))),Gt=()=>Qt(A.people.map(t=>Kt(t.id,t.name,"Scan to sign in"))),$t=()=>Qt([Kt("CMD-SEND","SEND","Scan to confirm"),Kt("CMD-CLEAR","CLEAR","Scan to start over")]);window.addEventListener("online",()=>{A.online=!0,Z().then(J)}),window.addEventListener("offline",()=>{A.online=!1,pt()}),document.addEventListener("visibilitychange",()=>{document.hidden?nt.running&&(ot(!1),ht()):(J(),Z(),"scan"===A.tab&&o.get("cam",!1)&&!nt.running&&at())}),window.addEventListener("hashchange",()=>{const t=location.hash.slice(1);t&&(history.replaceState(null,"",location.pathname+location.search),X(t))}),setInterval(()=>{document.hidden||(A.queue.length?Z():J())},6e4),function(){const t=location.hash.slice(1);if(t&&(A.pendingHash=t,history.replaceState(null,"",location.pathname+location.search)),dt(),A.pin){if(A.pendingHash&&A.loaded){const t=A.pendingHash;A.pendingHash="",X(t)}J().then(Z),o.get("cam",!1)&&at()}window.__tt={S:A,handleScan:X,parseScan:Y}}()}();</script>
 </body>
 </html>
