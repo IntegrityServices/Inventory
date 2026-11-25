@@ -199,6 +199,26 @@ input[type=file] { max-width: 100%; }
   #v-scan { max-width: 720px; margin: 0 auto; }
   #v-materials, #v-activity { max-width: 880px; }
 }
+/* search + filters */
+.topright { display: flex; gap: 8px; align-items: center; min-width: 0; }
+.topright .who { max-width: 42vw; }
+.srchbtn { display: flex; align-items: center; gap: 8px; border: 1.5px solid var(--line); background: var(--card); border-radius: 999px; padding: 8px 14px; font-weight: 600; color: var(--ink); min-height: 40px; }
+.srchbtn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+.srchbtn .lbl { display: none; }
+.srchbtn[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
+.chip[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+.fgrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 10px; margin: 10px 0 4px; }
+.fbar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 10px; }
+.fbar .sp { flex: 1; }
+.badge { background: var(--accent); color: var(--accent-ink); border-radius: 999px; padding: 1px 8px; font-size: 12px; margin-left: 6px; }
+.fnote { color: var(--muted); font-size: 14px; margin: 10px 2px 0; }
+.item.retired { opacity: .75; }
+@media (min-width: 900px) {
+  .srchbtn .lbl { display: inline; }
+  .topright .who { max-width: 260px; }
+  .fgrid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  #v-find { max-width: 960px; }
+}
 @media print {
   html, body { background: #fff; }
   #app, .tabs, .confirmbar, .toast, .overlay { display: none !important; }
@@ -244,6 +264,7 @@ const LS = {
 };
 const uid = () => (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2));
 const ICONS = {
+  search: 'M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM20 20l-4-4',
   dash: 'M4 4h7v7H4zM13 4h7v4h-7zM13 10h7v10h-7zM4 13h7v7H4z',
   scan: 'M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3M7 12h10',
   tools: 'M14.7 6.3a4 4 0 0 0-5.4 5l-6.3 6.3 2.4 2.4 6.3-6.3a4 4 0 0 0 5-5.4l-2.6 2.6-2.2-.5-.5-2.2z',
@@ -286,13 +307,95 @@ const fmtDay = iso => {
   return d.toLocaleDateString([], { weekday: 'long', month: 'short', day: 'numeric' });
 };
 
+/* ---------- fuzzy search ---------- */
+const nrm = s => String(s == null ? '' : s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
+function osa(a, b) {
+  const al = a.length, bl = b.length; if (!al) return bl; if (!bl) return al;
+  let prev2 = null, prev = Array.from({ length: bl + 1 }, (_, j) => j);
+  for (let i = 1; i <= al; i++) {
+    const cur = [i];
+    for (let j = 1; j <= bl; j++) {
+      let v = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+      if (i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) v = Math.min(v, prev2[j - 2] + 1);
+      cur[j] = v;
+    }
+    prev2 = prev; prev = cur;
+  }
+  return prev[bl];
+}
+const isSubseq = (q, t) => { let i = 0; for (let k = 0; k < t.length && i < q.length; k++) if (t[k] === q[i]) i++; return i === q.length; };
+function tokMatch(q, t) {
+  if (q === t) return 100;
+  if (t.startsWith(q)) return q.length >= 2 ? 90 : 50;
+  if (q.length >= 3 && t.includes(q)) return 60;
+  if (q.length >= 4) {
+    const thr = q.length >= 7 ? 2 : 1;
+    if (Math.abs(q.length - t.length) <= thr) { const d = osa(q, t); if (d <= thr) return 72 - d * 14; }
+    if (t.length > q.length) { const d = osa(q, t.slice(0, q.length)); if (d <= thr) return 64 - d * 14; }
+  }
+  if (q.length >= 3 && q.length <= t.length && t.length <= q.length * 2.5 + 1 && isSubseq(q, t)) return 30;
+  return 0;
+}
+function tokensOf(txt) {
+  const n = nrm(txt); if (!n) return [];
+  const out = new Set();
+  for (const w of n.split(' ')) {
+    out.add(w);
+    const parts = w.match(/[a-z]+|\d+/g); if (parts && parts.length > 1) parts.forEach(x => out.add(x));
+    if (w.length > 3 && w.endsWith('s')) out.add(w.slice(0, -1));
+  }
+  return [...out];
+}
+function bestFor(tok, fields) {
+  let best = 0;
+  for (const f of fields) for (const t of f.toks) { const m = tokMatch(tok, t) * f.wt; if (m > best) best = m; }
+  return best;
+}
+function wordScore(w, fields) {
+  let best = bestFor(w, fields);
+  if (w.length > 3 && w.endsWith('s')) best = Math.max(best, bestFor(w.slice(0, -1), fields));
+  const parts = w.match(/[a-z]+|\d+/g);
+  if (parts && parts.length > 1) { let mn = Infinity; for (const x of parts) mn = Math.min(mn, bestFor(x, fields)); if (mn > 0) best = Math.max(best, mn * 0.9); }
+  return best;
+}
+const ixCache = new WeakMap();
+function indexOf(it) {
+  const key = [it.name, it.category, it.code, it.holder, it.site, it.type].join('\u0001');
+  let c = ixCache.get(it); if (c && c.key === key) return c;
+  const mk = (txt, wt) => ({ toks: tokensOf(txt), wt });
+  c = { key, nameN: nrm(it.name), codeN: nrm(it.code),
+    fields: [mk(it.name, 1), mk(it.code, .9), mk(it.category, .7), mk(it.holder, .6), mk(it.site, .5), mk(it.type === 'Tool' ? 'tool' : 'material', .4)] };
+  ixCache.set(it, c); return c;
+}
+const parseQuery = q => { const n = nrm(q); return { n, words: n ? n.split(' ') : [] }; };
+function scoreItem(it, Q, any) {
+  if (!Q.words.length) return 1;
+  const ix = indexOf(it); let sum = 0, hit = 0;
+  for (const w of Q.words) { const s = wordScore(w, ix.fields); if (s > 0) { sum += s; hit++; } else if (!any) return 0; }
+  if (!hit) return 0;
+  let sc = sum / Q.words.length;
+  if (ix.nameN.includes(Q.n)) sc += 15;
+  if (ix.nameN.startsWith(Q.n)) sc += 10;
+  if (ix.codeN === Q.n) sc += 60;
+  return sc;
+}
+function scoreText(text, q) {
+  const Q = parseQuery(q); if (!Q.words.length) return 1;
+  const f = [{ toks: tokensOf(text), wt: 1 }]; let sum = 0;
+  for (const w of Q.words) { const s = wordScore(w, f); if (!s) return 0; sum += s; }
+  return sum / Q.words.length;
+}
+
 /* ---------- state ---------- */
 const S = {
   pin: LS.get('pin', ''), me: LS.get('me', ''), askEachTime: LS.get('ask', false),
   items: [], retired: [], settings: { overdueDays: CFG.overdueDays }, people: [], log: [], index: {},
   batch: [], queue: LS.get('queue', []), tab: window.matchMedia && matchMedia('(min-width:900px)').matches ? 'dash' : 'scan', loaded: false, online: true,
+  find: { q: '', f: null, open: window.matchMedia && matchMedia('(min-width:900px)').matches, limit: 100 },
   filter: 'all', q: '', done: null, lastAdded: [], busy: false, pendingHash: ''
 };
+const FDEF = { type: 'any', status: 'any', stock: 'any', holder: 'any', site: 'any', cat: 'any', moved: 'any', sort: 'best', retired: false };
+S.find.f = Object.assign({}, FDEF);
 const od = () => (S.settings && Number(S.settings.overdueDays)) || CFG.overdueDays;
 const saveCache = () => LS.set('cache', { items: S.items, retired: S.retired, settings: S.settings, people: S.people, log: S.log });
 function setState(st) {
@@ -551,7 +654,7 @@ function render() {
   app.append(el('nav', { class: 'tabs', 'aria-label': 'Sections' }, el('div', { class: 'tabs-inner', role: 'tablist' },
     [['dash', 'Dashboard'], ['scan', 'Scan'], ['tools', 'Tools'], ['materials', 'Materials'], ['activity', 'Activity'], ['setup', 'Manage']].map(([k, label]) =>
       el('button', { class: 'tab', role: 'tab', id: 'tab-' + k, 'aria-selected': S.tab === k ? 'true' : 'false', onclick: () => setTab(k) }, icon(k === 'setup' ? 'setup' : k), label)))));
-  for (const t of ['dash', 'scan', 'tools', 'materials', 'activity', 'setup']) { views[t] = el('main', { id: 'v-' + t, class: 'hidden' }); app.append(views[t]); }
+  for (const t of ['dash', 'find', 'scan', 'tools', 'materials', 'activity', 'setup']) { views[t] = el('main', { id: 'v-' + t, class: 'hidden' }); app.append(views[t]); }
   root.append(app);
   root.append(el('div', { class: 'confirmbar hidden', id: 'confirmbar' }));
   buildScanView();
@@ -563,9 +666,10 @@ function renderAll() {
   for (const t of Object.keys(views)) views[t].classList.toggle('hidden', t !== S.tab);
   document.querySelectorAll('.tab').forEach(b => b.setAttribute('aria-selected', b.id === 'tab-' + S.tab ? 'true' : 'false'));
   const ae = document.activeElement;
-  if (S.tab !== 'scan' && ae && /^(INPUT|TEXTAREA)$/.test(ae.tagName) && views[S.tab].contains(ae)) return;
+  if (S.tab !== 'scan' && ae && /^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName) && views[S.tab].contains(ae)) return;
   if (S.tab === 'scan') renderScan(); else $('#confirmbar').classList.add('hidden');
   if (S.tab === 'dash') renderDash();
+  if (S.tab === 'find') renderFind();
   if (S.tab === 'tools') renderTools();
   if (S.tab === 'materials') renderMaterials();
   if (S.tab === 'activity') renderActivity();
@@ -579,7 +683,9 @@ function renderTop() {
   t.textContent = '';
   t.append(
     el('div', { class: 'brand' }, 'Tool Tracker', el('span', { class: 'sync ' + state, title: label, role: 'img', 'aria-label': label })),
-    el('button', { class: 'who' + (meName() ? '' : ' empty'), onclick: () => openPicker() }, meName() || 'Who are you?'));
+    el('div', { class: 'topright' },
+      el('button', { class: 'srchbtn', 'aria-pressed': S.tab === 'find' ? 'true' : 'false', 'aria-label': 'Search tools and materials', onclick: openFind }, icon('search'), el('span', { class: 'lbl' }, 'Search')),
+      el('button', { class: 'who' + (meName() ? '' : ' empty'), onclick: () => openPicker() }, meName() || 'Who are you?')));
 }
 function gate(title, text, form) {
   return el('div', { class: 'gate' }, el('div', { class: 'card' }, el('h1', { style: 'font-size:28px;margin-bottom:8px' }, title), el('p', { class: 'muted' }, text), form));
@@ -701,13 +807,141 @@ function renderScan(flashCode) {
 const removeBtn = i => el('button', { class: 'x', 'aria-label': 'Remove', onclick: () => { S.batch.splice(i, 1); renderScan(); } }, '×');
 
 /* tools */
+/* find */
+function openFind() { setTab('find'); const i = $('#find-q'); if (i) { i.focus(); i.select(); } }
+const openItem = it => { if (it._retired) return; if (it.type === 'Tool') openTool(it.code); else openMaterial(it.code); };
+function passes(it, F) {
+  const tool = it.type === 'Tool', out = tool && it.status === 'Out';
+  if (F.type !== 'any' && F.type !== it.type) return false;
+  if (F.status !== 'any') {
+    if (!tool) return false;
+    if (F.status === 'in' && out) return false;
+    if (F.status === 'out' && !out) return false;
+    if (F.status === 'overdue' && !(out && daysOut(it.since) >= od())) return false;
+  }
+  if (F.stock !== 'any') {
+    if (tool) return false;
+    const q = it.qty || 0;
+    if (F.stock === 'empty' && q > 0) return false;
+    if (F.stock === 'low' && !isLow(it)) return false;
+    if (F.stock === 'ok' && (q <= 0 || isLow(it))) return false;
+  }
+  if (F.holder !== 'any') { if (!tool) return false; if (F.holder === 'none' ? out : !(out && it.holderId === F.holder)) return false; }
+  if (F.site !== 'any') { if (!out) return false; const st = (it.site || '').trim(); if (F.site === '__none' ? st : st !== F.site) return false; }
+  if (F.cat !== 'any') { const c = (it.category || '').trim(); if (F.cat === '__none' ? c : c !== F.cat) return false; }
+  if (F.moved !== 'any') {
+    if (!tool || !it.since) return false;
+    const d = daysOut(it.since);
+    if (F.moved === 'today' && d >= 1) return false;
+    if (F.moved === 'w1' && d >= 7) return false;
+    if (F.moved === 'm1' && d >= 30) return false;
+    if (F.moved === 'o7' && d < 7) return false;
+    if (F.moved === 'o30' && d < 30) return false;
+    if (F.moved === 'o90' && d < 90) return false;
+  }
+  return true;
+}
+function findRow(it) {
+  const tool = it.type === 'Tool';
+  const sub = [it.code, it.category].filter(Boolean).join(' · ');
+  const extra = tool ? (it.status === 'Out' ? 'With ' + (it.holder || 'someone') + (it.site ? ' at ' + it.site : '') + ' · out ' + ago(it.since) : 'In the shop · ' + ago(it.since))
+    : (it.qty || 0) + ' on hand' + (it.min != null ? ' · reorder at ' + it.min : '');
+  if (it._retired) return el('div', { class: 'item retired' }, el('div', {}, el('div', { class: 't' }, it.name), el('div', { class: 's' }, sub + ' · ' + it.type), el('div', { class: 's' }, 'Retired')),
+    el('div', { class: 'r' }, el('button', { class: 'btn sm', onclick: () => restoreItem(it) }, 'Restore')));
+  return el('button', { class: 'item', onclick: () => openItem(it) },
+    el('div', {}, el('div', { class: 't' }, it.name), el('div', { class: 's' }, sub + ' · ' + it.type), el('div', { class: 's' }, extra)),
+    el('div', { class: 'r' }, tool ? toolStatus(it) : [el('div', { class: 'qty num' }, String(it.qty || 0)), isLow(it) ? el('span', { class: 'pill late' }, 'Low') : null]));
+}
+function renderFind() {
+  const v = views.find; v.textContent = '';
+  const F = S.find.f;
+  let last = [];
+  const input = el('input', { type: 'search', id: 'find-q', placeholder: 'Search tools and materials', value: S.find.q, autocomplete: 'off', enterKeyHint: 'search', 'aria-label': 'Search tools and materials', style: 'font-size:18px',
+    oninput: e => { S.find.q = e.target.value; S.find.limit = 100; fill(); },
+    onkeydown: e => {
+      if (e.key !== 'Enter') return; e.preventDefault();
+      const direct = byCode(parseScan(S.find.q));
+      if (direct) { openItem(direct); input.select(); return; }
+      if (last.length === 1) openItem(last[0]);
+    } });
+  const holder = el('div', {});
+  const set = (k, val) => { F[k] = F[k] === val ? FDEF[k] : val; S.find.limit = 100; renderFind(); };
+  const chip = (label, k, val) => el('button', { class: 'chip btnchip', 'aria-pressed': F[k] === val ? 'true' : 'false', onclick: () => set(k, val) }, label);
+  const chips = el('div', { class: 'chips' }, chip('Tools', 'type', 'Tool'), chip('Materials', 'type', 'Material'), chip('Checked out', 'status', 'out'), chip('Overdue', 'status', 'overdue'),
+    chip('In the shop', 'status', 'in'), chip('Low stock', 'stock', 'low'), S.me ? chip('Mine', 'holder', S.me) : null);
+  const active = Object.keys(FDEF).filter(k => k !== 'sort' && F[k] !== FDEF[k]).length;
+  const clear = () => { Object.assign(F, FDEF); S.find.q = ''; S.find.limit = 100; renderFind(); };
+  const bar = el('div', { class: 'fbar' },
+    el('button', { class: 'btn sm', 'aria-expanded': S.find.open ? 'true' : 'false', onclick: () => { S.find.open = !S.find.open; renderFind(); } }, 'Filters', active ? el('span', { class: 'badge' }, String(active)) : null),
+    (active || S.find.q) ? el('button', { class: 'btn sm', onclick: clear }, 'Clear all') : null);
+  const sel = (label, k, opts) => el('div', {}, el('label', { class: 'field' }, label),
+    el('select', { 'aria-label': label, onchange: e => { F[k] = e.target.value; S.find.limit = 100; renderFind(); } }, opts.map(([val, t]) => el('option', { value: val, selected: F[k] === val }, t))));
+  let panel = null;
+  if (S.find.open) {
+    const cats = [...new Set(S.items.map(i => (i.category || '').trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+    const sites = [...new Set(S.items.filter(i => i.type === 'Tool' && i.status === 'Out').map(i => (i.site || '').trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+    const noSite = S.items.some(i => i.type === 'Tool' && i.status === 'Out' && !(i.site || '').trim());
+    const noCat = S.items.some(i => !(i.category || '').trim());
+    panel = el('div', {}, el('div', { class: 'fgrid' },
+      sel('Show', 'type', [['any', 'Everything'], ['Tool', 'Tools only'], ['Material', 'Materials only']]),
+      sel('Tool status', 'status', [['any', 'Any status'], ['in', 'In the shop'], ['out', 'Checked out'], ['overdue', 'Overdue (' + od() + '+ days)']]),
+      sel('Material stock', 'stock', [['any', 'Any stock level'], ['ok', 'In stock'], ['low', 'Low (at or below reorder level)'], ['empty', 'Out of stock']]),
+      sel('Held by', 'holder', [['any', 'Anyone'], ['none', 'Nobody (in the shop)']].concat(S.people.slice().sort((a, b) => a.name.localeCompare(b.name)).map(p => [p.id, p.name]))),
+      sel('Job site', 'site', [['any', 'Any job site']].concat(sites.map(x => [x, x]), noSite ? [['__none', 'No site noted']] : [])),
+      sel('Category', 'cat', [['any', 'Any category']].concat(cats.map(x => [x, x]), noCat ? [['__none', 'No category']] : [])),
+      sel('Last moved (tools)', 'moved', [['any', 'Any time'], ['today', 'Today'], ['w1', 'Past 7 days'], ['m1', 'Past 30 days'], ['o7', 'More than 7 days ago'], ['o30', 'More than 30 days ago'], ['o90', 'More than 90 days ago']]),
+      sel('Sort by', 'sort', [['best', S.find.q.trim() ? 'Best match' : 'Name A to Z'], ['name', 'Name A to Z'], ['code', 'Code'], ['old', 'Longest since last move'], ['new', 'Most recently moved'], ['stock', 'Lowest stock first']])),
+      el('label', { for: 'inc-ret', style: 'display:flex;gap:10px;align-items:center;margin:10px 0 0;font-weight:600' },
+        el('input', { type: 'checkbox', id: 'inc-ret', checked: F.retired, onchange: e => { F.retired = e.target.checked; renderFind(); } }), 'Include retired items'),
+      el('p', { class: 'fnote' }, '"Last moved" is when a tool was last checked out or returned. Filters for tool status, holder, job site and last moved only show tools. The stock filter only shows materials.'));
+  }
+  v.append(input, chips, bar, panel, holder);
+
+  function fill() {
+    holder.textContent = '';
+    if (!S.items.length && !S.retired.length) { holder.append(el('div', { class: 'empty' }, el('b', {}, 'Nothing to search yet'), 'Add tools and materials in Manage and they show up here.')); return; }
+    const Q = parseQuery(S.find.q);
+    let pool = S.items.concat(F.retired ? S.retired.map(r => Object.assign({}, r, { _retired: true })) : []).filter(it => passes(it, F));
+    let scored, partial = false;
+    if (Q.words.length) {
+      scored = pool.map(it => [it, scoreItem(it, Q, false)]).filter(x => x[1] > 0);
+      if (!scored.length && Q.words.length > 1) { scored = pool.map(it => [it, scoreItem(it, Q, true)]).filter(x => x[1] > 0); partial = scored.length > 0; }
+    } else scored = pool.map(it => [it, 0]);
+    const nm = (a, b) => a[0].name.localeCompare(b[0].name, undefined, { numeric: true });
+    const since = x => x[0].type === 'Tool' && x[0].since ? new Date(x[0].since).getTime() : null;
+    const cmp = {
+      best: (a, b) => Q.words.length ? (b[1] - a[1] || nm(a, b)) : nm(a, b),
+      name: nm,
+      code: (a, b) => a[0].code.localeCompare(b[0].code, undefined, { numeric: true }),
+      old: (a, b) => (since(a) == null) - (since(b) == null) || (since(a) - since(b)) || nm(a, b),
+      new: (a, b) => (since(a) == null) - (since(b) == null) || (since(b) - since(a)) || nm(a, b),
+      stock: (a, b) => (a[0].type === 'Tool') - (b[0].type === 'Tool') || ((a[0].qty || 0) - (a[0].min || 0)) - ((b[0].qty || 0) - (b[0].min || 0)) || nm(a, b)
+    }[F.sort] || nm;
+    scored.sort(cmp);
+    last = scored.map(x => x[0]);
+    const shown = last.slice(0, S.find.limit);
+    holder.append(el('div', { class: 'fbar' }, el('span', { class: 'muted', style: 'font-weight:600' }, last.length + (last.length === 1 ? ' result' : ' results') + ' of ' + (S.items.length + (F.retired ? S.retired.length : 0))),
+      el('span', { class: 'sp' }),
+      last.length ? el('button', { class: 'btn sm', onclick: () => downloadCsv('search-results-' + stamp() + '.csv', [INV_HEAD].concat(last.map(invRow))) }, 'Download results (CSV)') : null));
+    if (partial) holder.append(el('p', { class: 'fnote' }, 'Nothing matched every word, so these match some of them.'));
+    if (!last.length) {
+      holder.append(el('div', { class: 'empty' }, el('b', {}, 'No matches'), (active ? 'Try clearing a filter. ' : '') + 'Fewer letters or a different word can help.',
+        (active || S.find.q) ? el('div', { style: 'margin-top:12px' }, el('button', { class: 'btn sm', onclick: clear }, 'Clear search and filters')) : null));
+      return;
+    }
+    holder.append(el('div', { class: 'list' }, shown.map(findRow)));
+    if (last.length > shown.length) holder.append(el('div', { style: 'margin-top:12px;text-align:center' }, el('button', { class: 'btn', onclick: () => { S.find.limit += 100; fill(); } }, 'Show more (' + (last.length - shown.length) + ' left)')));
+  }
+  fill();
+}
+
 /* dashboard */
 function pickPerson(title, onPick) {
   const list = el('div', { class: 'stack' });
   const search = el('input', { type: 'search', placeholder: 'Search names', 'aria-label': 'Search names' });
   function fill() {
     list.textContent = ''; const q = search.value.trim().toLowerCase();
-    const ppl = S.people.filter(p => !q || p.name.toLowerCase().includes(q)).sort((a, b) => a.name.localeCompare(b.name));
+    const ppl = S.people.filter(p => !q || scoreText(p.name, q) > 0).sort((a, b) => a.name.localeCompare(b.name));
     ppl.forEach(p => list.append(el('button', { class: 'person', onclick: () => { closeSheet(); onPick(p); } }, p.name)));
     if (!ppl.length) list.append(el('div', { class: 'muted' }, S.people.length ? 'No one by that name.' : 'No one is in the list yet. Add people in Manage.'));
   }
@@ -729,6 +963,8 @@ const logWhen = iso => new Date(iso).toDateString() === new Date().toDateString(
 function renderDash() {
   const v = views.dash; v.textContent = '';
   const tools = S.items.filter(i => i.type === 'Tool'), mats = S.items.filter(i => i.type === 'Material');
+  if (S.items.length) v.append(el('input', { type: 'search', placeholder: 'Search tools and materials', 'aria-label': 'Search tools and materials', autocomplete: 'off', style: 'margin-bottom:14px;font-size:18px',
+    oninput: e => { S.find.q = e.target.value; S.find.limit = 100; setTab('find'); const i = $('#find-q'); if (i) { i.focus(); i.setSelectionRange(i.value.length, i.value.length); } } }));
   if (!S.items.length) {
     v.append(el('div', { class: 'card' }, el('h2', {}, 'Nothing in the inventory yet'),
       el('p', { class: 'muted', style: 'margin-top:0' }, S.loaded ? 'Add your tools and materials, print their labels, and this page fills in as people scan.' : 'Loading…'),
@@ -809,9 +1045,10 @@ function renderTools() {
   const okF = i => S.filter === 'all' || (S.filter === 'late' ? isLate(i) : (S.filter === 'out') === (i.status === 'Out'));
   function fill() {
     holder.textContent = '';
-    const q = S.q.trim().toLowerCase();
-    let list = tools.filter(i => okF(i) && (!q || (i.name + ' ' + i.code + ' ' + (i.category || '') + ' ' + (i.holder || '')).toLowerCase().includes(q)));
-    list.sort((a, b) => (a.status === 'Out' ? 0 : 1) - (b.status === 'Out' ? 0 : 1) || (a.status === 'Out' ? new Date(a.since) - new Date(b.since) : a.name.localeCompare(b.name)));
+    const q = S.q.trim(), Q = parseQuery(q), sc = new Map();
+    let list = tools.filter(i => okF(i) && (!Q.words.length || (sc.set(i, scoreItem(i, Q)), sc.get(i) > 0)));
+    if (Q.words.length) list.sort((a, b) => sc.get(b) - sc.get(a) || a.name.localeCompare(b.name));
+    else list.sort((a, b) => (a.status === 'Out' ? 0 : 1) - (b.status === 'Out' ? 0 : 1) || (a.status === 'Out' ? new Date(a.since) - new Date(b.since) : a.name.localeCompare(b.name)));
     if (!list.length) { holder.append(el('div', { class: 'empty' }, el('b', {}, tools.length ? 'No matches' : 'No tools yet'), tools.length ? 'Try a different search or filter.' : 'Add tools in Manage, then print their labels.')); return; }
     holder.append(el('div', { class: 'list' }, list.map(it => el('button', { class: 'item tool', onclick: () => openTool(it.code) },
       el('div', {}, el('div', { class: 't' }, it.name), el('div', { class: 's' }, it.code + (it.category ? ' · ' + it.category : ''))),
@@ -834,9 +1071,9 @@ function renderMaterials() {
   v.append(el('input', { type: 'search', placeholder: 'Search materials', 'aria-label': 'Search materials', value: S.q, oninput: e => { S.q = e.target.value; fill(); } }), holder);
   function fill() {
     holder.textContent = '';
-    const q = S.q.trim().toLowerCase();
-    const list = mats.filter(i => !q || (i.name + ' ' + i.code + ' ' + (i.category || '')).toLowerCase().includes(q))
-      .sort((a, b) => (isLow(b) - isLow(a)) || a.name.localeCompare(b.name));
+    const Q = parseQuery(S.q), sc = new Map();
+    const list = mats.filter(i => !Q.words.length || (sc.set(i, scoreItem(i, Q)), sc.get(i) > 0))
+      .sort((a, b) => Q.words.length ? (sc.get(b) - sc.get(a) || a.name.localeCompare(b.name)) : (isLow(b) - isLow(a)) || a.name.localeCompare(b.name));
     if (!list.length) { holder.append(el('div', { class: 'empty' }, el('b', {}, mats.length ? 'No matches' : 'No materials yet'), mats.length ? 'Try a different search.' : 'Add materials in Manage, with how many you have and the level to reorder at.')); return; }
     holder.append(el('div', { class: 'list' }, list.map(it => el('button', { class: 'item', onclick: () => openMaterial(it.code) },
       el('div', {}, el('div', { class: 't' }, it.name), el('div', { class: 's' }, it.code + (it.category ? ' · ' + it.category : '') + (it.min != null ? ' · reorder at ' + it.min : ''))),
@@ -861,8 +1098,8 @@ function renderActivity() {
   v.append(el('input', { type: 'search', placeholder: 'Search activity', 'aria-label': 'Search activity', value: S.q, oninput: e => { S.q = e.target.value; fill(); } }), holder);
   function fill() {
     holder.textContent = '';
-    const q = S.q.trim().toLowerCase();
-    const list = S.log.filter(l => !q || logText(l).toLowerCase().includes(q) || l.code.toLowerCase().includes(q));
+    const q = S.q.trim();
+    const list = S.log.filter(l => !q || scoreText(logText(l) + ' ' + l.code, q) > 0);
     if (!list.length) { holder.append(el('div', { class: 'empty' }, el('b', {}, 'No activity yet'), 'Check-outs and returns show up here.')); return; }
     let day = '', box = null;
     for (const l of list) {
@@ -892,7 +1129,7 @@ function openPicker(after) {
   const search = el('input', { type: 'search', placeholder: 'Search names', 'aria-label': 'Search names' });
   function fill() {
     list.textContent = ''; const q = search.value.trim().toLowerCase();
-    const ppl = S.people.filter(p => !q || p.name.toLowerCase().includes(q)).sort((a, b) => a.name.localeCompare(b.name));
+    const ppl = S.people.filter(p => !q || scoreText(p.name, q) > 0).sort((a, b) => a.name.localeCompare(b.name));
     ppl.forEach(p => list.append(el('button', { class: 'person', onclick: () => { S.me = p.id; LS.set('me', p.id); closeSheet(); renderTop(); renderScan(); if (after) after(); } }, p.name)));
     if (!ppl.length) list.append(el('div', { class: 'muted' }, S.people.length ? 'No one by that name.' : 'No one is in the list yet. Add your name below.'));
   }
@@ -1018,6 +1255,15 @@ function downloadCsv(name, rows) {
 const stamp = () => new Date().toISOString().slice(0, 10);
 const showErr = (box, e) => { box.textContent = explain(e) || 'No signal. Try again when you are online.'; box.classList.remove('hidden'); };
 
+const INV_HEAD = ['Code', 'Type', 'Name', 'Category', 'Status', 'With', 'Job site', 'Since', 'On hand', 'Reorder at'];
+const invRow = i => [i.code, i.type, i.name, i.category || '', i.type === 'Tool' ? (i.status === 'Out' ? 'Out' : 'In shop') : '', i.holder || '', i.site || '', i.since ? new Date(i.since).toLocaleString() : '', i.qty == null ? '' : i.qty, i.min == null ? '' : i.min];
+async function restoreItem(it) {
+  try {
+    const r = await call({ action: 'updateItem', code: it.code, fields: { active: true } });
+    if (!r.ok) { toast(r.error || 'Could not restore'); return; }
+    setState(r.state); renderAll(); toast(it.name + ' restored');
+  } catch (e) { toast(explain(e) || 'No signal. Try again when you are online.'); }
+}
 function openRename(p) {
   const inp = el('input', { type: 'text', value: p.name, autocomplete: 'off', 'aria-label': 'Name' });
   const err = el('div', { class: 'err hidden' });
@@ -1176,13 +1422,7 @@ function renderSetup() {
   const cardRetired = () => el('div', { class: 'card' }, el('h2', {}, 'Retired items' + (S.retired.length ? ' (' + S.retired.length + ')' : '')),
     S.retired.length ? el('div', { class: 'rows' }, S.retired.map(it => el('div', { class: 'arow' },
       el('div', { class: 'grow' }, el('div', { class: 't' }, it.name), el('div', { class: 's' }, it.code + ' · ' + it.type)),
-      el('button', { class: 'btn sm', onclick: async () => {
-        try {
-          const r = await call({ action: 'updateItem', code: it.code, fields: { active: true } });
-          if (!r.ok) { toast(r.error || 'Could not restore'); return; }
-          setState(r.state); renderAll(); toast(it.name + ' restored');
-        } catch (e) { toast(explain(e) || 'No signal. Try again when you are online.'); }
-      } }, 'Restore')))) : el('p', { class: 'muted', style: 'margin:0' }, 'Nothing retired. If you retire a tool or material, it shows up here so you can bring it back.'));
+      el('button', { class: 'btn sm', onclick: () => restoreItem(it) }, 'Restore')))) : el('p', { class: 'muted', style: 'margin:0' }, 'Nothing retired. If you retire a tool or material, it shows up here so you can bring it back.'));
 
   /* export */
   const cardExport = () => {
@@ -1191,8 +1431,7 @@ function renderSetup() {
       el('p', { class: 'muted', style: 'margin-top:0' }, 'Opens in Excel or Numbers. Use these for records, insurance or job costing.'),
       el('div', { class: 'stack' },
         el('button', { class: 'btn block', onclick: () => {
-          downloadCsv('inventory-' + stamp() + '.csv', [['Code', 'Type', 'Name', 'Category', 'Status', 'With', 'Job site', 'Since', 'On hand', 'Reorder at']]
-            .concat(S.items.map(i => [i.code, i.type, i.name, i.category || '', i.type === 'Tool' ? (i.status === 'Out' ? 'Out' : 'In shop') : '', i.holder || '', i.site || '', i.since ? new Date(i.since).toLocaleString() : '', i.qty == null ? '' : i.qty, i.min == null ? '' : i.min])));
+          downloadCsv('inventory-' + stamp() + '.csv', [INV_HEAD].concat(S.items.map(invRow)));
         } }, 'Inventory (CSV)'),
         el('button', { class: 'btn block', onclick: async () => {
           err.classList.add('hidden');
