@@ -120,7 +120,7 @@ label.field { display: block; font-weight: 600; font-size: 14px; margin: 12px 0 
 .done ul { list-style: none; padding: 0; margin: 10px 0 14px; color: var(--muted); }
 
 /* lists */
-.tiles { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 14px; }
+.tiles, .tiles.four { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 14px; }
 .tile { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 12px 16px; }
 .tile .n { font-family: var(--font-display); font-weight: 700; font-size: 34px; line-height: 1.1; }
 .tile .l { color: var(--muted); font-size: 14px; font-weight: 600; }
@@ -163,6 +163,41 @@ label.field { display: block; font-weight: 600; font-size: 14px; margin: 12px 0 
 .label-name { font: 700 12pt/1.1 var(--font-display); overflow-wrap: anywhere; }
 .label-code { font: 600 10pt/1.2 ui-monospace, Menlo, Consolas, monospace; margin-top: 3px; }
 .label-sub { font: 9pt/1.2 var(--font-body); color: #333; }
+/* dashboard + wide layout */
+button.tile { text-align: left; width: 100%; font: inherit; color: inherit; }
+button.tile:hover { border-color: var(--accent); }
+.dgrid { display: grid; gap: 14px; }
+.dcol { display: grid; gap: 14px; align-content: start; min-width: 0; }
+.dcol > .card { margin-bottom: 0; }
+.rows > * { border-top: 1px solid var(--line); padding: 11px 0; }
+.rows > *:first-child { border-top: 0; padding-top: 2px; }
+.arow { display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.arow .grow { flex: 1 1 170px; min-width: 0; }
+.arow .t { font-weight: 700; overflow-wrap: anywhere; }
+.arow .s { color: var(--muted); font-size: 14px; }
+.acts { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn.sm { min-height: 38px; padding: 7px 12px; font-size: 14px; border-radius: 10px; }
+.chip.btnchip { cursor: pointer; font-family: inherit; color: var(--ink); }
+.chip.late { border-color: var(--bad); color: var(--bad); background: var(--bad-bg); }
+.sub { color: var(--muted); font-size: 14px; }
+.item .xc { display: none; }
+.hrow { display: flex; justify-content: space-between; gap: 10px; font-weight: 700; }
+@media (max-width: 420px) { .tab { font-size: 11px; } }
+@media (min-width: 900px) {
+  :root { --tabs-h: 0px; }
+  #app { max-width: 1120px; padding: 0 24px 150px; }
+  .tabs { position: static; border: 0; background: none; padding: 0 0 16px; display: block; }
+  .tabs-inner { max-width: none; gap: 6px; border-bottom: 1px solid var(--line); padding-bottom: 10px; }
+  .tab { flex: none; flex-direction: row; min-height: 42px; padding: 0 16px; border-radius: 10px; font-size: 15px; gap: 8px; }
+  .tab[aria-selected="true"] { background: var(--accent-soft); }
+  .tiles.four { grid-template-columns: repeat(4, 1fr); }
+  .dgrid { grid-template-columns: 1fr 1fr; align-items: start; }
+  .item.tool { grid-template-columns: minmax(0, 2.2fr) minmax(0, 1.2fr) minmax(0, 1fr) auto; }
+  .item.tool .xc { display: block; }
+  .item.tool .r .s { display: none; }
+  #v-scan { max-width: 720px; margin: 0 auto; }
+  #v-materials, #v-activity { max-width: 880px; }
+}
 @media print {
   html, body { background: #fff; }
   #app, .tabs, .confirmbar, .toast, .overlay { display: none !important; }
@@ -208,6 +243,7 @@ const LS = {
 };
 const uid = () => (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2));
 const ICONS = {
+  dash: 'M4 4h7v7H4zM13 4h7v4h-7zM13 10h7v10h-7zM4 13h7v7H4z',
   scan: 'M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3M7 12h10',
   tools: 'M14.7 6.3a4 4 0 0 0-5.4 5l-6.3 6.3 2.4 2.4 6.3-6.3a4 4 0 0 0 5-5.4l-2.6 2.6-2.2-.5-.5-2.2z',
   materials: 'M3 7l9-4 9 4v10l-9 4-9-4zM3 7l9 4 9-4M12 11v10',
@@ -252,34 +288,39 @@ const fmtDay = iso => {
 /* ---------- state ---------- */
 const S = {
   pin: LS.get('pin', ''), me: LS.get('me', ''), askEachTime: LS.get('ask', false),
-  items: [], people: [], log: [], index: {},
-  batch: [], queue: LS.get('queue', []), tab: 'scan', loaded: false, online: true,
+  items: [], retired: [], settings: { overdueDays: CFG.overdueDays }, people: [], log: [], index: {},
+  batch: [], queue: LS.get('queue', []), tab: window.matchMedia && matchMedia('(min-width:900px)').matches ? 'dash' : 'scan', loaded: false, online: true,
   filter: 'all', q: '', done: null, lastAdded: [], busy: false, pendingHash: ''
 };
+const od = () => (S.settings && Number(S.settings.overdueDays)) || CFG.overdueDays;
+const saveCache = () => LS.set('cache', { items: S.items, retired: S.retired, settings: S.settings, people: S.people, log: S.log });
 function setState(st) {
   S.items = st.items || []; S.people = st.people || []; S.log = st.log || [];
+  S.retired = st.retired || []; if (st.settings) S.settings = st.settings;
   for (const q of S.queue) applyLocal(q.ops, q.personId, q.ts, true);
   reindex(); S.loaded = true;
-  LS.set('cache', { items: S.items, people: S.people, log: S.log });
+  saveCache();
 }
 function reindex() { S.index = {}; for (const it of S.items) S.index[it.code.toUpperCase()] = it; }
 const byCode = c => S.index[String(c).toUpperCase()];
 const person = id => S.people.find(p => p.id === id);
 const meName = () => { const p = person(S.me); return p ? p.name : ''; };
 (function loadCache() {
-  const c = LS.get('cache'); if (c) { S.items = c.items || []; S.people = c.people || []; S.log = c.log || []; reindex(); S.loaded = true; }
+  const c = LS.get('cache'); if (c) { S.items = c.items || []; S.retired = c.retired || []; if (c.settings) S.settings = c.settings; S.people = c.people || []; S.log = c.log || []; reindex(); S.loaded = true; }
 })();
 
 function applyLocal(ops, personId, ts, skipSave) {
-  const p = person(personId), name = p ? p.name : '';
   for (const op of ops) {
     const it = byCode(op.code); if (!it) continue;
     if (it.type === 'Tool') {
-      if (op.action === 'out') { it.status = 'Out'; it.holder = name; it.holderId = personId; it.site = op.site || ''; it.since = ts; }
-      else { it.status = 'In'; it.holder = ''; it.holderId = ''; it.site = ''; it.since = ts; }
-    } else it.qty = Math.max(0, (it.qty || 0) + (op.delta || 0));
+      if (op.action === 'out') {
+        const pid = op.personId || personId, p = person(pid);
+        it.status = 'Out'; it.holder = p ? p.name : ''; it.holderId = pid; it.site = op.site || ''; it.since = ts;
+      } else { it.status = 'In'; it.holder = ''; it.holderId = ''; it.site = ''; it.since = ts; }
+    } else if (op.setQty != null) it.qty = Math.max(0, Number(op.setQty) || 0);
+    else it.qty = Math.max(0, (it.qty || 0) + (op.delta || 0));
   }
-  if (!skipSave) LS.set('cache', { items: S.items, people: S.people, log: S.log });
+  if (!skipSave) saveCache();
 }
 
 /* ---------- server calls ---------- */
@@ -506,12 +547,11 @@ function render() {
   if (!S.pin) { root.append(pinGate()); return; }
   const app = el('div', { id: 'app' });
   app.append(el('div', { class: 'topbar', id: 'topbar' }));
-  for (const t of ['scan', 'tools', 'materials', 'activity', 'setup']) { views[t] = el('main', { id: 'v-' + t, class: 'hidden' }); app.append(views[t]); }
+  app.append(el('nav', { class: 'tabs', 'aria-label': 'Sections' }, el('div', { class: 'tabs-inner', role: 'tablist' },
+    [['dash', 'Dashboard'], ['scan', 'Scan'], ['tools', 'Tools'], ['materials', 'Materials'], ['activity', 'Activity'], ['setup', 'Manage']].map(([k, label]) =>
+      el('button', { class: 'tab', role: 'tab', id: 'tab-' + k, 'aria-selected': S.tab === k ? 'true' : 'false', onclick: () => setTab(k) }, icon(k === 'setup' ? 'setup' : k), label)))));
+  for (const t of ['dash', 'scan', 'tools', 'materials', 'activity', 'setup']) { views[t] = el('main', { id: 'v-' + t, class: 'hidden' }); app.append(views[t]); }
   root.append(app);
-  const tabs = el('nav', { class: 'tabs', 'aria-label': 'Sections' }, el('div', { class: 'tabs-inner', role: 'tablist' },
-    [['scan', 'Scan'], ['tools', 'Tools'], ['materials', 'Materials'], ['activity', 'Activity'], ['setup', 'Setup']].map(([k, label]) =>
-      el('button', { class: 'tab', role: 'tab', id: 'tab-' + k, 'aria-selected': S.tab === k ? 'true' : 'false', onclick: () => setTab(k) }, icon(k), label))));
-  root.append(tabs);
   root.append(el('div', { class: 'confirmbar hidden', id: 'confirmbar' }));
   buildScanView();
   renderAll();
@@ -524,6 +564,7 @@ function renderAll() {
   const ae = document.activeElement;
   if (S.tab !== 'scan' && ae && /^(INPUT|TEXTAREA)$/.test(ae.tagName) && views[S.tab].contains(ae)) return;
   if (S.tab === 'scan') renderScan(); else $('#confirmbar').classList.add('hidden');
+  if (S.tab === 'dash') renderDash();
   if (S.tab === 'tools') renderTools();
   if (S.tab === 'materials') renderMaterials();
   if (S.tab === 'activity') renderActivity();
@@ -659,31 +700,122 @@ function renderScan(flashCode) {
 const removeBtn = i => el('button', { class: 'x', 'aria-label': 'Remove', onclick: () => { S.batch.splice(i, 1); renderScan(); } }, '×');
 
 /* tools */
+/* dashboard */
+function pickPerson(title, onPick) {
+  const list = el('div', { class: 'stack' });
+  const search = el('input', { type: 'search', placeholder: 'Search names', 'aria-label': 'Search names' });
+  function fill() {
+    list.textContent = ''; const q = search.value.trim().toLowerCase();
+    const ppl = S.people.filter(p => !q || p.name.toLowerCase().includes(q)).sort((a, b) => a.name.localeCompare(b.name));
+    ppl.forEach(p => list.append(el('button', { class: 'person', onclick: () => { closeSheet(); onPick(p); } }, p.name)));
+    if (!ppl.length) list.append(el('div', { class: 'muted' }, S.people.length ? 'No one by that name.' : 'No one is in the list yet. Add people in Manage.'));
+  }
+  search.addEventListener('input', fill);
+  openSheet(title, el('div', { class: 'stack' }, search, list)); fill();
+}
+async function returnTool(it) {
+  closeSheet(); await submit([{ code: it.code, action: 'in', site: '' }], S.me || '');
+  toast(it.name + ' is back in the shop'); renderAll();
+}
+function assignTool(it) {
+  const site = it.status === 'Out' ? (it.site || '') : '';
+  pickPerson((it.status === 'Out' ? 'Reassign ' : 'Assign ') + it.name + ' to…', async p => {
+    await submit([{ code: it.code, action: 'out', site, personId: p.id }], S.me || '');
+    toast(it.name + ' is now with ' + p.name); renderAll();
+  });
+}
+const logWhen = iso => new Date(iso).toDateString() === new Date().toDateString() ? fmtTime(iso) : new Date(iso).toLocaleDateString([], { month: 'short', day: 'numeric' });
+function renderDash() {
+  const v = views.dash; v.textContent = '';
+  const tools = S.items.filter(i => i.type === 'Tool'), mats = S.items.filter(i => i.type === 'Material');
+  if (!S.items.length) {
+    v.append(el('div', { class: 'card' }, el('h2', {}, 'Nothing in the inventory yet'),
+      el('p', { class: 'muted', style: 'margin-top:0' }, S.loaded ? 'Add your tools and materials, print their labels, and this page fills in as people scan.' : 'Loading…'),
+      el('button', { class: 'btn primary', onclick: () => setTab('setup') }, 'Add tools and materials')));
+    return;
+  }
+  const out = tools.filter(i => i.status === 'Out');
+  const late = out.filter(i => daysOut(i.since) >= od()).sort((a, b) => new Date(a.since) - new Date(b.since));
+  const low = mats.filter(isLow).sort((a, b) => (a.qty || 0) - (b.qty || 0));
+  const tile = (n, label, cls, fn) => el('button', { class: 'tile ' + cls, onclick: fn }, el('div', { class: 'n num' }, String(n)), el('div', { class: 'l' }, label));
+  v.append(el('div', { class: 'tiles four' },
+    tile(out.length, 'Tools out now', out.length ? 'warn' : '', () => { S.filter = 'out'; setTab('tools'); }),
+    tile(late.length, 'Overdue (' + od() + '+ days)', late.length ? 'bad' : '', () => { S.filter = 'late'; setTab('tools'); }),
+    tile(low.length, 'Materials running low', low.length ? 'bad' : '', () => setTab('materials')),
+    tile(tools.length - out.length, 'Tools in the shop', '', () => { S.filter = 'in'; setTab('tools'); })));
+
+  /* needs attention */
+  const att = el('div', { class: 'card' }, el('h2', {}, 'Needs attention'));
+  const rows = el('div', { class: 'rows' });
+  late.slice(0, 8).forEach(it => rows.append(el('div', { class: 'arow' },
+    el('div', { class: 'grow' }, el('div', { class: 't' }, it.name),
+      el('div', { class: 's' }, 'With ' + (it.holder || 'someone') + (it.site ? ' at ' + it.site : '') + ' · out ' + ago(it.since))),
+    el('div', { class: 'acts' },
+      el('button', { class: 'btn sm primary', onclick: () => returnTool(it) }, 'Mark returned'),
+      el('button', { class: 'btn sm', onclick: () => assignTool(it) }, 'Reassign')))));
+  if (late.length > 8) rows.append(el('div', {}, el('button', { class: 'btn sm', onclick: () => { S.filter = 'late'; setTab('tools'); } }, 'See all ' + late.length + ' overdue tools')));
+  low.slice(0, 8).forEach(it => rows.append(el('div', { class: 'arow' },
+    el('div', { class: 'grow' }, el('div', { class: 't' }, it.name), el('div', { class: 's' }, (it.qty || 0) + ' left · reorder at ' + it.min)),
+    el('div', { class: 'acts' }, el('button', { class: 'btn sm primary', onclick: () => openMaterial(it.code) }, 'Add stock')))));
+  att.append(rows.children.length ? rows : el('p', { class: 'muted', style: 'margin:0' }, 'Nothing overdue and nothing running low.'));
+
+  /* who has what */
+  const by = {};
+  out.forEach(it => { const k = it.holderId || it.holder || '?'; (by[k] = by[k] || { name: it.holder || 'Unknown', items: [] }).items.push(it); });
+  const groups = Object.values(by).sort((a, b) => b.items.length - a.items.length || a.name.localeCompare(b.name));
+  const who = el('div', { class: 'card' }, el('h2', {}, 'Who has what'));
+  if (!groups.length) who.append(el('p', { class: 'muted', style: 'margin:0' }, 'Every tool is back in the shop.'));
+  else who.append(el('div', { class: 'rows' }, groups.map(g => el('div', {},
+    el('div', { class: 'hrow' }, el('span', {}, g.name), el('span', { class: 'sub num' }, g.items.length + (g.items.length === 1 ? ' tool' : ' tools'))),
+    el('div', { class: 'chips' }, g.items.map(it => el('button', { class: 'chip btnchip' + (daysOut(it.since) >= od() ? ' late' : ''), onclick: () => openTool(it.code) }, it.name)))))));
+
+  /* by job site */
+  const sites = {};
+  out.forEach(it => { const k = (it.site || '').trim() || 'No site noted'; (sites[k] = sites[k] || []).push(it); });
+  const sk = Object.keys(sites).sort((a, b) => sites[b].length - sites[a].length || a.localeCompare(b));
+  const siteCard = sk.length ? el('div', { class: 'card' }, el('h2', {}, 'Out by job site'), el('div', { class: 'rows' }, sk.map(k => el('div', {},
+    el('div', { class: 'hrow' }, el('span', {}, k), el('span', { class: 'sub num' }, sites[k].length)),
+    el('div', { class: 'sub' }, sites[k].map(i => i.name).join(', ')))))) : null;
+
+  /* recent */
+  const lg = S.log.slice(0, 8);
+  const rec = el('div', { class: 'card' }, el('h2', {}, 'Recent activity'),
+    lg.length ? el('div', { style: 'margin:0 -16px' }, lg.map(l => el('div', { class: 'log' }, el('time', { class: 'num' }, logWhen(l.time)), el('div', {}, logText(l)))))
+      : el('p', { class: 'muted', style: 'margin:0' }, 'Check-outs and returns show up here.'),
+    lg.length ? el('div', { style: 'margin-top:10px' }, el('button', { class: 'btn sm', onclick: () => setTab('activity') }, 'See all activity')) : null);
+
+  v.append(el('div', { class: 'dgrid' }, el('div', { class: 'dcol' }, att, rec), el('div', { class: 'dcol' }, who, siteCard)));
+}
+
 function toolStatus(it) {
   if (it.status !== 'Out') return el('span', { class: 'pill in' }, 'In shop');
-  const late = daysOut(it.since) >= CFG.overdueDays;
+  const late = daysOut(it.since) >= od();
   return el('span', { class: 'pill ' + (late ? 'late' : 'out') }, 'Out · ' + (it.holder || '?'));
 }
 function renderTools() {
   const v = views.tools; v.textContent = '';
   const tools = S.items.filter(i => i.type === 'Tool');
-  const out = tools.filter(i => i.status === 'Out'), late = out.filter(i => daysOut(i.since) >= CFG.overdueDays);
+  const isLate = i => i.status === 'Out' && daysOut(i.since) >= od();
+  const out = tools.filter(i => i.status === 'Out'), late = out.filter(isLate);
   v.append(el('div', { class: 'tiles' },
     el('div', { class: 'tile' + (out.length ? ' warn' : '') }, el('div', { class: 'n num' }, String(out.length)), el('div', { class: 'l' }, 'Out now')),
-    el('div', { class: 'tile' + (late.length ? ' bad' : '') }, el('div', { class: 'n num' }, String(late.length)), el('div', { class: 'l' }, 'Out ' + CFG.overdueDays + '+ days'))));
+    el('div', { class: 'tile' + (late.length ? ' bad' : '') }, el('div', { class: 'n num' }, String(late.length)), el('div', { class: 'l' }, 'Out ' + od() + '+ days'))));
   const search = el('input', { type: 'search', placeholder: 'Search tools', value: S.q, 'aria-label': 'Search tools', oninput: e => { S.q = e.target.value; fill(); } });
-  const seg = el('div', { class: 'seg', style: 'margin-top:10px' }, [['all', 'All'], ['out', 'Out'], ['in', 'In shop']].map(([k, l]) =>
+  const seg = el('div', { class: 'seg', style: 'margin-top:10px' }, [['all', 'All'], ['out', 'Out'], ['late', 'Overdue'], ['in', 'In shop']].map(([k, l]) =>
     el('button', { 'aria-pressed': S.filter === k ? 'true' : 'false', onclick: () => { S.filter = k; renderTools(); } }, l)));
   const holder = el('div', {});
   v.append(search, seg, holder);
+  const okF = i => S.filter === 'all' || (S.filter === 'late' ? isLate(i) : (S.filter === 'out') === (i.status === 'Out'));
   function fill() {
     holder.textContent = '';
     const q = S.q.trim().toLowerCase();
-    let list = tools.filter(i => (S.filter === 'all' || (S.filter === 'out') === (i.status === 'Out')) && (!q || (i.name + ' ' + i.code + ' ' + (i.category || '') + ' ' + (i.holder || '')).toLowerCase().includes(q)));
+    let list = tools.filter(i => okF(i) && (!q || (i.name + ' ' + i.code + ' ' + (i.category || '') + ' ' + (i.holder || '')).toLowerCase().includes(q)));
     list.sort((a, b) => (a.status === 'Out' ? 0 : 1) - (b.status === 'Out' ? 0 : 1) || (a.status === 'Out' ? new Date(a.since) - new Date(b.since) : a.name.localeCompare(b.name)));
-    if (!list.length) { holder.append(el('div', { class: 'empty' }, el('b', {}, tools.length ? 'No matches' : 'No tools yet'), tools.length ? 'Try a different search.' : 'Add tools in Setup, then print their labels.')); return; }
-    holder.append(el('div', { class: 'list' }, list.map(it => el('button', { class: 'item', onclick: () => openTool(it.code) },
+    if (!list.length) { holder.append(el('div', { class: 'empty' }, el('b', {}, tools.length ? 'No matches' : 'No tools yet'), tools.length ? 'Try a different search or filter.' : 'Add tools in Manage, then print their labels.')); return; }
+    holder.append(el('div', { class: 'list' }, list.map(it => el('button', { class: 'item tool', onclick: () => openTool(it.code) },
       el('div', {}, el('div', { class: 't' }, it.name), el('div', { class: 's' }, it.code + (it.category ? ' · ' + it.category : ''))),
+      el('div', { class: 'xc s' }, it.status === 'Out' ? (it.site || 'No site noted') : ''),
+      el('div', { class: 'xc s' }, it.status === 'Out' ? 'Out ' + ago(it.since) : ''),
       el('div', { class: 'r' }, toolStatus(it), it.status === 'Out' ? el('div', { class: 's' }, (it.site ? it.site + ' · ' : '') + ago(it.since)) : null)))));
   }
   fill();
@@ -704,7 +836,7 @@ function renderMaterials() {
     const q = S.q.trim().toLowerCase();
     const list = mats.filter(i => !q || (i.name + ' ' + i.code + ' ' + (i.category || '')).toLowerCase().includes(q))
       .sort((a, b) => (isLow(b) - isLow(a)) || a.name.localeCompare(b.name));
-    if (!list.length) { holder.append(el('div', { class: 'empty' }, el('b', {}, mats.length ? 'No matches' : 'No materials yet'), mats.length ? 'Try a different search.' : 'Add materials in Setup, with how many you have and the level to reorder at.')); return; }
+    if (!list.length) { holder.append(el('div', { class: 'empty' }, el('b', {}, mats.length ? 'No matches' : 'No materials yet'), mats.length ? 'Try a different search.' : 'Add materials in Manage, with how many you have and the level to reorder at.')); return; }
     holder.append(el('div', { class: 'list' }, list.map(it => el('button', { class: 'item', onclick: () => openMaterial(it.code) },
       el('div', {}, el('div', { class: 't' }, it.name), el('div', { class: 's' }, it.code + (it.category ? ' · ' + it.category : '') + (it.min != null ? ' · reorder at ' + it.min : ''))),
       el('div', { class: 'r' }, el('div', { class: 'qty num' }, String(it.qty || 0)), isLow(it) ? el('span', { class: 'pill late' }, 'Low') : null)))));
@@ -714,11 +846,12 @@ function renderMaterials() {
 const isLow = it => it.min != null && (it.qty || 0) <= it.min ? 1 : 0;
 
 /* activity */
-const VERB = { OUT: 'checked out', IN: 'returned', TRANSFER: 'took over', TAKE: 'took', RESTOCK: 'added', ADD: 'was added', EDIT: 'was edited', RETIRE: 'was retired' };
+const VERB = { OUT: 'checked out', IN: 'returned', TRANSFER: 'took over', TAKE: 'took', RESTOCK: 'added', ADD: 'was added', EDIT: 'was edited', RETIRE: 'was retired', RESTORE: 'was restored', ADJUST: 'recounted' };
 function logText(l) {
   const who = l.person || 'Someone';
   if (l.action === 'TAKE' || l.action === 'RESTOCK') return who + ' ' + VERB[l.action] + ' ' + l.qty + ' × ' + l.item;
-  if (l.action === 'ADD' || l.action === 'EDIT' || l.action === 'RETIRE') return l.item + ' ' + VERB[l.action];
+  if (l.action === 'ADD' || l.action === 'EDIT' || l.action === 'RETIRE' || l.action === 'RESTORE') return l.item + ' ' + VERB[l.action];
+  if (l.action === 'ADJUST') return who + ' recounted ' + l.item + (l.note ? ' · ' + l.note : '');
   return who + ' ' + VERB[l.action] + ' ' + l.item + (l.site && l.action !== 'IN' ? ' (' + l.site + ')' : '') + (l.note ? ' · ' + l.note : '');
 }
 function renderActivity() {
@@ -777,22 +910,28 @@ function openPicker(after) {
   openSheet('Who are you?', body); fill();
 }
 
+function histNode(it) {
+  const hist = S.log.filter(l => l.code.toUpperCase() === it.code.toUpperCase()).slice(0, 8);
+  if (!hist.length) return null;
+  return el('div', {}, el('h3', { style: 'font-size:18px;margin:6px 0 0' }, 'History'), el('div', { class: 'list', style: 'margin-top:8px' },
+    hist.map(l => el('div', { class: 'log' }, el('time', {}, new Date(l.time).toLocaleDateString([], { month: 'short', day: 'numeric' })), el('div', {}, logText(l))))));
+}
 function openTool(code) {
   const it = byCode(code); if (!it) return;
   const body = el('div', { class: 'stack' });
   const detail = it.status === 'Out' ? 'With ' + (it.holder || 'someone') + (it.site ? ' at ' + it.site : '') + ' · ' + ago(it.since) : 'In the shop';
   body.append(el('div', {}, toolStatus(it), el('div', { class: 'muted', style: 'margin-top:6px' }, it.code + (it.category ? ' · ' + it.category : '') + ' · ' + detail)));
   const act = async (action) => {
+    if (action === 'in') { await returnTool(it); return; }
     if (!S.me) { openPicker(() => act(action)); return; }
-    closeSheet(); await submit([{ code: it.code, action, site: '' }], S.me); toast(action === 'in' ? 'Returned to shop' : 'Checked out to ' + meName()); renderAll();
+    closeSheet(); await submit([{ code: it.code, action, site: '' }], S.me); toast('Checked out to ' + meName()); renderAll();
   };
   if (it.status === 'Out') body.append(el('button', { class: 'btn primary block', onclick: () => act('in') }, 'Mark returned to shop'),
     it.holderId !== S.me ? el('button', { class: 'btn block', onclick: () => act('out') }, 'I have it now') : null);
   else body.append(el('button', { class: 'btn primary block', onclick: () => act('out') }, 'Check out' + (meName() ? ' to ' + meName() : '')));
+  body.append(el('button', { class: 'btn block', onclick: () => assignTool(it) }, it.status === 'Out' ? 'Reassign to someone else…' : 'Assign to someone…'));
   body.append(el('div', { class: 'seg', style: 'display:flex' }, el('button', { onclick: () => { closeSheet(); printLabels([it]); } }, 'Print label'), el('button', { onclick: () => { closeSheet(); openEdit(it.code); } }, 'Edit')));
-  const hist = S.log.filter(l => l.code.toUpperCase() === it.code.toUpperCase()).slice(0, 8);
-  if (hist.length) body.append(el('h3', { style: 'font-size:18px;margin-top:6px' }, 'History'), el('div', { class: 'list', style: 'margin-top:0' },
-    hist.map(l => el('div', { class: 'log' }, el('time', {}, new Date(l.time).toLocaleDateString([], { month: 'short', day: 'numeric' })), el('div', {}, logText(l))))));
+  const h = histNode(it); if (h) body.append(h);
   openSheet(it.name, body);
 }
 function openMaterial(code) {
@@ -805,12 +944,21 @@ function openMaterial(code) {
     if (!S.me) { openPicker(() => go(sign)); return; }
     closeSheet(); await submit([{ code: it.code, delta: sign * n }], S.me); toast((sign < 0 ? 'Took ' : 'Added ') + n); renderAll();
   };
+  const cnt = el('input', { type: 'number', inputMode: 'numeric', min: '0', placeholder: 'Exact count', 'aria-label': 'Exact count on hand' });
+  const setCount = async () => {
+    if (cnt.value === '') return;
+    const q = Math.max(0, Math.round(Number(cnt.value)));
+    closeSheet(); await submit([{ code: it.code, setQty: q }], S.me || ''); toast('Count set to ' + q); renderAll();
+  };
   body.append(el('div', { class: 'muted' }, it.code + (it.category ? ' · ' + it.category : '') + (it.min != null ? ' · reorder at ' + it.min : '')),
     el('div', { class: 'qty num', style: 'font-size:44px' }, (it.qty || 0) + ' on hand'),
     el('div', { style: 'display:flex;align-items:center;justify-content:center;gap:14px' },
       el('button', { class: 'btn', style: 'min-width:56px', onclick: () => set(-1) }, '−'), num, el('button', { class: 'btn', style: 'min-width:56px', onclick: () => set(1) }, '+')),
     el('div', { style: 'display:grid;grid-template-columns:1fr 1fr;gap:10px' }, el('button', { class: 'btn danger', onclick: () => go(-1) }, 'Take'), el('button', { class: 'btn primary', onclick: () => go(1) }, 'Add stock')),
+    el('div', {}, el('label', { class: 'field' }, 'Recount: type what is really on the shelf'),
+      el('div', { style: 'display:grid;grid-template-columns:1fr auto;gap:10px' }, cnt, el('button', { class: 'btn', onclick: setCount }, 'Set count'))),
     el('div', { class: 'seg', style: 'display:flex' }, el('button', { onclick: () => { closeSheet(); printLabels([it]); } }, 'Print label'), el('button', { onclick: () => { closeSheet(); openEdit(it.code); } }, 'Edit')));
+  const h = histNode(it); if (h) body.append(h);
   openSheet(it.name, body);
 }
 function openEdit(code) {
@@ -859,67 +1007,188 @@ function openAddUnknown(code) {
     } }, 'Add')));
 }
 
-/* setup */
+/* manage */
+const csvCell = v => { v = v == null ? '' : String(v); if (/^[=+\-@]/.test(v)) v = "'" + v; return /[",\r\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+function downloadCsv(name, rows) {
+  const blob = new Blob(['﻿' + rows.map(r => r.map(csvCell).join(',')).join('\r\n')], { type: 'text/csv;charset=utf-8' });
+  const a = el('a', { href: URL.createObjectURL(blob), download: name }); document.body.append(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+}
+const stamp = () => new Date().toISOString().slice(0, 10);
+const showErr = (box, e) => { box.textContent = explain(e) || 'No signal. Try again when you are online.'; box.classList.remove('hidden'); };
+
+function openRename(p) {
+  const inp = el('input', { type: 'text', value: p.name, autocomplete: 'off', 'aria-label': 'Name' });
+  const err = el('div', { class: 'err hidden' });
+  const save = async () => {
+    err.classList.add('hidden');
+    try {
+      const r = await call({ action: 'renamePerson', id: p.id, name: inp.value });
+      if (!r.ok) { err.textContent = r.error || 'Could not rename.'; err.classList.remove('hidden'); return; }
+      setState(r.state); closeSheet(); renderAll(); toast('Renamed');
+    } catch (e) { showErr(err, e); }
+  };
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter') save(); });
+  openSheet('Rename', el('div', { class: 'stack' }, inp, err, el('button', { class: 'btn primary block', onclick: save }, 'Save')));
+}
+function openRemove(p) {
+  const n = S.items.filter(i => i.type === 'Tool' && i.status === 'Out' && i.holderId === p.id).length;
+  let armed = false; const err = el('div', { class: 'err hidden' });
+  const btn = el('button', { class: 'btn danger block', onclick: async () => {
+    if (!armed) { armed = true; btn.textContent = 'Tap again to remove ' + p.name; return; }
+    try {
+      const r = await call({ action: 'removePerson', id: p.id });
+      if (!r.ok) { err.textContent = r.error || 'Could not remove.'; err.classList.remove('hidden'); return; }
+      if (S.me === p.id) { S.me = ''; LS.del('me'); }
+      setState(r.state); closeSheet(); renderAll(); toast('Removed ' + p.name);
+    } catch (e) { showErr(err, e); }
+  } }, 'Remove ' + p.name);
+  openSheet('Remove ' + p.name + '?', el('div', { class: 'stack' },
+    el('p', { class: 'muted', style: 'margin:0' }, 'They disappear from the name list. Their past activity stays in the log.' + (n ? ' ' + n + (n === 1 ? ' tool is' : ' tools are') + ' still out under this name, so return or reassign ' + (n === 1 ? 'it' : 'them') + ' first.' : '')),
+    err, btn));
+}
+
 function renderSetup() {
   const v = views.setup; v.textContent = '';
+
   /* add items */
-  let type = 'Tool';
-  const ta = el('textarea', { id: 'bulk', placeholder: '' });
-  const hint = el('p', { class: 'muted', style: 'margin:6px 0 0;font-size:14px' });
-  const seg = el('div', { class: 'seg' });
-  const err = el('div', { class: 'err hidden' });
-  function drawType() {
-    seg.textContent = '';
-    for (const t of ['Tool', 'Material']) seg.append(el('button', { 'aria-pressed': type === t ? 'true' : 'false', onclick: () => { type = t; drawType(); } }, t));
-    ta.placeholder = type === 'Tool' ? 'DeWalt impact driver, Power tools\nMilwaukee 18in pipe wrench, Plumbing' : '1/4" drywall screws, 500, 100\nPVC primer, 6, 2';
-    hint.textContent = type === 'Tool' ? 'One tool per line. Add a category after a comma if you like.' : 'One per line: name, how many on hand, reorder level.';
-  }
-  drawType();
-  const addBtn = el('button', { class: 'btn primary block', onclick: async () => {
-    err.classList.add('hidden');
-    const items = ta.value.split('\n').map(l => l.trim()).filter(Boolean).map(l => {
-      const p = l.split(',').map(x => x.trim());
-      return type === 'Tool' ? { type, name: p[0], category: p[1] || '' } : { type, name: p[0], qty: Number(p[1]) || 0, min: p[2] === undefined || p[2] === '' ? '' : Number(p[2]) };
-    });
-    if (!items.length) return;
-    try {
-      const r = await call({ action: 'addItems', items });
-      if (!r.ok) { err.textContent = r.error || 'Could not add.'; err.classList.remove('hidden'); return; }
-      setState(r.state); S.lastAdded = r.added.map(a => a.code); ta.value = ''; toast(r.added.length + ' added'); renderSetup();
-    } catch (e) { err.textContent = explain(e) || 'No signal. Try again when you are online.'; err.classList.remove('hidden'); }
-  } }, 'Add to inventory');
-  v.append(el('div', { class: 'card' }, el('h2', {}, 'Add tools and materials'), seg, el('label', { class: 'field', for: 'bulk' }, 'List'), ta, hint, err, el('div', { style: 'height:12px' }), addBtn));
+  const cardAdd = () => {
+    let type = 'Tool';
+    const ta = el('textarea', { id: 'bulk', placeholder: '' });
+    const hint = el('p', { class: 'muted', style: 'margin:6px 0 0;font-size:14px' });
+    const seg = el('div', { class: 'seg' });
+    const err = el('div', { class: 'err hidden' });
+    function drawType() {
+      seg.textContent = '';
+      for (const t of ['Tool', 'Material']) seg.append(el('button', { 'aria-pressed': type === t ? 'true' : 'false', onclick: () => { type = t; drawType(); } }, t));
+      ta.placeholder = type === 'Tool' ? 'DeWalt impact driver, Power tools\nMilwaukee 18in pipe wrench, Plumbing' : '1/4" drywall screws, 500, 100\nPVC primer, 6, 2';
+      hint.textContent = type === 'Tool' ? 'One tool per line. Add a category after a comma if you like.' : 'One per line: name, how many on hand, reorder level.';
+    }
+    drawType();
+    const addBtn = el('button', { class: 'btn primary block', onclick: async () => {
+      err.classList.add('hidden');
+      const items = ta.value.split('\n').map(l => l.trim()).filter(Boolean).map(l => {
+        const p = l.split(',').map(x => x.trim());
+        return type === 'Tool' ? { type, name: p[0], category: p[1] || '' } : { type, name: p[0], qty: Number(p[1]) || 0, min: p[2] === undefined || p[2] === '' ? '' : Number(p[2]) };
+      });
+      if (!items.length) return;
+      try {
+        const r = await call({ action: 'addItems', items });
+        if (!r.ok) { err.textContent = r.error || 'Could not add.'; err.classList.remove('hidden'); return; }
+        setState(r.state); S.lastAdded = r.added.map(a => a.code); ta.value = ''; toast(r.added.length + ' added'); renderSetup();
+      } catch (e) { showErr(err, e); }
+    } }, 'Add to inventory');
+    return el('div', { class: 'card' }, el('h2', {}, 'Add tools and materials'), seg, el('label', { class: 'field', for: 'bulk' }, 'List'), ta, hint, err, el('div', { style: 'height:12px' }), addBtn);
+  };
 
   /* labels */
-  const lab = el('div', { class: 'card' }, el('h2', {}, 'Labels and badges'),
+  const cardLabels = () => el('div', { class: 'card' }, el('h2', {}, 'Labels and badges'),
     el('p', { class: 'muted', style: 'margin-top:0' }, 'Each QR label works with the phone camera and the shop scanner. Print at 100% size, then stick one on every tool and bin.'),
     el('div', { class: 'stack' },
       S.lastAdded.length ? el('button', { class: 'btn primary block', onclick: () => printLabels(S.lastAdded.map(byCode).filter(Boolean)) }, 'Print the ' + S.lastAdded.length + ' you just added') : null,
       el('button', { class: 'btn block', onclick: () => openLabelPicker() }, 'Choose labels to print'),
       el('button', { class: 'btn block', onclick: () => printBadges() }, 'Print name badges'),
       el('button', { class: 'btn block', onclick: () => printCommands() }, 'Print Send and Clear codes for the shop scanner')));
-  v.append(lab);
 
   /* people */
-  const pin = el('input', { type: 'text', placeholder: 'Add a person', autocomplete: 'off' });
-  const perr = el('div', { class: 'err hidden' });
-  v.append(el('div', { class: 'card' }, el('h2', {}, 'People (' + S.people.length + ')'),
-    S.people.length ? el('div', { class: 'chips', style: 'margin:0 0 12px' }, S.people.map(p => el('span', { class: 'chip' }, p.name))) : el('p', { class: 'muted' }, 'No one yet. Workers can add their own name the first time they open the page.'),
-    pin, perr, el('div', { style: 'height:10px' }),
-    el('button', { class: 'btn block', onclick: async () => {
-      const n = pin.value.trim(); if (!n) return; perr.classList.add('hidden');
-      try { const r = await call({ action: 'addPerson', name: n }); if (!r.ok) { perr.textContent = r.error; perr.classList.remove('hidden'); return; } setState(r.state); renderSetup(); }
-      catch (e) { perr.textContent = explain(e) || 'No signal. Try again when you are online.'; perr.classList.remove('hidden'); }
-    } }, 'Add person')));
+  const cardPeople = () => {
+    const inp = el('input', { type: 'text', placeholder: 'Add a person', autocomplete: 'off', 'aria-label': 'Add a person' });
+    const err = el('div', { class: 'err hidden' });
+    const held = id => S.items.filter(i => i.type === 'Tool' && i.status === 'Out' && i.holderId === id).length;
+    const add = async () => {
+      const n = inp.value.trim(); if (!n) return; err.classList.add('hidden');
+      try { const r = await call({ action: 'addPerson', name: n }); if (!r.ok) { err.textContent = r.error; err.classList.remove('hidden'); return; } setState(r.state); renderSetup(); }
+      catch (e) { showErr(err, e); }
+    };
+    inp.addEventListener('keydown', e => { if (e.key === 'Enter') add(); });
+    return el('div', { class: 'card' }, el('h2', {}, 'People (' + S.people.length + ')'),
+      S.people.length ? el('div', { class: 'rows', style: 'margin-bottom:12px' }, S.people.slice().sort((a, b) => a.name.localeCompare(b.name)).map(p => el('div', { class: 'arow' },
+        el('div', { class: 'grow' }, el('div', { class: 't' }, p.name), el('div', { class: 's' }, held(p.id) ? held(p.id) + ' out now' : 'Nothing out')),
+        el('div', { class: 'acts' }, el('button', { class: 'btn sm', onclick: () => openRename(p) }, 'Rename'), el('button', { class: 'btn sm danger', onclick: () => openRemove(p) }, 'Remove')))))
+        : el('p', { class: 'muted' }, 'No one yet. Workers can add their own name the first time they open the page.'),
+      inp, err, el('div', { style: 'height:10px' }), el('button', { class: 'btn block', onclick: add }, 'Add person'));
+  };
+
+  /* retired */
+  const cardRetired = () => el('div', { class: 'card' }, el('h2', {}, 'Retired items' + (S.retired.length ? ' (' + S.retired.length + ')' : '')),
+    S.retired.length ? el('div', { class: 'rows' }, S.retired.map(it => el('div', { class: 'arow' },
+      el('div', { class: 'grow' }, el('div', { class: 't' }, it.name), el('div', { class: 's' }, it.code + ' · ' + it.type)),
+      el('button', { class: 'btn sm', onclick: async () => {
+        try {
+          const r = await call({ action: 'updateItem', code: it.code, fields: { active: true } });
+          if (!r.ok) { toast(r.error || 'Could not restore'); return; }
+          setState(r.state); renderAll(); toast(it.name + ' restored');
+        } catch (e) { toast(explain(e) || 'No signal. Try again when you are online.'); }
+      } }, 'Restore')))) : el('p', { class: 'muted', style: 'margin:0' }, 'Nothing retired. If you retire a tool or material, it shows up here so you can bring it back.'));
+
+  /* export */
+  const cardExport = () => {
+    const err = el('div', { class: 'err hidden' });
+    return el('div', { class: 'card' }, el('h2', {}, 'Download your data'),
+      el('p', { class: 'muted', style: 'margin-top:0' }, 'Opens in Excel or Numbers. Use these for records, insurance or job costing.'),
+      el('div', { class: 'stack' },
+        el('button', { class: 'btn block', onclick: () => {
+          downloadCsv('inventory-' + stamp() + '.csv', [['Code', 'Type', 'Name', 'Category', 'Status', 'With', 'Job site', 'Since', 'On hand', 'Reorder at']]
+            .concat(S.items.map(i => [i.code, i.type, i.name, i.category || '', i.type === 'Tool' ? (i.status === 'Out' ? 'Out' : 'In shop') : '', i.holder || '', i.site || '', i.since ? new Date(i.since).toLocaleString() : '', i.qty == null ? '' : i.qty, i.min == null ? '' : i.min])));
+        } }, 'Inventory (CSV)'),
+        el('button', { class: 'btn block', onclick: async () => {
+          err.classList.add('hidden');
+          try {
+            const r = await call({ action: 'fullLog' });
+            if (!r.ok) { err.textContent = r.error || 'Could not get the log.'; err.classList.remove('hidden'); return; }
+            downloadCsv('activity-' + stamp() + '.csv', [['When', 'Code', 'Item', 'What happened', 'Person', 'Job site', 'Quantity', 'Note']]
+              .concat(r.log.map(l => [l.time ? new Date(l.time).toLocaleString() : '', l.code, l.item, l.action, l.person, l.site, l.qty, l.note])));
+          } catch (e) { showErr(err, e); }
+        } }, 'Full activity history (CSV)'), err));
+  };
+
+  /* settings */
+  const cardSettings = () => {
+    const days = el('input', { type: 'number', inputMode: 'numeric', min: '1', max: '365', value: String(od()), 'aria-label': 'Days before a tool counts as overdue' });
+    const derr = el('div', { class: 'err hidden' });
+    const pin = el('input', { type: 'text', autocomplete: 'off', placeholder: 'New team PIN', 'aria-label': 'New team PIN' });
+    const perr = el('div', { class: 'err hidden' });
+    let armed = false;
+    const pinBtn = el('button', { class: 'btn block', onclick: async () => {
+      perr.classList.add('hidden');
+      const np = pin.value.trim();
+      if (!/^[A-Za-z0-9]{4,20}$/.test(np)) { perr.textContent = 'Use 4 to 20 letters or numbers.'; perr.classList.remove('hidden'); return; }
+      if (!armed) { armed = true; pinBtn.textContent = 'Tap again. Everyone else will need the new PIN.'; return; }
+      try {
+        const r = await call({ action: 'setPin', newPin: np });
+        if (!r.ok) { perr.textContent = r.error || 'Could not change the PIN.'; perr.classList.remove('hidden'); armed = false; pinBtn.textContent = 'Change PIN'; return; }
+        S.pin = np; LS.set('pin', np); pin.value = ''; armed = false; pinBtn.textContent = 'Change PIN'; toast('PIN changed. Tell your team.');
+      } catch (e) { showErr(perr, e); armed = false; pinBtn.textContent = 'Change PIN'; }
+    } }, 'Change PIN');
+    return el('div', { class: 'card' }, el('h2', {}, 'Settings'),
+      el('label', { class: 'field' }, 'A tool counts as overdue after this many days out'),
+      el('div', { style: 'display:grid;grid-template-columns:1fr auto;gap:10px' }, days, el('button', { class: 'btn', onclick: async () => {
+        derr.classList.add('hidden');
+        try {
+          const r = await call({ action: 'setSettings', overdueDays: days.value });
+          if (!r.ok) { derr.textContent = r.error || 'Could not save.'; derr.classList.remove('hidden'); return; }
+          setState(r.state); renderAll(); toast('Saved');
+        } catch (e) { showErr(derr, e); }
+      } }, 'Save')), derr,
+      el('label', { class: 'field', style: 'margin-top:16px' }, 'Team PIN'),
+      el('p', { class: 'muted', style: 'margin:0 0 8px;font-size:14px' }, 'Changing it signs out every other phone and computer until they enter the new PIN.'),
+      pin, perr, el('div', { style: 'height:10px' }), pinBtn);
+  };
 
   /* this device */
-  const ask = el('input', { type: 'checkbox', id: 'ask', checked: S.askEachTime, onchange: e => { S.askEachTime = e.target.checked; LS.set('ask', S.askEachTime); } });
-  v.append(el('div', { class: 'card' }, el('h2', {}, 'This device'),
-    el('p', { class: 'muted', style: 'margin-top:0' }, 'Signed in as ' + (meName() || 'no one') + '. ' + (lastError ? lastError : (S.online ? 'Connected.' : 'Offline.')) + (S.queue.length ? ' ' + S.queue.length + ' waiting to send.' : '')),
-    el('label', { for: 'ask', style: 'display:flex;gap:10px;align-items:center;margin:8px 0 14px;font-weight:600' }, ask, 'Shared computer: ask for a name after every Confirm'),
-    el('div', { class: 'stack' },
-      el('button', { class: 'btn block', onclick: () => refresh().then(() => toast('Refreshed')) }, 'Refresh now'),
-      el('button', { class: 'btn danger block', onclick: () => { S.pin = ''; LS.del('pin'); LS.del('me'); S.me = ''; stopCam(true); render(); } }, 'Sign this device out'))));
+  const cardDevice = () => {
+    const ask = el('input', { type: 'checkbox', id: 'ask', checked: S.askEachTime, onchange: e => { S.askEachTime = e.target.checked; LS.set('ask', S.askEachTime); } });
+    return el('div', { class: 'card' }, el('h2', {}, 'This device'),
+      el('p', { class: 'muted', style: 'margin-top:0' }, 'Signed in as ' + (meName() || 'no one') + '. ' + (lastError ? lastError : (S.online ? 'Connected.' : 'Offline.')) + (S.queue.length ? ' ' + S.queue.length + ' waiting to send.' : '')),
+      el('label', { for: 'ask', style: 'display:flex;gap:10px;align-items:center;margin:8px 0 14px;font-weight:600' }, ask, 'Shared computer: ask for a name after every Confirm'),
+      el('div', { class: 'stack' },
+        el('button', { class: 'btn block', onclick: () => refresh().then(() => toast('Refreshed')) }, 'Refresh now'),
+        el('button', { class: 'btn danger block', onclick: () => { S.pin = ''; LS.del('pin'); LS.del('me'); S.me = ''; stopCam(true); render(); } }, 'Sign this device out')));
+  };
+
+  v.append(el('div', { class: 'dgrid' },
+    el('div', { class: 'dcol' }, cardAdd(), cardLabels(), cardExport()),
+    el('div', { class: 'dcol' }, cardPeople(), cardRetired(), cardSettings(), cardDevice())));
 }
 function openLabelPicker() {
   const sel = new Set(S.items.map(i => i.code));
