@@ -166,8 +166,9 @@ label.field { display: block; font-weight: 600; font-size: 14px; margin: 12px 0 
 /* dashboard + wide layout */
 button.tile { text-align: left; width: 100%; font: inherit; color: inherit; }
 button.tile:hover { border-color: var(--accent); }
-.dgrid { display: grid; gap: 14px; }
-.dcol { display: grid; gap: 14px; align-content: start; min-width: 0; }
+.dgrid { display: grid; gap: 14px; grid-template-columns: minmax(0, 1fr); }
+input[type=file] { max-width: 100%; }
+.dcol { display: grid; gap: 14px; align-content: start; min-width: 0; grid-template-columns: minmax(0, 1fr); }
 .dcol > .card { margin-bottom: 0; }
 .rows > * { border-top: 1px solid var(--line); padding: 11px 0; }
 .rows > *:first-child { border-top: 0; padding-top: 2px; }
@@ -191,7 +192,7 @@ button.tile:hover { border-color: var(--accent); }
   .tab { flex: none; flex-direction: row; min-height: 42px; padding: 0 16px; border-radius: 10px; font-size: 15px; gap: 8px; }
   .tab[aria-selected="true"] { background: var(--accent-soft); }
   .tiles.four { grid-template-columns: repeat(4, 1fr); }
-  .dgrid { grid-template-columns: 1fr 1fr; align-items: start; }
+  .dgrid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
   .item.tool { grid-template-columns: minmax(0, 2.2fr) minmax(0, 1.2fr) minmax(0, 1fr) auto; }
   .item.tool .xc { display: block; }
   .item.tool .r .s { display: none; }
@@ -1048,6 +1049,18 @@ function openRemove(p) {
     err, btn));
 }
 
+function splitRow(line) {
+  if (line.includes('\t')) return line.split('\t').map(x => x.trim());
+  const out = []; let cur = '', q = false;
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i];
+    if (q) { if (c === '"') { if (line[i + 1] === '"') { cur += '"'; i++; } else q = false; } else cur += c; }
+    else if (c === '"') q = true;
+    else if (c === ',') { out.push(cur.trim()); cur = ''; }
+    else cur += c;
+  }
+  out.push(cur.trim()); return out;
+}
 function renderSetup() {
   const v = views.setup; v.textContent = '';
 
@@ -1079,6 +1092,56 @@ function renderSetup() {
       } catch (e) { showErr(err, e); }
     } }, 'Add to inventory');
     return el('div', { class: 'card' }, el('h2', {}, 'Add tools and materials'), seg, el('label', { class: 'field', for: 'bulk' }, 'List'), ta, hint, err, el('div', { style: 'height:12px' }), addBtn);
+  };
+
+  /* import own tags */
+  const cardImport = () => {
+    let type = 'Tool';
+    const ta = el('textarea', { id: 'imp', placeholder: '', style: 'min-height:130px' });
+    const seg = el('div', { class: 'seg' });
+    const hint = el('p', { class: 'muted', style: 'margin:6px 0 0;font-size:14px' });
+    const out = el('div', { style: 'margin-top:10px;font-size:15px' });
+    const err = el('div', { class: 'err hidden' });
+    const file = el('input', { type: 'file', accept: '.csv,.tsv,.txt,text/csv,text/plain', 'aria-label': 'Choose a CSV or text file' });
+    file.addEventListener('change', async () => { const f = file.files[0]; if (f) { ta.value = await f.text(); out.textContent = ''; } });
+    function draw() {
+      seg.textContent = '';
+      for (const t of ['Tool', 'Material']) seg.append(el('button', { 'aria-pressed': type === t ? 'true' : 'false', onclick: () => { type = t; draw(); } }, t));
+      ta.placeholder = type === 'Tool' ? 'A-1001, Hilti drill, Power tools\nA-1002, Pipe wrench, Plumbing' : 'B-2001, 1/4in drywall screws, 500, 100\nB-2002, PVC primer, 6, 2';
+      hint.textContent = type === 'Tool' ? 'One per line: the code on your tag, the name, then a category if you like.' : 'One per line: the code on your tag, the name, how many on hand, reorder level.';
+    }
+    draw();
+    const go = el('button', { class: 'btn primary block', onclick: async () => {
+      err.classList.add('hidden'); out.textContent = '';
+      const rows = ta.value.split(/\r?\n/).map(l => l.trim()).filter(Boolean).map(splitRow);
+      if (rows.length && /^(code|tag|id|barcode|qr)/i.test(rows[0][0])) rows.shift();
+      const issues = [], items = [], seen = new Set();
+      for (const p of rows) {
+        const code = parseScan(p[0]), name = (p[1] || '').trim(); if (!code) continue;
+        const up = code.toUpperCase();
+        if (!name) issues.push(code + ': no name given');
+        else if (/^CMD-(SEND|CLEAR)$/.test(up) || /^P\d+$/.test(up)) issues.push(code + ': reserved for name badges and shop scanner commands');
+        else if (byCode(code) || seen.has(up)) issues.push(code + ': already in the list');
+        else if (S.retired.some(r => r.code.toUpperCase() === up)) issues.push(code + ': is a retired item, restore it instead');
+        else { seen.add(up); items.push(type === 'Tool' ? { type, code, name, category: p[2] || '' } : { type, code, name, qty: Number(p[2]) || 0, min: p[3] === undefined || p[3] === '' ? '' : Number(p[3]) }); }
+      }
+      if (!items.length) { out.textContent = issues.length ? 'Nothing imported. ' + issues.slice(0, 6).join('; ') + '.' : 'Paste or choose a list first.'; return; }
+      go.disabled = true;
+      try {
+        const r = await call({ action: 'addItems', items });
+        if (!r.ok) { err.textContent = r.error || 'Could not import.'; err.classList.remove('hidden'); return; }
+        setState(r.state); ta.value = ''; file.value = '';
+        out.textContent = r.added.length + ' imported.' + (issues.length ? ' Skipped ' + issues.length + ': ' + issues.slice(0, 6).join('; ') + (issues.length > 6 ? '; and ' + (issues.length - 6) + ' more' : '') + '.' : '');
+        toast(r.added.length + ' imported'); renderAll();
+        // renderAll keeps this card because the textarea is not focused; refill message after it redraws
+        const m = document.querySelector('#imp-out'); if (m) m.textContent = out.textContent;
+      } catch (e) { showErr(err, e); } finally { go.disabled = false; }
+    } }, 'Import');
+    out.id = 'imp-out';
+    return el('div', { class: 'card' }, el('h2', {}, 'Import your own tags'),
+      el('p', { class: 'muted', style: 'margin-top:0' }, 'Already have QR or barcode tags on your gear? Paste a list or choose a spreadsheet file (CSV) and every tag works right away, with no labels to print.'),
+      seg, el('label', { class: 'field', for: 'imp' }, 'List'), ta, hint,
+      el('label', { class: 'field', style: 'margin-top:12px' }, 'Or choose a file'), file, err, el('div', { style: 'height:12px' }), go, out);
   };
 
   /* labels */
@@ -1187,7 +1250,7 @@ function renderSetup() {
   };
 
   v.append(el('div', { class: 'dgrid' },
-    el('div', { class: 'dcol' }, cardAdd(), cardLabels(), cardExport()),
+    el('div', { class: 'dcol' }, cardAdd(), cardImport(), cardLabels(), cardExport()),
     el('div', { class: 'dcol' }, cardPeople(), cardRetired(), cardSettings(), cardDevice())));
 }
 function openLabelPicker() {
