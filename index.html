@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1558B0">
+<title>Tool Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: one phone-width column, big thumb-reach buttons, scan list on top of a fixed Confirm bar. */
+:root {
+  --paper: #F2F4F5; --card: #FFFFFF; --ink: #172027; --muted: #586873; --line: #D5DCE0;
+  --accent: #1558B0; --accent-ink: #FFFFFF; --accent-soft: #E3EDFA;
+  --good: #17703F; --good-bg: #DDF2E5; --warn: #8F4B00; --warn-bg: #FFEBCC; --bad: #B3261E; --bad-bg: #FBE0DD;
+  --cam: #0E1418;
+  --font-display: 'Barlow Semi Condensed', 'Arial Narrow', system-ui, sans-serif;
+  --font-body: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --tabs-h: 64px;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #12181C; --card: #1B2329; --ink: #E8EDF0; --muted: #9AA9B3; --line: #2C373E;
+    --accent: #6AA5FF; --accent-ink: #0A1522; --accent-soft: #1D2D44;
+    --good: #5ED28F; --good-bg: #17382A; --warn: #FFB454; --warn-bg: #3F2D12; --bad: #FF8A80; --bad-bg: #44201D;
+    --cam: #05080A;
+  }
+  .label { color: #000; }
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.4; -webkit-text-size-adjust: 100%; }
+body { min-height: 100%; }
+h1, h2, h3 { font-family: var(--font-display); margin: 0; text-wrap: balance; letter-spacing: .01em; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.hidden { display: none !important; }
+.muted { color: var(--muted); }
+.num { font-variant-numeric: tabular-nums; }
+
+#app { max-width: 760px; margin: 0 auto; padding: 0 16px calc(var(--tabs-h) + 130px + env(safe-area-inset-bottom)); }
+.topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: calc(12px + env(safe-area-inset-top)) 0 12px; position: sticky; top: 0; background: var(--paper); z-index: 5; }
+.brand { font-family: var(--font-display); font-weight: 700; font-size: 24px; display: flex; align-items: center; gap: 10px; }
+.sync { width: 10px; height: 10px; border-radius: 50%; background: var(--good); flex: none; }
+.sync.wait { background: #E39A1B; } .sync.off { background: var(--bad); }
+.who { border: 1.5px solid var(--line); background: var(--card); border-radius: 999px; padding: 8px 14px; font-weight: 600; max-width: 55%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.who.empty { border-color: var(--accent); color: var(--accent); }
+
+.tabs { position: fixed; left: 0; right: 0; bottom: 0; background: var(--card); border-top: 1px solid var(--line); display: flex; justify-content: center; padding-bottom: env(safe-area-inset-bottom); z-index: 10; }
+.tabs-inner { display: flex; width: 100%; max-width: 760px; }
+.tab { flex: 1; min-height: var(--tabs-h); background: none; border: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 12px; font-weight: 600; color: var(--muted); }
+.tab svg { width: 24px; height: 24px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.tab[aria-selected="true"] { color: var(--accent); }
+
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 16px; margin-bottom: 14px; }
+.card h2 { font-size: 20px; margin-bottom: 10px; }
+.btn { border: 0; border-radius: 12px; padding: 12px 18px; font-weight: 700; background: var(--accent-soft); color: var(--accent); min-height: 46px; }
+.btn.primary { background: var(--accent); color: var(--accent-ink); }
+.btn.danger { background: var(--bad-bg); color: var(--bad); }
+.btn.block { width: 100%; }
+.btn:disabled { opacity: .5; cursor: default; }
+.link { background: none; border: 0; color: var(--accent); font-weight: 600; padding: 6px 0; }
+input[type=text], input[type=search], input[type=number], input[type=password], textarea, select {
+  width: 100%; padding: 12px 14px; border-radius: 10px; border: 1.5px solid var(--line); background: var(--paper); min-height: 46px; }
+textarea { min-height: 120px; resize: vertical; }
+label.field { display: block; font-weight: 600; font-size: 14px; margin: 12px 0 6px; }
+.seg { display: flex; background: var(--paper); border: 1.5px solid var(--line); border-radius: 12px; padding: 3px; gap: 3px; }
+.seg button { flex: 1; border: 0; background: none; border-radius: 9px; padding: 9px 8px; font-weight: 600; color: var(--muted); }
+.seg button[aria-pressed="true"] { background: var(--card); color: var(--ink); box-shadow: 0 1px 3px rgba(0,0,0,.18); }
+
+/* camera */
+.cam { position: relative; background: var(--cam); border-radius: 14px; overflow: hidden; aspect-ratio: 4/3; max-height: 42vh; width: 100%; margin-bottom: 14px; display: grid; place-items: center; }
+.cam video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.cam .frame { position: absolute; inset: 18% 18%; border-radius: 16px; pointer-events: none; box-shadow: 0 0 0 2000px rgba(0,0,0,.28);
+  background:
+    linear-gradient(#fff,#fff) top left/28px 4px no-repeat, linear-gradient(#fff,#fff) top left/4px 28px no-repeat,
+    linear-gradient(#fff,#fff) top right/28px 4px no-repeat, linear-gradient(#fff,#fff) top right/4px 28px no-repeat,
+    linear-gradient(#fff,#fff) bottom left/28px 4px no-repeat, linear-gradient(#fff,#fff) bottom left/4px 28px no-repeat,
+    linear-gradient(#fff,#fff) bottom right/28px 4px no-repeat, linear-gradient(#fff,#fff) bottom right/4px 28px no-repeat; }
+.cam .msg { position: relative; color: #fff; text-align: center; padding: 20px; display: grid; gap: 12px; justify-items: center; }
+.cam .msg p { margin: 0; color: #C5D0D8; }
+.cam .tools { position: absolute; right: 10px; top: 10px; display: flex; gap: 8px; }
+.cam .tools button { background: rgba(0,0,0,.55); color: #fff; border: 0; border-radius: 999px; padding: 8px 14px; font-weight: 600; }
+.cam.compact { aspect-ratio: 16 / 7; max-height: 24vh; }
+.cam.compact .frame { inset: 10% 30%; }
+.cam.flash { animation: flash .35s; }
+@keyframes flash { from { box-shadow: 0 0 0 6px var(--good); } to { box-shadow: 0 0 0 0 transparent; } }
+
+/* scan list */
+.batch-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
+.scan-row { display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 10px; padding: 12px 0; border-top: 1px solid var(--line); }
+.scan-row:first-of-type { border-top: 0; }
+.scan-row.pop { animation: pop .5s; }
+@keyframes pop { from { background: var(--accent-soft); } to { background: transparent; } }
+.sr-name { font-weight: 700; overflow-wrap: anywhere; }
+.sr-sub { font-size: 14px; color: var(--muted); }
+.act { border: 0; border-radius: 10px; padding: 10px 12px; font-weight: 700; min-height: 44px; min-width: 104px; background: var(--accent-soft); color: var(--accent); }
+.act.in { background: var(--good-bg); color: var(--good); }
+.act.take { background: var(--warn-bg); color: var(--warn); }
+.x { border: 0; background: none; font-size: 26px; line-height: 1; color: var(--muted); width: 44px; height: 44px; border-radius: 10px; }
+.scan-row.mat { grid-template-columns: 1fr auto; row-gap: 8px; }
+.scan-row.mat .sr-main { grid-column: 1 / -1; }
+.stepper { display: flex; align-items: center; gap: 4px; }
+.stepper button { width: 40px; height: 44px; border-radius: 10px; border: 1.5px solid var(--line); background: var(--paper); font-size: 20px; font-weight: 700; }
+.stepper b { min-width: 28px; text-align: center; font-size: 18px; }
+.empty { text-align: center; padding: 18px 8px; color: var(--muted); }
+.empty b { display: block; color: var(--ink); font-family: var(--font-display); font-size: 20px; margin-bottom: 4px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.chip { border: 1.5px solid var(--line); background: var(--paper); border-radius: 999px; padding: 6px 12px; font-size: 14px; font-weight: 600; }
+
+.confirmbar { position: fixed; left: 0; right: 0; bottom: calc(var(--tabs-h) + env(safe-area-inset-bottom)); padding: 12px 16px; background: linear-gradient(to top, var(--paper) 70%, transparent); z-index: 9; }
+.confirmbar .btn { max-width: 728px; margin: 0 auto; display: block; font-size: 19px; min-height: 58px; font-family: var(--font-display); letter-spacing: .02em; }
+
+.done { text-align: center; padding: 22px 12px; }
+.done .tick { width: 64px; height: 64px; border-radius: 50%; background: var(--good-bg); color: var(--good); display: grid; place-items: center; margin: 0 auto 10px; }
+.done .tick svg { width: 34px; height: 34px; stroke: currentColor; fill: none; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.done h2 { margin-bottom: 6px; }
+.done .btn { margin-top: 14px; }
+.done ul { list-style: none; padding: 0; margin: 10px 0 14px; color: var(--muted); }
+
+/* lists */
+.tiles { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 14px; }
+.tile { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 12px 16px; }
+.tile .n { font-family: var(--font-display); font-weight: 700; font-size: 34px; line-height: 1.1; }
+.tile .l { color: var(--muted); font-size: 14px; font-weight: 600; }
+.tile.warn .n { color: var(--warn); } .tile.bad .n { color: var(--bad); }
+.list { background: var(--card); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; margin-top: 12px; }
+.item { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; width: 100%; text-align: left; background: none; border: 0; border-top: 1px solid var(--line); padding: 14px 16px; min-height: 64px; }
+.item:first-child { border-top: 0; }
+.item .t { font-weight: 700; overflow-wrap: anywhere; }
+.item .s { color: var(--muted); font-size: 14px; }
+.item .r { text-align: right; }
+.pill { display: inline-block; border-radius: 999px; padding: 3px 11px; font-size: 13px; font-weight: 700; white-space: nowrap; }
+.pill.in { background: var(--good-bg); color: var(--good); }
+.pill.out { background: var(--warn-bg); color: var(--warn); }
+.pill.late { background: var(--bad-bg); color: var(--bad); }
+.qty { font-family: var(--font-display); font-weight: 700; font-size: 26px; line-height: 1; }
+.daylabel { font-family: var(--font-display); font-weight: 600; color: var(--muted); margin: 18px 4px 6px; }
+.log { display: grid; grid-template-columns: 64px 1fr; gap: 10px; padding: 11px 16px; border-top: 1px solid var(--line); font-size: 15px; }
+.log:first-child { border-top: 0; }
+.log time { color: var(--muted); font-size: 14px; }
+
+/* sheet */
+.overlay { position: fixed; inset: 0; background: rgba(8,14,18,.55); z-index: 30; display: flex; align-items: flex-end; justify-content: center; }
+.sheet { background: var(--paper); width: 100%; max-width: 760px; max-height: 90vh; overflow: auto; border-radius: 18px 18px 0 0; padding: 18px 16px calc(18px + env(safe-area-inset-bottom)); }
+.sheet-head { display: flex; justify-content: space-between; align-items: start; gap: 12px; margin-bottom: 12px; }
+.sheet h2 { font-size: 24px; }
+.stack { display: grid; gap: 10px; }
+.person { display: block; width: 100%; text-align: left; border: 1.5px solid var(--line); background: var(--card); border-radius: 12px; padding: 14px 16px; font-weight: 700; font-size: 18px; min-height: 56px; }
+
+.gate { min-height: 100vh; display: grid; place-items: center; padding: 24px; }
+.gate .card { max-width: 380px; width: 100%; }
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(var(--tabs-h) + 92px + env(safe-area-inset-bottom)); background: var(--ink); color: var(--paper); padding: 10px 16px; border-radius: 999px; font-weight: 600; z-index: 40; max-width: 90vw; text-align: center; }
+.err { background: var(--bad-bg); color: var(--bad); border-radius: 10px; padding: 10px 12px; margin: 10px 0; font-weight: 600; }
+
+/* printing */
+#printArea { display: none; }
+.label { display: flex; align-items: center; gap: .12in; width: 2.45in; height: 1.15in; padding: .08in; border: 1px dashed #999; color: #000; background: #fff; break-inside: avoid; overflow: hidden; }
+.label-qr { width: .95in; height: .95in; flex: none; }
+.label-qr svg { width: 100%; height: 100%; display: block; }
+.label-txt { min-width: 0; }
+.label-name { font: 700 12pt/1.1 var(--font-display); overflow-wrap: anywhere; }
+.label-code { font: 600 10pt/1.2 ui-monospace, Menlo, Consolas, monospace; margin-top: 3px; }
+.label-sub { font: 9pt/1.2 var(--font-body); color: #333; }
+@media print {
+  html, body { background: #fff; }
+  #app, .tabs, .confirmbar, .toast, .overlay { display: none !important; }
+  #printArea { display: flex; flex-wrap: wrap; gap: .1in; }
+  @page { margin: .4in; }
+}
+@media (prefers-reduced-motion: reduce) { .cam.flash, .scan-row.pop { animation: none; } }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<div id="printArea" aria-hidden="true"></div>
+<div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+<noscript><p style="padding:24px">Tool Tracker needs JavaScript turned on.</p></noscript>
+
+<script src="config.js"></script>
+<script src="jsQR.js"></script>
+<script src="qrcode.js"></script>
+<script>
+(function () {
+'use strict';
+
+/* ---------- small helpers ---------- */
+const CFG = Object.assign({ api: '', overdueDays: 7 }, window.TRACKER_CONFIG || {});
+const ATTR_ONLY = new Set(['list', 'for', 'role', 'inputmode', 'autocomplete', 'enterkeyhint']);
+function el(tag, props, ...kids) {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(props || {})) {
+    if (v == null || v === false) continue;
+    if (k === 'class') n.className = v;
+    else if (k.startsWith('on') && typeof v === 'function') n.addEventListener(k.slice(2), v);
+    else if (k.startsWith('aria-') || k.startsWith('data-') || ATTR_ONLY.has(k)) n.setAttribute(k, v === true ? '' : v);
+    else n[k] = v;
+  }
+  for (const c of kids.flat()) { if (c == null || c === false) continue; n.append(c.nodeType ? c : document.createTextNode(String(c))); }
+  return n;
+}
+const $ = (s, r) => (r || document).querySelector(s);
+const LS = {
+  get(k, d) { try { const v = localStorage.getItem('tt.' + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem('tt.' + k, JSON.stringify(v)); } catch (e) { /* storage unavailable */ } },
+  del(k) { try { localStorage.removeItem('tt.' + k); } catch (e) { /* ignore */ } }
+};
+const uid = () => (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2));
+const ICONS = {
+  scan: 'M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3M7 12h10',
+  tools: 'M14.7 6.3a4 4 0 0 0-5.4 5l-6.3 6.3 2.4 2.4 6.3-6.3a4 4 0 0 0 5-5.4l-2.6 2.6-2.2-.5-.5-2.2z',
+  materials: 'M3 7l9-4 9 4v10l-9 4-9-4zM3 7l9 4 9-4M12 11v10',
+  activity: 'M4 6h16M4 12h16M4 18h10',
+  setup: 'M4 7h10M18 7h2M4 17h2M10 17h10M14 5v4M6 15v4'
+};
+function icon(name) {
+  const s = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  s.setAttribute('viewBox', '0 0 24 24'); s.setAttribute('aria-hidden', 'true');
+  const p = document.createElementNS('http://www.w3.org/2000/svg', 'path'); p.setAttribute('d', ICONS[name]); s.append(p);
+  return s;
+}
+function tickIcon() {
+  const s = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  s.setAttribute('viewBox', '0 0 24 24'); s.setAttribute('aria-hidden', 'true');
+  const p = document.createElementNS('http://www.w3.org/2000/svg', 'path'); p.setAttribute('d', 'M5 12.5l4.5 4.5L19 7'); s.append(p);
+  return s;
+}
+let toastTimer;
+function toast(msg) {
+  const t = $('#toast'); t.textContent = msg; t.classList.remove('hidden');
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.add('hidden'), 2200);
+}
+function ago(iso) {
+  if (!iso) return '';
+  const m = Math.max(0, (Date.now() - new Date(iso).getTime()) / 60000);
+  if (m < 2) return 'just now';
+  if (m < 60) return Math.round(m) + ' min';
+  if (m < 60 * 24) return Math.round(m / 60) + ' hr';
+  const d = Math.floor(m / 1440);
+  return d + (d === 1 ? ' day' : ' days');
+}
+const daysOut = iso => iso ? (Date.now() - new Date(iso).getTime()) / 864e5 : 0;
+const fmtTime = iso => new Date(iso).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+const fmtDay = iso => {
+  const d = new Date(iso), t = new Date(); const y = new Date(); y.setDate(t.getDate() - 1);
+  if (d.toDateString() === t.toDateString()) return 'Today';
+  if (d.toDateString() === y.toDateString()) return 'Yesterday';
+  return d.toLocaleDateString([], { weekday: 'long', month: 'short', day: 'numeric' });
+};
+
+/* ---------- state ---------- */
+const S = {
+  pin: LS.get('pin', ''), me: LS.get('me', ''), askEachTime: LS.get('ask', false),
+  items: [], people: [], log: [], index: {},
+  batch: [], queue: LS.get('queue', []), tab: 'scan', loaded: false, online: true,
+  filter: 'all', q: '', done: null, lastAdded: [], busy: false, pendingHash: ''
+};
+function setState(st) {
+  S.items = st.items || []; S.people = st.people || []; S.log = st.log || [];
+  for (const q of S.queue) applyLocal(q.ops, q.personId, q.ts, true);
+  reindex(); S.loaded = true;
+  LS.set('cache', { items: S.items, people: S.people, log: S.log });
+}
+function reindex() { S.index = {}; for (const it of S.items) S.index[it.code.toUpperCase()] = it; }
+const byCode = c => S.index[String(c).toUpperCase()];
+const person = id => S.people.find(p => p.id === id);
+const meName = () => { const p = person(S.me); return p ? p.name : ''; };
+(function loadCache() {
+  const c = LS.get('cache'); if (c) { S.items = c.items || []; S.people = c.people || []; S.log = c.log || []; reindex(); S.loaded = true; }
+})();
+
+function applyLocal(ops, personId, ts, skipSave) {
+  const p = person(personId), name = p ? p.name : '';
+  for (const op of ops) {
+    const it = byCode(op.code); if (!it) continue;
+    if (it.type === 'Tool') {
+      if (op.action === 'out') { it.status = 'Out'; it.holder = name; it.holderId = personId; it.site = op.site || ''; it.since = ts; }
+      else { it.status = 'In'; it.holder = ''; it.holderId = ''; it.site = ''; it.since = ts; }
+    } else it.qty = Math.max(0, (it.qty || 0) + (op.delta || 0));
+  }
+  if (!skipSave) LS.set('cache', { items: S.items, people: S.people, log: S.log });
+}
+
+/* ---------- server calls ---------- */
+async function call(payload, isGet) {
+  if (!CFG.api) throw new Error('noapi');
+  const ctl = new AbortController(); const to = setTimeout(() => ctl.abort(), 25000);
+  try {
+    const res = isGet
+      ? await fetch(CFG.api + '?' + new URLSearchParams({ action: 'state', pin: S.pin }), { signal: ctl.signal })
+      : await fetch(CFG.api, { method: 'POST', body: JSON.stringify(Object.assign({ pin: S.pin }, payload)), signal: ctl.signal });
+    const text = await res.text();
+    let data; try { data = JSON.parse(text); } catch (e) { const err = new Error('badresponse'); throw err; }
+    return data;
+  } finally { clearTimeout(to); }
+}
+let lastError = '';
+function explain(err) {
+  if (err.message === 'noapi') return 'This page is not connected yet. Paste the Web app URL into config.js.';
+  if (err.message === 'badresponse') return 'The Google script did not answer correctly. Check that it is deployed with access set to "Anyone".';
+  return '';
+}
+async function refresh() {
+  if (!S.pin || S.busy) return;
+  try {
+    const r = await call({}, true);
+    if (r.error === 'pin') { badPin(); return; }
+    if (!r.ok) { lastError = r.error || 'Error'; return; }
+    S.online = true; lastError = ''; setState(r.state);
+    if (S.pendingHash) { const h = S.pendingHash; S.pendingHash = ''; handleScan(h); }
+  } catch (e) { S.online = false; lastError = explain(e); }
+  renderAll();
+}
+function badPin() { S.pin = ''; LS.del('pin'); render(); }
+
+let flushP = null;
+function flushQueue() {
+  if (!S.queue.length || !S.pin) return Promise.resolve({});
+  if (!flushP) flushP = doFlush().finally(() => { flushP = null; });
+  return flushP;
+}
+async function doFlush() {
+  const results = {};
+  while (S.queue.length) {
+    const q = S.queue[0];
+    let r;
+    try { r = await call({ action: 'batch', batchId: q.batchId, personId: q.personId, ops: q.ops }); }
+    catch (e) { S.online = false; lastError = explain(e); break; }
+    if (r.error === 'pin') { badPin(); break; }
+    S.queue.shift(); LS.set('queue', S.queue);
+    if (r.ok) { results[q.batchId] = r.results; S.online = true; setState(r.state); }
+    else results[q.batchId] = [{ ok: false, msg: r.error || 'Not saved' }];
+  }
+  renderAll();
+  return results;
+}
+async function submit(ops, personId) {
+  const batch = { batchId: uid(), personId, ops, ts: new Date().toISOString() };
+  applyLocal(ops, personId, batch.ts);
+  S.queue.push(batch); LS.set('queue', S.queue);
+  const res = await flushQueue();
+  return { sent: !!res[batch.batchId], results: res[batch.batchId] || [] };
+}
+
+/* ---------- audio / haptics ---------- */
+let actx;
+function beep(ok) {
+  try {
+    actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+    const o = actx.createOscillator(), g = actx.createGain();
+    o.frequency.value = ok ? 880 : 220; g.gain.value = .08; o.connect(g); g.connect(actx.destination);
+    o.start(); o.stop(actx.currentTime + (ok ? .09 : .2));
+  } catch (e) { /* audio blocked */ }
+  if (navigator.vibrate) navigator.vibrate(ok ? 40 : [60, 40, 60]);
+}
+
+/* ---------- scanning logic ---------- */
+function parseScan(raw) {
+  let t = String(raw || '').trim(); if (!t) return '';
+  const hi = t.lastIndexOf('#');
+  if (hi >= 0) t = t.slice(hi + 1);
+  else { const m = t.match(/[?&]c=([^&#]+)/); if (m) t = m[1]; }
+  try { t = decodeURIComponent(t); } catch (e) { /* keep as is */ }
+  return t.trim();
+}
+function handleScan(raw) {
+  const code = parseScan(raw); if (!code) return;
+  if (S.tab !== 'scan') setTab('scan');
+  const up = code.toUpperCase();
+  if (up === 'CMD-SEND') { beep(true); confirmBatch(); return; }
+  if (up === 'CMD-CLEAR') { beep(true); S.batch = []; renderScan(); toast('Cleared'); return; }
+  const p = S.people.find(x => x.id.toUpperCase() === up);
+  if (p) { S.me = p.id; LS.set('me', p.id); beep(true); toast('Hi ' + p.name); renderTop(); renderScan(); return; }
+  S.done = null;
+  const existing = S.batch.find(r => r.code.toUpperCase() === up);
+  const it = byCode(code);
+  if (existing) {
+    if (it && it.type === 'Material') { existing.qty++; beep(true); renderScan(existing.code); }
+    else { beep(false); toast('Already scanned'); renderScan(existing.code); }
+    return;
+  }
+  S.batch.push({ code: it ? it.code : code, action: null, qty: 1, mode: 'take' });
+  beep(!!it || !S.loaded); renderScan(it ? it.code : code);
+}
+function defaultAction(it) { return it.status === 'Out' && it.holderId === S.me ? 'in' : 'out'; }
+const rowAction = (r, it) => r.action || defaultAction(it);
+
+async function confirmBatch() {
+  if (!S.batch.length) return;
+  if (!S.me || !person(S.me)) { openPicker(() => confirmBatch()); return; }
+  const site = ($('#site') ? $('#site').value.trim() : '');
+  const ops = [], skipped = [];
+  for (const r of S.batch) {
+    const it = byCode(r.code);
+    if (!it) { skipped.push(r.code); continue; }
+    if (it.type === 'Tool') ops.push({ code: it.code, action: rowAction(r, it), site: rowAction(r, it) === 'out' ? site : '' });
+    else ops.push({ code: it.code, delta: r.mode === 'add' ? r.qty : -r.qty });
+  }
+  if (!ops.length) { toast('Nothing to send'); return; }
+  const who = meName();
+  S.busy = true; renderScan();
+  const { sent, results } = await submit(ops, S.me);
+  S.busy = false;
+  const lines = [];
+  for (const x of results) if (x.ok === false || x.action === 'NOCHANGE' || x.msg) lines.push((x.name || x.code || 'Item') + ': ' + (x.msg || 'not saved'));
+  for (const c of skipped) lines.push(c + ': not in the list, skipped');
+  const outs = ops.filter(o => o.action === 'out').length, ins = ops.filter(o => o.action === 'in').length;
+  const takes = ops.filter(o => o.delta < 0).length, adds = ops.filter(o => o.delta > 0).length;
+  const parts = [];
+  if (outs) parts.push(outs + (outs === 1 ? ' tool' : ' tools') + ' checked out to ' + who);
+  if (ins) parts.push(ins + (ins === 1 ? ' tool' : ' tools') + ' returned');
+  if (takes) parts.push(takes + (takes === 1 ? ' material' : ' materials') + ' taken');
+  if (adds) parts.push(adds + (adds === 1 ? ' material' : ' materials') + ' added');
+  if (site && outs) LS.set('site', site);
+  S.done = { title: sent ? 'Done' : 'Saved on this phone', parts, lines, queued: !sent };
+  S.batch = [];
+  if (S.askEachTime) { S.me = ''; LS.del('me'); }
+  renderTop(); renderScan(); setTimeout(() => { if (S.done && S.tab === 'scan') window.scrollTo({ top: 0, behavior: 'smooth' }); }, 50);
+}
+
+/* ---------- camera ---------- */
+const cam = { stream: null, running: false, detector: null, timer: 0, last: { code: '', t: 0 }, wanted: LS.get('cam', false), canvas: null, torch: false, note: '' };
+async function startCam() {
+  if (cam.running) return;
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { cam.note = 'This browser cannot open the camera here. Use a scanner, or open the page with https.'; renderCamBox(); return; }
+  try {
+    cam.stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false });
+  } catch (e) {
+    cam.note = e && e.name === 'NotAllowedError' ? 'Camera is blocked. Allow the camera for this site in your browser settings, then tap Start camera.' : 'No camera found.';
+    renderCamBox(); return;
+  }
+  cam.note = ''; cam.running = true; LS.set('cam', true);
+  const v = $('#camvideo'); v.srcObject = cam.stream; try { await v.play(); } catch (e) { /* autoplay quirks */ }
+  if ('BarcodeDetector' in window && !cam.detector) {
+    try { const f = await BarcodeDetector.getSupportedFormats(); if (f.includes('qr_code')) cam.detector = new BarcodeDetector({ formats: ['qr_code'] }); } catch (e) { cam.detector = null; }
+  }
+  renderCamBox(); tick();
+}
+function stopCam(forget) {
+  cam.running = false; clearTimeout(cam.timer);
+  if (cam.stream) cam.stream.getTracks().forEach(t => t.stop());
+  cam.stream = null; cam.torch = false; if (forget) LS.set('cam', false);
+  const v = $('#camvideo'); if (v) v.srcObject = null;
+}
+function tick() {
+  if (!cam.running) return;
+  scanFrame().catch(() => {}).finally(() => { cam.timer = setTimeout(tick, 120); });
+}
+async function scanFrame() {
+  const v = $('#camvideo'); if (!v || v.readyState < 2 || !v.videoWidth) return;
+  let codes = [];
+  if (cam.detector) { const r = await cam.detector.detect(v); codes = r.map(x => x.rawValue); }
+  else {
+    const w = Math.min(720, v.videoWidth), h = Math.round(v.videoHeight * w / v.videoWidth);
+    cam.canvas = cam.canvas || document.createElement('canvas'); cam.canvas.width = w; cam.canvas.height = h;
+    const c = cam.canvas.getContext('2d', { willReadFrequently: true }); c.drawImage(v, 0, 0, w, h);
+    const d = c.getImageData(0, 0, w, h), q = window.jsQR(d.data, w, h, { inversionAttempts: 'dontInvert' });
+    if (q && q.data) codes = [q.data];
+  }
+  const now = Date.now();
+  for (const raw of codes) {
+    const code = parseScan(raw);
+    if (code === cam.last.code && now - cam.last.t < 2000) { cam.last.t = now; continue; }
+    cam.last = { code, t: now };
+    const box = $('.cam'); if (box) { box.classList.remove('flash'); void box.offsetWidth; box.classList.add('flash'); }
+    handleScan(raw);
+  }
+}
+async function toggleTorch() {
+  const t = cam.stream && cam.stream.getVideoTracks()[0]; if (!t) return;
+  try { cam.torch = !cam.torch; await t.applyConstraints({ advanced: [{ torch: cam.torch }] }); } catch (e) { cam.torch = false; toast('No flashlight on this camera'); }
+}
+function torchSupported() { const t = cam.stream && cam.stream.getVideoTracks()[0]; return !!(t && t.getCapabilities && t.getCapabilities().torch); }
+
+/* hardware scanner typing into the page (Zebra DS8178 etc.) */
+(function keyboardScanner() {
+  let buf = '', last = 0, fast = true, timer;
+  function flush() { const b = buf; buf = ''; fast = true; if (b.length >= 3) handleScan(b); }
+  document.addEventListener('keydown', ev => {
+    const tg = ev.target, typing = tg && (tg.tagName === 'INPUT' || tg.tagName === 'TEXTAREA' || tg.tagName === 'SELECT');
+    if (ev.ctrlKey || ev.metaKey || ev.altKey) return;
+    if (typing) return;
+    const now = Date.now();
+    if (ev.key === 'Enter' || ev.key === 'Tab') { if (buf) { ev.preventDefault(); clearTimeout(timer); flush(); } return; }
+    if (ev.key.length !== 1) return;
+    if (buf && now - last > 80) fast = false;
+    last = now; buf += ev.key;
+    clearTimeout(timer); timer = setTimeout(() => { if (fast) flush(); else buf = ''; }, 150);
+  });
+})();
+
+/* ---------- views ---------- */
+const root = $('#root');
+let views = {};          // tab -> container
+function setTab(t) {
+  if (S.tab === 'scan' && t !== 'scan') { stopCam(false); renderCamBox(); }
+  if (S.tab !== t) S.q = '';
+  S.tab = t; renderAll();
+  if (t === 'scan' && (cam.wanted || LS.get('cam', false)) && !cam.running) startCam();
+  window.scrollTo(0, 0);
+}
+function render() {
+  root.textContent = '';
+  if (!CFG.api) { root.append(gate('Not connected yet', 'Open config.js and paste the Web app URL from the Google script. See SETUP.md.', null)); return; }
+  if (!S.pin) { root.append(pinGate()); return; }
+  const app = el('div', { id: 'app' });
+  app.append(el('div', { class: 'topbar', id: 'topbar' }));
+  for (const t of ['scan', 'tools', 'materials', 'activity', 'setup']) { views[t] = el('main', { id: 'v-' + t, class: 'hidden' }); app.append(views[t]); }
+  root.append(app);
+  const tabs = el('nav', { class: 'tabs', 'aria-label': 'Sections' }, el('div', { class: 'tabs-inner', role: 'tablist' },
+    [['scan', 'Scan'], ['tools', 'Tools'], ['materials', 'Materials'], ['activity', 'Activity'], ['setup', 'Setup']].map(([k, label]) =>
+      el('button', { class: 'tab', role: 'tab', id: 'tab-' + k, 'aria-selected': S.tab === k ? 'true' : 'false', onclick: () => setTab(k) }, icon(k), label))));
+  root.append(tabs);
+  root.append(el('div', { class: 'confirmbar hidden', id: 'confirmbar' }));
+  buildScanView();
+  renderAll();
+}
+function renderAll() {
+  if (!views.scan || !views.scan.isConnected) return;
+  renderTop();
+  for (const t of Object.keys(views)) views[t].classList.toggle('hidden', t !== S.tab);
+  document.querySelectorAll('.tab').forEach(b => b.setAttribute('aria-selected', b.id === 'tab-' + S.tab ? 'true' : 'false'));
+  const ae = document.activeElement;
+  if (S.tab !== 'scan' && ae && /^(INPUT|TEXTAREA)$/.test(ae.tagName) && views[S.tab].contains(ae)) return;
+  if (S.tab === 'scan') renderScan(); else $('#confirmbar').classList.add('hidden');
+  if (S.tab === 'tools') renderTools();
+  if (S.tab === 'materials') renderMaterials();
+  if (S.tab === 'activity') renderActivity();
+  if (S.tab === 'setup') renderSetup();
+}
+function renderTop() {
+  const t = $('#topbar'); if (!t) return;
+  const waiting = S.queue.length;
+  const state = !S.online ? 'off' : waiting ? 'wait' : '';
+  const label = !S.online ? (waiting ? waiting + ' waiting to send (offline)' : 'Offline') : waiting ? waiting + ' sending' : 'Up to date';
+  t.textContent = '';
+  t.append(
+    el('div', { class: 'brand' }, 'Tool Tracker', el('span', { class: 'sync ' + state, title: label, role: 'img', 'aria-label': label })),
+    el('button', { class: 'who' + (meName() ? '' : ' empty'), onclick: () => openPicker() }, meName() || 'Who are you?'));
+}
+function gate(title, text, form) {
+  return el('div', { class: 'gate' }, el('div', { class: 'card' }, el('h1', { style: 'font-size:28px;margin-bottom:8px' }, title), el('p', { class: 'muted' }, text), form));
+}
+function pinGate() {
+  const inp = el('input', { type: 'password', id: 'pin', inputMode: 'numeric', autocomplete: 'off', placeholder: 'PIN' });
+  inp.setAttribute('inputmode', 'numeric');
+  const err = el('div', { class: 'err hidden', id: 'pinerr' });
+  const go = async () => {
+    const v = inp.value.trim(); if (!v) return;
+    S.pin = v; err.classList.add('hidden');
+    try {
+      const r = await call({}, true);
+      if (r.error === 'pin') { S.pin = ''; err.textContent = 'That PIN is not right.'; err.classList.remove('hidden'); return; }
+      if (!r.ok) { S.pin = ''; err.textContent = r.error || 'Something went wrong.'; err.classList.remove('hidden'); return; }
+      LS.set('pin', v); setState(r.state); S.online = true; render(); flushQueue();
+      if (S.pendingHash) { const x = S.pendingHash; S.pendingHash = ''; handleScan(x); }
+    } catch (e) { S.pin = ''; err.textContent = explain(e) || 'Could not reach the tracker. Check your signal and try again.'; err.classList.remove('hidden'); }
+  };
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter') go(); });
+  return gate('Tool Tracker', 'Enter the team PIN. You only need to do this once on this phone.',
+    el('div', {}, el('label', { class: 'field', for: 'pin' }, 'Team PIN'), inp, err, el('div', { style: 'height:12px' }), el('button', { class: 'btn primary block', onclick: go }, 'Continue')));
+}
+
+/* scan view */
+function buildScanView() {
+  const v = views.scan; v.textContent = '';
+  v.append(el('div', { id: 'cambox' }), el('div', { id: 'donebox' }), el('div', { id: 'batchbox' }));
+  renderCamBox();
+}
+function renderCamBox() {
+  const b = $('#cambox'); if (!b) return;
+  b.textContent = '';
+  const video = el('video', { id: 'camvideo', playsInline: true, muted: true, autoplay: true });
+  video.setAttribute('playsinline', ''); video.muted = true;
+  const box = el('div', { class: 'cam' }, video);
+  if (cam.running) {
+    box.append(el('div', { class: 'frame' }));
+    const tools = el('div', { class: 'tools' });
+    if (torchSupported()) tools.append(el('button', { onclick: toggleTorch }, 'Light'));
+    tools.append(el('button', { onclick: () => { stopCam(true); renderCamBox(); } }, 'Stop'));
+    box.append(tools);
+    video.srcObject = cam.stream; video.play().catch(() => {});
+  } else {
+    box.append(el('div', { class: 'msg' },
+      el('p', {}, cam.note || 'Scan with the camera, or just use your scanner.'),
+      el('button', { class: 'btn primary', onclick: startCam }, 'Start camera')));
+  }
+  box.classList.toggle('compact', S.batch.length > 0);
+  b.append(box);
+}
+function renderScan(flashCode) {
+  if (!$('#batchbox')) return;
+  const done = $('#donebox'); done.textContent = '';
+  if (S.done) {
+    const d = S.done;
+    done.append(el('div', { class: 'card done' },
+      el('div', { class: 'tick' }, tickIcon()),
+      el('h2', {}, d.title),
+      d.parts.map(p => el('div', { style: 'font-weight:600' }, p)),
+      d.queued ? el('p', { class: 'muted' }, 'No signal right now. It will send by itself when you are back online.') : null,
+      d.lines.length ? el('ul', {}, d.lines.map(l => el('li', {}, l))) : null,
+      el('button', { class: 'btn', onclick: () => { S.done = null; renderScan(); } }, 'Scan more')));
+  }
+  const cb = $('.cam'); if (cb) cb.classList.toggle('compact', S.batch.length > 0);
+  const box = $('#batchbox'); box.textContent = '';
+  const card = el('div', { class: 'card' });
+  card.append(el('div', { class: 'batch-head' }, el('h2', {}, S.batch.length ? 'Scanned (' + S.batch.length + ')' : 'Scanned'),
+    S.batch.length ? el('button', { class: 'link', onclick: () => { S.batch = []; renderScan(); } }, 'Clear all') : null));
+  if (!S.batch.length) {
+    card.append(el('div', { class: 'empty' }, el('b', {}, 'Nothing scanned yet'), 'Point the camera at a tool’s QR code. Scan as many as you like, then press Confirm once.'));
+  }
+  let anyOut = false;
+  S.batch.forEach((r, i) => {
+    const it = byCode(r.code);
+    const row = el('div', { class: 'scan-row' + (flashCode && flashCode.toUpperCase() === r.code.toUpperCase() ? ' pop' : '') });
+    const main = el('div', {});
+    if (!it) {
+      main.append(el('div', { class: 'sr-name' }, S.loaded ? 'New code ' + r.code : 'Looking up…'), el('div', { class: 'sr-sub' }, S.loaded ? 'Not in the list yet' : r.code));
+      row.append(main, S.loaded ? el('button', { class: 'act', onclick: () => openAddUnknown(r.code) }, 'Add it') : el('span'), removeBtn(i));
+    } else if (it.type === 'Tool') {
+      const a = rowAction(r, it); if (a === 'out') anyOut = true;
+      const status = it.status === 'Out' ? 'With ' + (it.holder || 'someone') + (it.site ? ' at ' + it.site : '') + ' · ' + ago(it.since) : 'In the shop';
+      main.append(el('div', { class: 'sr-name' }, it.name), el('div', { class: 'sr-sub' }, 'Now: ' + status));
+      const label = a === 'in' ? 'Return' : (it.status === 'Out' && it.holderId !== S.me ? 'Take over' : 'Check out');
+      row.append(main, el('button', { class: 'act' + (a === 'in' ? ' in' : ''), 'aria-label': label + ' ' + it.name + '. Tap to switch.', onclick: () => { r.action = a === 'in' ? 'out' : 'in'; renderScan(); } }, label + ' ⇅'), removeBtn(i));
+    } else {
+      main.append(el('div', { class: 'sr-name' }, it.name), el('div', { class: 'sr-sub' }, (it.qty != null ? it.qty : 0) + ' on hand'));
+      const step = el('div', { class: 'stepper' },
+        el('button', { 'aria-label': 'One less', onclick: () => { r.qty = Math.max(1, r.qty - 1); renderScan(); } }, '−'),
+        el('b', { class: 'num' }, String(r.qty)),
+        el('button', { 'aria-label': 'One more', onclick: () => { r.qty++; renderScan(); } }, '+'));
+      const mode = el('button', { class: 'act ' + (r.mode === 'add' ? 'in' : 'take'), style: 'min-width:84px', onclick: () => { r.mode = r.mode === 'add' ? 'take' : 'add'; renderScan(); } }, r.mode === 'add' ? 'Add' : 'Take');
+      main.classList.add('sr-main'); row.classList.add('mat');
+      row.append(main, el('div', { class: 'stepper', style: 'gap:8px' }, step, mode), removeBtn(i));
+    }
+    card.append(row);
+  });
+  if (anyOut) {
+    const recent = [...new Set(S.log.filter(l => l.site).map(l => l.site))].slice(0, 5);
+    const inp = el('input', { type: 'text', id: 'site', placeholder: 'e.g. Maple St job (optional)', autocomplete: 'off', value: '' });
+    card.append(el('label', { class: 'field', for: 'site' }, 'Where are they going?'), inp,
+      recent.length ? el('div', { class: 'chips' }, recent.map(s => el('button', { class: 'chip', onclick: () => { inp.value = s; } }, s))) : null);
+  }
+  box.append(card);
+
+  const bar = $('#confirmbar');
+  if (S.batch.length && !S.busy) {
+    const outs = S.batch.filter(r => { const it = byCode(r.code); return it && it.type === 'Tool' && rowAction(r, it) === 'out'; }).length;
+    const ins = S.batch.filter(r => { const it = byCode(r.code); return it && it.type === 'Tool' && rowAction(r, it) === 'in'; }).length;
+    const mats = S.batch.filter(r => { const it = byCode(r.code); return it && it.type === 'Material'; }).length;
+    const bits = []; if (outs) bits.push(outs + ' out'); if (ins) bits.push(ins + ' back'); if (mats) bits.push(mats + (mats === 1 ? ' material' : ' materials'));
+    bar.textContent = ''; bar.append(el('button', { class: 'btn primary block', onclick: confirmBatch }, 'Confirm' + (bits.length ? ' · ' + bits.join(' · ') : '')));
+    bar.classList.remove('hidden');
+  } else if (S.busy) {
+    bar.textContent = ''; bar.append(el('button', { class: 'btn primary block', disabled: true }, 'Sending…')); bar.classList.remove('hidden');
+  } else bar.classList.add('hidden');
+}
+const removeBtn = i => el('button', { class: 'x', 'aria-label': 'Remove', onclick: () => { S.batch.splice(i, 1); renderScan(); } }, '×');
+
+/* tools */
+function toolStatus(it) {
+  if (it.status !== 'Out') return el('span', { class: 'pill in' }, 'In shop');
+  const late = daysOut(it.since) >= CFG.overdueDays;
+  return el('span', { class: 'pill ' + (late ? 'late' : 'out') }, 'Out · ' + (it.holder || '?'));
+}
+function renderTools() {
+  const v = views.tools; v.textContent = '';
+  const tools = S.items.filter(i => i.type === 'Tool');
+  const out = tools.filter(i => i.status === 'Out'), late = out.filter(i => daysOut(i.since) >= CFG.overdueDays);
+  v.append(el('div', { class: 'tiles' },
+    el('div', { class: 'tile' + (out.length ? ' warn' : '') }, el('div', { class: 'n num' }, String(out.length)), el('div', { class: 'l' }, 'Out now')),
+    el('div', { class: 'tile' + (late.length ? ' bad' : '') }, el('div', { class: 'n num' }, String(late.length)), el('div', { class: 'l' }, 'Out ' + CFG.overdueDays + '+ days'))));
+  const search = el('input', { type: 'search', placeholder: 'Search tools', value: S.q, 'aria-label': 'Search tools', oninput: e => { S.q = e.target.value; fill(); } });
+  const seg = el('div', { class: 'seg', style: 'margin-top:10px' }, [['all', 'All'], ['out', 'Out'], ['in', 'In shop']].map(([k, l]) =>
+    el('button', { 'aria-pressed': S.filter === k ? 'true' : 'false', onclick: () => { S.filter = k; renderTools(); } }, l)));
+  const holder = el('div', {});
+  v.append(search, seg, holder);
+  function fill() {
+    holder.textContent = '';
+    const q = S.q.trim().toLowerCase();
+    let list = tools.filter(i => (S.filter === 'all' || (S.filter === 'out') === (i.status === 'Out')) && (!q || (i.name + ' ' + i.code + ' ' + (i.category || '') + ' ' + (i.holder || '')).toLowerCase().includes(q)));
+    list.sort((a, b) => (a.status === 'Out' ? 0 : 1) - (b.status === 'Out' ? 0 : 1) || (a.status === 'Out' ? new Date(a.since) - new Date(b.since) : a.name.localeCompare(b.name)));
+    if (!list.length) { holder.append(el('div', { class: 'empty' }, el('b', {}, tools.length ? 'No matches' : 'No tools yet'), tools.length ? 'Try a different search.' : 'Add tools in Setup, then print their labels.')); return; }
+    holder.append(el('div', { class: 'list' }, list.map(it => el('button', { class: 'item', onclick: () => openTool(it.code) },
+      el('div', {}, el('div', { class: 't' }, it.name), el('div', { class: 's' }, it.code + (it.category ? ' · ' + it.category : ''))),
+      el('div', { class: 'r' }, toolStatus(it), it.status === 'Out' ? el('div', { class: 's' }, (it.site ? it.site + ' · ' : '') + ago(it.since)) : null)))));
+  }
+  fill();
+}
+
+/* materials */
+function renderMaterials() {
+  const v = views.materials; v.textContent = '';
+  const mats = S.items.filter(i => i.type === 'Material');
+  const low = mats.filter(i => i.min != null && (i.qty || 0) <= i.min);
+  v.append(el('div', { class: 'tiles' },
+    el('div', { class: 'tile' }, el('div', { class: 'n num' }, String(mats.length)), el('div', { class: 'l' }, 'Materials')),
+    el('div', { class: 'tile' + (low.length ? ' bad' : '') }, el('div', { class: 'n num' }, String(low.length)), el('div', { class: 'l' }, 'Running low'))));
+  const holder = el('div', {});
+  v.append(el('input', { type: 'search', placeholder: 'Search materials', 'aria-label': 'Search materials', value: S.q, oninput: e => { S.q = e.target.value; fill(); } }), holder);
+  function fill() {
+    holder.textContent = '';
+    const q = S.q.trim().toLowerCase();
+    const list = mats.filter(i => !q || (i.name + ' ' + i.code + ' ' + (i.category || '')).toLowerCase().includes(q))
+      .sort((a, b) => (isLow(b) - isLow(a)) || a.name.localeCompare(b.name));
+    if (!list.length) { holder.append(el('div', { class: 'empty' }, el('b', {}, mats.length ? 'No matches' : 'No materials yet'), mats.length ? 'Try a different search.' : 'Add materials in Setup, with how many you have and the level to reorder at.')); return; }
+    holder.append(el('div', { class: 'list' }, list.map(it => el('button', { class: 'item', onclick: () => openMaterial(it.code) },
+      el('div', {}, el('div', { class: 't' }, it.name), el('div', { class: 's' }, it.code + (it.category ? ' · ' + it.category : '') + (it.min != null ? ' · reorder at ' + it.min : ''))),
+      el('div', { class: 'r' }, el('div', { class: 'qty num' }, String(it.qty || 0)), isLow(it) ? el('span', { class: 'pill late' }, 'Low') : null)))));
+  }
+  fill();
+}
+const isLow = it => it.min != null && (it.qty || 0) <= it.min ? 1 : 0;
+
+/* activity */
+const VERB = { OUT: 'checked out', IN: 'returned', TRANSFER: 'took over', TAKE: 'took', RESTOCK: 'added', ADD: 'was added', EDIT: 'was edited', RETIRE: 'was retired' };
+function logText(l) {
+  const who = l.person || 'Someone';
+  if (l.action === 'TAKE' || l.action === 'RESTOCK') return who + ' ' + VERB[l.action] + ' ' + l.qty + ' × ' + l.item;
+  if (l.action === 'ADD' || l.action === 'EDIT' || l.action === 'RETIRE') return l.item + ' ' + VERB[l.action];
+  return who + ' ' + VERB[l.action] + ' ' + l.item + (l.site && l.action !== 'IN' ? ' (' + l.site + ')' : '') + (l.note ? ' · ' + l.note : '');
+}
+function renderActivity() {
+  const v = views.activity; v.textContent = '';
+  const holder = el('div', {});
+  v.append(el('input', { type: 'search', placeholder: 'Search activity', 'aria-label': 'Search activity', value: S.q, oninput: e => { S.q = e.target.value; fill(); } }), holder);
+  function fill() {
+    holder.textContent = '';
+    const q = S.q.trim().toLowerCase();
+    const list = S.log.filter(l => !q || logText(l).toLowerCase().includes(q) || l.code.toLowerCase().includes(q));
+    if (!list.length) { holder.append(el('div', { class: 'empty' }, el('b', {}, 'No activity yet'), 'Check-outs and returns show up here.')); return; }
+    let day = '', box = null;
+    for (const l of list) {
+      const d = fmtDay(l.time);
+      if (d !== day) { day = d; holder.append(el('div', { class: 'daylabel' }, d)); box = el('div', { class: 'list', style: 'margin-top:0' }); holder.append(box); }
+      box.append(el('div', { class: 'log' }, el('time', { class: 'num' }, fmtTime(l.time)), el('div', {}, logText(l))));
+    }
+  }
+  fill();
+}
+
+/* sheets */
+function openSheet(title, body, onclose) {
+  closeSheet();
+  const ov = el('div', { class: 'overlay', id: 'overlay', onclick: e => { if (e.target === ov) closeSheet(); } });
+  const sh = el('div', { class: 'sheet', role: 'dialog', 'aria-modal': 'true', 'aria-label': title },
+    el('div', { class: 'sheet-head' }, el('h2', {}, title), el('button', { class: 'x', 'aria-label': 'Close', onclick: closeSheet }, '×')), body);
+  ov.append(sh); document.body.append(ov); ov._onclose = onclose;
+  const first = sh.querySelector('input,textarea'); if (first && !('ontouchstart' in window)) first.focus();
+}
+function closeSheet() { const o = $('#overlay'); if (o) { const f = o._onclose; o.remove(); if (f) f(); } }
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSheet(); });
+
+function openPicker(after) {
+  const body = el('div', { class: 'stack' });
+  const list = el('div', { class: 'stack' });
+  const search = el('input', { type: 'search', placeholder: 'Search names', 'aria-label': 'Search names' });
+  function fill() {
+    list.textContent = ''; const q = search.value.trim().toLowerCase();
+    const ppl = S.people.filter(p => !q || p.name.toLowerCase().includes(q)).sort((a, b) => a.name.localeCompare(b.name));
+    ppl.forEach(p => list.append(el('button', { class: 'person', onclick: () => { S.me = p.id; LS.set('me', p.id); closeSheet(); renderTop(); renderScan(); if (after) after(); } }, p.name)));
+    if (!ppl.length) list.append(el('div', { class: 'muted' }, S.people.length ? 'No one by that name.' : 'No one is in the list yet. Add your name below.'));
+  }
+  search.addEventListener('input', fill);
+  const nameIn = el('input', { type: 'text', placeholder: 'Your name', autocomplete: 'off' });
+  const err = el('div', { class: 'err hidden' });
+  const add = el('button', { class: 'btn', onclick: async () => {
+    const n = nameIn.value.trim(); if (!n) return; err.classList.add('hidden');
+    try {
+      const r = await call({ action: 'addPerson', name: n });
+      if (!r.ok) { err.textContent = r.error || 'Could not add that name.'; err.classList.remove('hidden'); return; }
+      setState(r.state); S.me = r.person.id; LS.set('me', S.me); closeSheet(); renderAll(); if (after) after();
+    } catch (e) { err.textContent = explain(e) || 'No signal. Try again when you are online.'; err.classList.remove('hidden'); }
+  } }, 'Add me');
+  body.append(search, list, el('label', { class: 'field' }, 'Not in the list?'), nameIn, err, add);
+  openSheet('Who are you?', body); fill();
+}
+
+function openTool(code) {
+  const it = byCode(code); if (!it) return;
+  const body = el('div', { class: 'stack' });
+  const detail = it.status === 'Out' ? 'With ' + (it.holder || 'someone') + (it.site ? ' at ' + it.site : '') + ' · ' + ago(it.since) : 'In the shop';
+  body.append(el('div', {}, toolStatus(it), el('div', { class: 'muted', style: 'margin-top:6px' }, it.code + (it.category ? ' · ' + it.category : '') + ' · ' + detail)));
+  const act = async (action) => {
+    if (!S.me) { openPicker(() => act(action)); return; }
+    closeSheet(); await submit([{ code: it.code, action, site: '' }], S.me); toast(action === 'in' ? 'Returned to shop' : 'Checked out to ' + meName()); renderAll();
+  };
+  if (it.status === 'Out') body.append(el('button', { class: 'btn primary block', onclick: () => act('in') }, 'Mark returned to shop'),
+    it.holderId !== S.me ? el('button', { class: 'btn block', onclick: () => act('out') }, 'I have it now') : null);
+  else body.append(el('button', { class: 'btn primary block', onclick: () => act('out') }, 'Check out' + (meName() ? ' to ' + meName() : '')));
+  body.append(el('div', { class: 'seg', style: 'display:flex' }, el('button', { onclick: () => { closeSheet(); printLabels([it]); } }, 'Print label'), el('button', { onclick: () => { closeSheet(); openEdit(it.code); } }, 'Edit')));
+  const hist = S.log.filter(l => l.code.toUpperCase() === it.code.toUpperCase()).slice(0, 8);
+  if (hist.length) body.append(el('h3', { style: 'font-size:18px;margin-top:6px' }, 'History'), el('div', { class: 'list', style: 'margin-top:0' },
+    hist.map(l => el('div', { class: 'log' }, el('time', {}, new Date(l.time).toLocaleDateString([], { month: 'short', day: 'numeric' })), el('div', {}, logText(l))))));
+  openSheet(it.name, body);
+}
+function openMaterial(code) {
+  const it = byCode(code); if (!it) return;
+  let n = 1;
+  const body = el('div', { class: 'stack' });
+  const num = el('b', { class: 'num', style: 'font-size:28px;min-width:40px;text-align:center' }, '1');
+  const set = d => { n = Math.max(1, n + d); num.textContent = String(n); };
+  const go = async (sign) => {
+    if (!S.me) { openPicker(() => go(sign)); return; }
+    closeSheet(); await submit([{ code: it.code, delta: sign * n }], S.me); toast((sign < 0 ? 'Took ' : 'Added ') + n); renderAll();
+  };
+  body.append(el('div', { class: 'muted' }, it.code + (it.category ? ' · ' + it.category : '') + (it.min != null ? ' · reorder at ' + it.min : '')),
+    el('div', { class: 'qty num', style: 'font-size:44px' }, (it.qty || 0) + ' on hand'),
+    el('div', { style: 'display:flex;align-items:center;justify-content:center;gap:14px' },
+      el('button', { class: 'btn', style: 'min-width:56px', onclick: () => set(-1) }, '−'), num, el('button', { class: 'btn', style: 'min-width:56px', onclick: () => set(1) }, '+')),
+    el('div', { style: 'display:grid;grid-template-columns:1fr 1fr;gap:10px' }, el('button', { class: 'btn danger', onclick: () => go(-1) }, 'Take'), el('button', { class: 'btn primary', onclick: () => go(1) }, 'Add stock')),
+    el('div', { class: 'seg', style: 'display:flex' }, el('button', { onclick: () => { closeSheet(); printLabels([it]); } }, 'Print label'), el('button', { onclick: () => { closeSheet(); openEdit(it.code); } }, 'Edit')));
+  openSheet(it.name, body);
+}
+function openEdit(code) {
+  const it = byCode(code); if (!it) return;
+  const name = el('input', { type: 'text', value: it.name }), cat = el('input', { type: 'text', value: it.category || '' });
+  const min = it.type === 'Material' ? el('input', { type: 'number', inputMode: 'numeric', value: it.min == null ? '' : it.min }) : null;
+  const err = el('div', { class: 'err hidden' });
+  let armed = false;
+  const retire = el('button', { class: 'btn danger block', onclick: async () => {
+    if (!armed) { armed = true; retire.textContent = 'Tap again to retire ' + it.name; return; }
+    await save({ active: false });
+  } }, 'Retire this item');
+  async function save(extra) {
+    const fields = Object.assign({ name: name.value, category: cat.value }, min ? { min: min.value === '' ? null : Number(min.value) } : {}, extra || {});
+    try {
+      const r = await call({ action: 'updateItem', code: it.code, fields });
+      if (!r.ok) { err.textContent = r.error || 'Could not save.'; err.classList.remove('hidden'); return; }
+      setState(r.state); closeSheet(); renderAll(); toast('Saved');
+    } catch (e) { err.textContent = explain(e) || 'No signal. Try again when you are online.'; err.classList.remove('hidden'); }
+  }
+  openSheet('Edit ' + it.code, el('div', {}, el('label', { class: 'field' }, 'Name'), name, el('label', { class: 'field' }, 'Category'), cat,
+    min ? [el('label', { class: 'field' }, 'Reorder at'), min] : null, err, el('div', { style: 'height:14px' }),
+    el('div', { class: 'stack' }, el('button', { class: 'btn primary block', onclick: () => save() }, 'Save'), retire)));
+}
+function openAddUnknown(code) {
+  let type = 'Tool';
+  const name = el('input', { type: 'text', placeholder: 'What is it? e.g. DeWalt impact driver', autocomplete: 'off' });
+  const extra = el('div', {});
+  const err = el('div', { class: 'err hidden' });
+  const qty = el('input', { type: 'number', inputMode: 'numeric', placeholder: 'How many on hand' });
+  const seg = el('div', { class: 'seg' });
+  function drawSeg() {
+    seg.textContent = '';
+    for (const t of ['Tool', 'Material']) seg.append(el('button', { 'aria-pressed': type === t ? 'true' : 'false', onclick: () => { type = t; drawSeg(); } }, t));
+    extra.textContent = ''; if (type === 'Material') extra.append(el('label', { class: 'field' }, 'On hand'), qty);
+  }
+  drawSeg();
+  openSheet('Add ' + code, el('div', {}, el('p', { class: 'muted' }, 'This code is not in the list yet. Name it and it is ready to scan.'), seg, el('label', { class: 'field' }, 'Name'), name, extra, err, el('div', { style: 'height:14px' }),
+    el('button', { class: 'btn primary block', onclick: async () => {
+      if (!name.value.trim()) { err.textContent = 'Enter a name.'; err.classList.remove('hidden'); return; }
+      try {
+        const r = await call({ action: 'addItems', items: [{ code, type, name: name.value, qty: Number(qty.value) || 0 }] });
+        if (!r.ok) { err.textContent = r.error || 'Could not add it.'; err.classList.remove('hidden'); return; }
+        setState(r.state); closeSheet(); renderAll(); toast('Added');
+      } catch (e) { err.textContent = explain(e) || 'No signal. Try again when you are online.'; err.classList.remove('hidden'); }
+    } }, 'Add')));
+}
+
+/* setup */
+function renderSetup() {
+  const v = views.setup; v.textContent = '';
+  /* add items */
+  let type = 'Tool';
+  const ta = el('textarea', { id: 'bulk', placeholder: '' });
+  const hint = el('p', { class: 'muted', style: 'margin:6px 0 0;font-size:14px' });
+  const seg = el('div', { class: 'seg' });
+  const err = el('div', { class: 'err hidden' });
+  function drawType() {
+    seg.textContent = '';
+    for (const t of ['Tool', 'Material']) seg.append(el('button', { 'aria-pressed': type === t ? 'true' : 'false', onclick: () => { type = t; drawType(); } }, t));
+    ta.placeholder = type === 'Tool' ? 'DeWalt impact driver, Power tools\nMilwaukee 18in pipe wrench, Plumbing' : '1/4" drywall screws, 500, 100\nPVC primer, 6, 2';
+    hint.textContent = type === 'Tool' ? 'One tool per line. Add a category after a comma if you like.' : 'One per line: name, how many on hand, reorder level.';
+  }
+  drawType();
+  const addBtn = el('button', { class: 'btn primary block', onclick: async () => {
+    err.classList.add('hidden');
+    const items = ta.value.split('\n').map(l => l.trim()).filter(Boolean).map(l => {
+      const p = l.split(',').map(x => x.trim());
+      return type === 'Tool' ? { type, name: p[0], category: p[1] || '' } : { type, name: p[0], qty: Number(p[1]) || 0, min: p[2] === undefined || p[2] === '' ? '' : Number(p[2]) };
+    });
+    if (!items.length) return;
+    try {
+      const r = await call({ action: 'addItems', items });
+      if (!r.ok) { err.textContent = r.error || 'Could not add.'; err.classList.remove('hidden'); return; }
+      setState(r.state); S.lastAdded = r.added.map(a => a.code); ta.value = ''; toast(r.added.length + ' added'); renderSetup();
+    } catch (e) { err.textContent = explain(e) || 'No signal. Try again when you are online.'; err.classList.remove('hidden'); }
+  } }, 'Add to inventory');
+  v.append(el('div', { class: 'card' }, el('h2', {}, 'Add tools and materials'), seg, el('label', { class: 'field', for: 'bulk' }, 'List'), ta, hint, err, el('div', { style: 'height:12px' }), addBtn));
+
+  /* labels */
+  const lab = el('div', { class: 'card' }, el('h2', {}, 'Labels and badges'),
+    el('p', { class: 'muted', style: 'margin-top:0' }, 'Each QR label works with the phone camera and the shop scanner. Print at 100% size, then stick one on every tool and bin.'),
+    el('div', { class: 'stack' },
+      S.lastAdded.length ? el('button', { class: 'btn primary block', onclick: () => printLabels(S.lastAdded.map(byCode).filter(Boolean)) }, 'Print the ' + S.lastAdded.length + ' you just added') : null,
+      el('button', { class: 'btn block', onclick: () => openLabelPicker() }, 'Choose labels to print'),
+      el('button', { class: 'btn block', onclick: () => printBadges() }, 'Print name badges'),
+      el('button', { class: 'btn block', onclick: () => printCommands() }, 'Print Send and Clear codes for the shop scanner')));
+  v.append(lab);
+
+  /* people */
+  const pin = el('input', { type: 'text', placeholder: 'Add a person', autocomplete: 'off' });
+  const perr = el('div', { class: 'err hidden' });
+  v.append(el('div', { class: 'card' }, el('h2', {}, 'People (' + S.people.length + ')'),
+    S.people.length ? el('div', { class: 'chips', style: 'margin:0 0 12px' }, S.people.map(p => el('span', { class: 'chip' }, p.name))) : el('p', { class: 'muted' }, 'No one yet. Workers can add their own name the first time they open the page.'),
+    pin, perr, el('div', { style: 'height:10px' }),
+    el('button', { class: 'btn block', onclick: async () => {
+      const n = pin.value.trim(); if (!n) return; perr.classList.add('hidden');
+      try { const r = await call({ action: 'addPerson', name: n }); if (!r.ok) { perr.textContent = r.error; perr.classList.remove('hidden'); return; } setState(r.state); renderSetup(); }
+      catch (e) { perr.textContent = explain(e) || 'No signal. Try again when you are online.'; perr.classList.remove('hidden'); }
+    } }, 'Add person')));
+
+  /* this device */
+  const ask = el('input', { type: 'checkbox', id: 'ask', checked: S.askEachTime, onchange: e => { S.askEachTime = e.target.checked; LS.set('ask', S.askEachTime); } });
+  v.append(el('div', { class: 'card' }, el('h2', {}, 'This device'),
+    el('p', { class: 'muted', style: 'margin-top:0' }, 'Signed in as ' + (meName() || 'no one') + '. ' + (lastError ? lastError : (S.online ? 'Connected.' : 'Offline.')) + (S.queue.length ? ' ' + S.queue.length + ' waiting to send.' : '')),
+    el('label', { for: 'ask', style: 'display:flex;gap:10px;align-items:center;margin:8px 0 14px;font-weight:600' }, ask, 'Shared computer: ask for a name after every Confirm'),
+    el('div', { class: 'stack' },
+      el('button', { class: 'btn block', onclick: () => refresh().then(() => toast('Refreshed')) }, 'Refresh now'),
+      el('button', { class: 'btn danger block', onclick: () => { S.pin = ''; LS.del('pin'); LS.del('me'); S.me = ''; stopCam(true); render(); } }, 'Sign this device out'))));
+}
+function openLabelPicker() {
+  const sel = new Set(S.items.map(i => i.code));
+  const body = el('div', { class: 'stack' });
+  const list = el('div', { class: 'list', style: 'margin-top:0' });
+  function draw() {
+    list.textContent = '';
+    for (const it of [...S.items].sort((a, b) => a.type.localeCompare(b.type) || a.name.localeCompare(b.name))) {
+      const cb = el('input', { type: 'checkbox', checked: sel.has(it.code), style: 'width:22px;height:22px', onchange: e => { e.target.checked ? sel.add(it.code) : sel.delete(it.code); } });
+      list.append(el('label', { class: 'item', style: 'grid-template-columns:auto 1fr;justify-content:start;cursor:pointer' }, cb, el('div', {}, el('div', { class: 't' }, it.name), el('div', { class: 's' }, it.code + ' · ' + it.type))));
+    }
+    if (!S.items.length) list.append(el('div', { class: 'empty' }, 'Nothing to print yet.'));
+  }
+  draw();
+  body.append(el('div', { style: 'display:grid;grid-template-columns:1fr 1fr;gap:10px' },
+    el('button', { class: 'btn', onclick: () => { S.items.forEach(i => sel.add(i.code)); draw(); } }, 'Select all'), el('button', { class: 'btn', onclick: () => { sel.clear(); draw(); } }, 'Select none')),
+    list, el('button', { class: 'btn primary block', onclick: () => { const picked = S.items.filter(i => sel.has(i.code)); closeSheet(); printLabels(picked); } }, 'Print selected'));
+  openSheet('Choose labels', body);
+}
+
+/* printing */
+const baseUrl = () => location.origin + location.pathname;
+function labelNode(code, name, sub, payload) {
+  const qr = qrcode(0, 'M'); qr.addData(payload || (baseUrl() + '#' + encodeURIComponent(code))); qr.make();
+  const q = el('div', { class: 'label-qr' }); q.innerHTML = qr.createSvgTag({ cellSize: 4, margin: 0, scalable: true });
+  return el('div', { class: 'label' }, q, el('div', { class: 'label-txt' }, el('div', { class: 'label-name' }, name), sub ? el('div', { class: 'label-sub' }, sub) : null, el('div', { class: 'label-code' }, code)));
+}
+function printNodes(nodes) {
+  if (!nodes.length) { toast('Nothing to print'); return; }
+  const pa = $('#printArea'); pa.textContent = ''; nodes.forEach(n => pa.append(n));
+  setTimeout(() => window.print(), 80);
+}
+const printLabels = items => printNodes(items.map(it => labelNode(it.code, it.name, it.category || it.type)));
+const printBadges = () => printNodes(S.people.map(p => labelNode(p.id, p.name, 'Scan to sign in')));
+const printCommands = () => printNodes([labelNode('CMD-SEND', 'SEND', 'Scan to confirm'), labelNode('CMD-CLEAR', 'CLEAR', 'Scan to start over')]);
+
+/* ---------- boot ---------- */
+window.addEventListener('online', () => { S.online = true; flushQueue().then(refresh); });
+window.addEventListener('offline', () => { S.online = false; renderTop(); });
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) { if (cam.running) { stopCam(false); renderCamBox(); } }
+  else { refresh(); flushQueue(); if (S.tab === 'scan' && LS.get('cam', false) && !cam.running) startCam(); }
+});
+window.addEventListener('hashchange', () => { const h = location.hash.slice(1); if (h) { history.replaceState(null, '', location.pathname + location.search); handleScan(h); } });
+setInterval(() => { if (!document.hidden) { if (S.queue.length) flushQueue(); else refresh(); } }, 60000);
+
+(function boot() {
+  const h = location.hash.slice(1);
+  if (h) { S.pendingHash = h; history.replaceState(null, '', location.pathname + location.search); }
+  render();
+  if (S.pin) {
+    if (S.pendingHash && S.loaded) { const x = S.pendingHash; S.pendingHash = ''; handleScan(x); }
+    refresh().then(flushQueue);
+    if (LS.get('cam', false)) startCam();
+  }
+  window.__tt = { S, handleScan, parseScan };   // handy for testing
+})();
+})();
+</script>
+</body>
+</html>
